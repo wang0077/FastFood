@@ -25,6 +25,7 @@
         <mysql.version>8.0.22</mysql.version>
         <druid.verison>1.1.21</druid.verison>
         <mybatis.spring.boot.verison>2.1.4</mybatis.spring.boot.verison>
+        <mybatis-plus>3.3.0</mybatis-plus>
     </properties>
 
     <dependencyManagement>
@@ -36,6 +37,18 @@
                 <version>2.2.2.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--Mybatis-Plus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus}</version>
+            </dependency>
+            <!-- google.guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
             </dependency>
             <!--spring cloud Hoxton.SR1-->
             <dependency>
