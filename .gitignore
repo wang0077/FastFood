@@ -17,6 +17,7 @@ target/
 .mvn
 mvnw
 target
+.github
 
 ### IntelliJ IDEA ###
 .idea
