@@ -1,5 +1,7 @@
 # FastFood
-<img src="https://wang-blog.oss-cn-beijing.aliyuncs.com/img/FastFood-logo.png" alt="FastFood-logo" style="zoom:15%;" />
+<p align="center">
+	<img src="https://wang-blog.oss-cn-beijing.aliyuncs.com/img/FastFood-logo.png" alt="FastFood-logo" width="400" height="400" />
+</p>
 <p align="center">
 	<img src="https://img.shields.io/badge/JDK-1.8+-orange">
 	<img src="https://img.shields.io/badge/SpringBoot-2.2.2.RELEASE-brightgreen">
