@@ -26,7 +26,7 @@ public class ProductDetailPO implements Serializable {
 	/**
 	 * 商品详情种类ID
 	 */
-	private Integer dtid;
+	private Integer detailTypeId;
 
 	/**
 	 * 商品详情名称

@@ -26,11 +26,11 @@ public class ProductPO implements Serializable {
 	/**
 	 * 种类ID
 	 */
-	private Integer tid;
+	private Integer TypeId;
 	/**
 	 * 商品详情ID
 	 */
-	private Integer ppdid;
+	private Integer productProductDetailId;
 	/**
 	 * 商品名称
 	 */

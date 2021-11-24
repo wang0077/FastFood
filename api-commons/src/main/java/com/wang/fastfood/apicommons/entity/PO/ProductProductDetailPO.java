@@ -19,11 +19,11 @@ public class ProductProductDetailPO implements Serializable {
 	/**
 	 * 商品ID
 	 */
-	private Integer pid;
+	private Integer productId;
 	/**
 	 * 商品详情ID
 	 */
-	private Integer pdid;
+	private Integer productDetailId;
 
 	private Date crateTime;
 
