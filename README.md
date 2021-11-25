@@ -10,6 +10,6 @@
 </p>
 #项目架构
 
-![image-20211126034216506](https://wang-blog.oss-cn-beijing.aliyuncs.com/img/image-20211126034216506.png)
+![image-20211126034443484](https://wang-blog.oss-cn-beijing.aliyuncs.com/img/image-20211126034443484.png)
 # 数据库结构
 ![image-20211125021256618](https://wang-blog.oss-cn-beijing.aliyuncs.com/img/image-20211125021256618.png)
