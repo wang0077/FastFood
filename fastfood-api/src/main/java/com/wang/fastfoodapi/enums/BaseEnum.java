@@ -1,4 +1,4 @@
-package com.wang.fastfood.apicommons.enums;
+package com.wang.fastfoodapi.enums;
 
 /**
  * @Auther: wAnG

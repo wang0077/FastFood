@@ -8,6 +8,8 @@
 	<img src="https://img.shields.io/badge/SpringCloud-Hoxton.SR1-red">
 	<img src="https://img.shields.io/badge/license-MIT-blue">
 </p>
+#项目架构
 
+![image-20211125181631253](https://wang-blog.oss-cn-beijing.aliyuncs.com/img/image-20211125181631253.png)
 # 数据库结构
 ![image-20211125021256618](https://wang-blog.oss-cn-beijing.aliyuncs.com/img/image-20211125021256618.png)

@@ -1,16 +1,14 @@
-package com.wang.fastfood.apicommons.entity.Request;
+package com.wang.fastfoodapi.entity.Request;
 
 import com.google.common.base.Strings;
-import com.wang.fastfood.apicommons.Exception.ParamException;
 import com.wang.fastfood.apicommons.entity.BO.User;
-import com.wang.fastfood.apicommons.entity.common.BaseRequest;
-import com.wang.fastfood.apicommons.entity.common.DTOConvert;
+import com.wang.fastfoodapi.Exception.ParamException;
+import com.wang.fastfoodapi.entity.common.BaseRequest;
+import com.wang.fastfoodapi.entity.common.DTOConvert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.BeanUtils;
-
-import java.time.LocalDateTime;
 
 /**
  * @Auther: wAnG
@@ -54,7 +52,7 @@ public class UserLoginRequest extends BaseRequest {
     }
 
 
-    private static class UserDTOConvert implements DTOConvert<UserLoginRequest,User>{
+    private static class UserDTOConvert implements DTOConvert<UserLoginRequest,User> {
         @Override
         public User convert(UserLoginRequest userRequest) {
             User user = new User();

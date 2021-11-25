@@ -1,4 +1,4 @@
-package com.wang.fastfood.apicommons.entity.Response;
+package com.wang.fastfoodapi.entity.Response;
 
 import lombok.Data;
 import lombok.Getter;

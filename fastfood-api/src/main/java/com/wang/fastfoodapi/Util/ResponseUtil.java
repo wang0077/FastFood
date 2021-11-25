@@ -1,8 +1,8 @@
-package com.wang.fastfood.apicommons.Util;
+package com.wang.fastfoodapi.Util;
 
-import com.wang.fastfood.apicommons.entity.common.Response;
-import com.wang.fastfood.apicommons.enums.BaseEnum;
-import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
+import com.wang.fastfoodapi.entity.common.Response;
+import com.wang.fastfoodapi.enums.BaseEnum;
+import com.wang.fastfoodapi.enums.ErrorCodeEnum;
 
 /**
  * @Auther: wAnG
