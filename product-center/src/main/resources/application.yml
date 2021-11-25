@@ -1,0 +1,15 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: Product-Center
+  cloud:
+    nacos:
+      server-addr: 121.196.168.154:8848
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+
