@@ -1,4 +1,6 @@
-package com.wang.fastfoodapi.entity.common;
+package com.wang.fastfood.apicommons.entity.common;
+
+import lombok.Data;
 
 /**
  * @Auther: wAnG
@@ -6,6 +8,7 @@ package com.wang.fastfoodapi.entity.common;
  * @Description:
  */
 
+@Data
 public class Response<T> {
     /**
      * 响应码

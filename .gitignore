@@ -18,6 +18,8 @@ target/
 mvnw
 target
 .github
+*/logs
+*.log
 
 ### IntelliJ IDEA ###
 .idea
