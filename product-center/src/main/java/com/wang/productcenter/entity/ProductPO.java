@@ -1,19 +1,19 @@
-package com.wang.fastfood.apicommons.entity.PO;
+package com.wang.productcenter.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-
 import lombok.Data;
 
 /**
+ * 商品表
  * 
- * 
- * @author wAnG
- * @Date 2021-11-24 00:15:32
- * @Description: 商品表
+ * @author chenshun
+ * @email sunlightcs@gmail.com
+ * @date 2021-11-27 02:06:31
  */
 @Data
 public class ProductPO implements Serializable {
@@ -26,7 +26,7 @@ public class ProductPO implements Serializable {
 	/**
 	 * 种类ID
 	 */
-	private Integer TypeId;
+	private Integer typeId;
 	/**
 	 * 商品详情ID
 	 */
@@ -47,15 +47,16 @@ public class ProductPO implements Serializable {
 	 * 商品销量
 	 */
 	private Integer sales;
+
 	/**
 	 * 商品是否上架
 	 */
 	private Integer isSales;
 
 	/**
-	 * 商品详情列表
+	 * 数据是否有效
 	 */
-	private List<ProductDetailPO> productDetailPOList;
+	private Integer valid;
 
 	private Date crateTime;
 

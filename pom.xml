@@ -26,6 +26,7 @@
         <druid.verison>1.1.21</druid.verison>
         <mybatis.spring.boot.verison>2.1.4</mybatis.spring.boot.verison>
         <mybatis-plus>3.3.0</mybatis-plus>
+        <spring.boot.jdbc>2.2.2.RELEASE</spring.boot.jdbc>
     </properties>
 
     <dependencyManagement>
@@ -81,6 +82,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-jdbc</artifactId>
+                <version>${spring.boot.jdbc}</version>
             </dependency>
 
             <!-- mybatis-springboot整合 -->
