@@ -1,7 +1,7 @@
 package com.wang.productcenter;
 
 import com.wang.productcenter.config.SpringContext;
-import com.wang.productcenter.config.SqlCostInterceptor;
+import com.wang.productcenter.Interceptor.SqlCostInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

@@ -20,10 +20,10 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>4.12</junit.version>
-        <log4j.version>1.2.17</log4j.version>
+        <log4j.version>1.2.16</log4j.version>
         <lombok.version>1.18.12</lombok.version>
         <mysql.version>8.0.22</mysql.version>
-        <druid.verison>1.1.21</druid.verison>
+        <druid.verison>1.2.8</druid.verison>
         <mybatis.spring.boot.verison>2.1.4</mybatis.spring.boot.verison>
         <mybatis-plus>3.3.0</mybatis-plus>
         <spring.boot.jdbc>2.2.2.RELEASE</spring.boot.jdbc>
@@ -103,7 +103,7 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <!-- log4j -->
+<!--             log4j -->
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>

@@ -1,6 +1,7 @@
-package com.wang.productcenter.config;
+package com.wang.productcenter.Interceptor;
 
 import com.google.common.collect.Lists;
+import com.wang.productcenter.config.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -32,10 +33,6 @@ import java.util.*;
         @Signature(type = StatementHandler.class, method = "batch", args = { Statement.class })})
 @Component
 public class SqlCostInterceptor implements Interceptor {
-
-    static {
-        log.info(">>>>>>>>>");
-    }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -83,7 +80,7 @@ public class SqlCostInterceptor implements Interceptor {
             }
             Object value = null;
             String propertyName = parameterMapping.getProperty();
-            if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+            if (boundSql.hasAdditionalParameter(propertyName)) {
                 value = boundSql.getAdditionalParameter(propertyName);
             } else if (parameterObject == null) {
                 value = null;
