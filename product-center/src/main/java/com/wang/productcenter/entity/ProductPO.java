@@ -62,4 +62,6 @@ public class ProductPO implements Serializable {
 
 	private Date updateTime;
 
+	private String clazz;
+
 }

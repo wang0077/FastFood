@@ -1,7 +1,6 @@
 package com.wang.fastfoodapi.Interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.runtime.directive.Foreach;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

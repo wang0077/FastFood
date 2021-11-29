@@ -20,6 +20,7 @@ target
 .github
 logs
 *.log
+test
 
 ### IntelliJ IDEA ###
 .idea

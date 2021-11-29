@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: Product-Center
+  cache:
+    type: redis
   cloud:
     # Nacos配置
     nacos:
@@ -26,10 +28,25 @@ spring:
     testOnBorrow: false
     testOnReturn: false
     poolPreparedStatements: true
-    filters: stat,wall,log4j
+    filters: stat,wall
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  redis:
+    redisson:
+      config: classpath:redisson.yml
+    host: 121.196.168.154
+    port: 6379
+    database: 0
+    password: Wangsi12
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-wait: 500
+        max-idle: 8
+    timeout: 1000
+
 management:
   endpoints:
     web:
