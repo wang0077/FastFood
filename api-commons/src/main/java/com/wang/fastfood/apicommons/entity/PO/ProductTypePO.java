@@ -1,7 +1,11 @@
 package com.wang.fastfood.apicommons.entity.PO;
 
 
+import com.wang.fastfood.apicommons.entity.BO.ProductType;
+import com.wang.fastfood.apicommons.entity.BO.User;
+import com.wang.fastfood.apicommons.entity.common.BOConvert;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +18,7 @@ import java.util.Date;
  * @Description: 商品类型表
  */
 @Data
-public class ProductTypePO implements Serializable {
+public class ProductTypePO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -27,12 +31,26 @@ public class ProductTypePO implements Serializable {
 	private String name;
 
 	/**
-	 * 
+	 * 数据是否有效
 	 */
+	private Integer valid;
+
 	private Date crateTime;
-	/**
-	 * 
-	 */
+
 	private Date updateTime;
 
+	public ProductType convertToProductType(){
+		ProductTypeBOConvert productTypeBOConvert = new ProductTypeBOConvert();
+		return productTypeBOConvert.convert(this);
+	}
+
+	private static class ProductTypeBOConvert implements BOConvert<ProductTypePO, ProductType>{
+
+		@Override
+		public ProductType convert(ProductTypePO productTypePO) {
+			ProductType productType = new ProductType();
+			BeanUtils.copyProperties(productTypePO,productType);
+			return productType;
+		}
+	}
 }

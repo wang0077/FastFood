@@ -35,7 +35,7 @@ public class RemoteLogger extends Logger {
             Request request = build.request();
             String bodyText =  request.charset() != null ? new String(request.body(), request.charset()) : null;
 
-            log.info("[OpenFeign_Request] ==> UseTime : [{}ms] | state : [{}] | RequestIP : [{}] | RequestURIL : [{}] |" +
+            log.info("[OpenFeign_Request (TotalTime : {} ms)] ==> state : [{}] | RequestIP : [{}] | RequestURIL : [{}] |" +
                             "\n ResponseData : [{}]"
                     ,elapsedTime
                     ,response.status()

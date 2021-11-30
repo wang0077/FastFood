@@ -1,5 +1,9 @@
 server:
   port: 8091
+rocketmq:
+  name-server: 106.13.206.235:9876
+  producer:
+    group: Product-Center-Group
 spring:
   application:
     name: Product-Center
@@ -35,10 +39,10 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 121.196.168.154
+    host: 159.75.20.118
     port: 6379
     database: 0
-    password: Wangsi12
+    password: 228913
     jedis:
       pool:
         max-active: 8

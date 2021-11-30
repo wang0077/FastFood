@@ -1,6 +1,6 @@
 package com.wang.productcenter.dao;
 
-import com.wang.productcenter.entity.ProductPO;
+import com.wang.productcenter.entity.PO.ProductPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

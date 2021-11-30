@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.productcenter.dao.ProductDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.productcenter.entity.PO.ProductPO" id="productMap">
+        <result property="id" column="id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="productProductDetailId" column="product_product_detail_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="productImagePath" column="product_image_path"/>
+        <result property="sales" column="sales"/>
+        <result property="isSales" column="is_sales"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <select id="findAll" resultMap="productMap">
+        select * from product;
+    </select>
+
+    <sql id="WhereParam">
+        <if test="typeId != null">
+            and type_id = ${product.typeId}
+        </if>
+        <if test="productProductDetailId != null">
+            and product_product_detail_id = ${product.productProductDetailId}
+        </if>
+        <if test="productName != null">
+            and product_name = ${product.productName}
+        </if>
+        <if test="productPrice != null">
+            and product_price = ${product.productPrice}
+        </if>
+        <if test="productImagePath != null">
+            and product_image_path = ${product.productImagePath}
+        </if>
+        <if test="sales != null">
+            and sales = ${product.sales}
+        </if>
+        <if test="isSales != null">
+            and is_sales = ${product.isSales}
+        </if>
+        <if test="valid != null">
+            and valid = ${product.valid}
+        </if>
+    </sql>
+
+
+</mapper>

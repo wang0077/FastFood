@@ -40,9 +40,6 @@ public class JSONUtil {
         return json;
     }
 
-//    public static <T> T parse(@NonNull String json){
-//        mapper.
-//    }
     /**
      * 反序列化，将json字符串转化为对象
      *

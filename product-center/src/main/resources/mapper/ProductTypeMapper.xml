@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.productcenter.dao.ProductTypeDao">
+
+    <resultMap type="com.wang.fastfood.apicommons.entity.PO.ProductTypePO" id="productTypeMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectBy">
+        product_type.id, product_type.name
+    </sql>
+
+    <select id="getAll" resultMap="productTypeMap">
+        select
+        <include refid="SelectBy"/>
+        from product_type;
+    </select>
+</mapper>

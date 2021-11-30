@@ -12,9 +12,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @EnableAspectJAutoProxy
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @EnableFeignClients
-@EnableCaching
 public class ProductCenterApplication {
 
     public static void main(String[] args) {

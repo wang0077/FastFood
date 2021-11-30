@@ -1,11 +1,10 @@
-package com.wang.productcenter.entity;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+package com.wang.productcenter.entity.PO;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.wang.fastfood.apicommons.entity.PO.ProductTypePO;
 import lombok.Data;
 
 /**
@@ -42,7 +41,7 @@ public class ProductPO implements Serializable {
 	/**
 	 * 商品图片
 	 */
-	private String productImage;
+	private String productImagePath;
 	/**
 	 * 商品销量
 	 */
@@ -58,10 +57,13 @@ public class ProductPO implements Serializable {
 	 */
 	private Integer valid;
 
+	/**
+	 * 商品种类
+	 */
+	private ProductTypePO productType;
+
 	private Date crateTime;
 
 	private Date updateTime;
-
-	private String clazz;
 
 }

@@ -1,42 +1,32 @@
 package com.wang.productcenter;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wang.productcenter.Util.JSONUtil;
-import com.wang.productcenter.Util.RedisUtil;
-import com.wang.productcenter.entity.ProductPO;
+import com.wang.productcenter.entity.PO.ProductPO;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.junit.jupiter.api.Test;
-import org.redisson.Redisson;
-import org.redisson.api.*;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-import java.util.*;
+import java.util.List;
 
 @SpringBootTest
 class ProductCenterApplicationTests {
 
+    @Autowired
+    RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    DiscoveryClient discoveryClient;
 
     @Test
     void contextLoads() {
-        int a = 1;
-        String s = JSONUtil.toJsonString(a);
-        Object parse = JSONUtil.parse(s, Object.class);
-        System.out.println(parse.getClass());
+        List<String> services = discoveryClient.getServices();
 
-//        System.out.println(Object instanceof int);
-//        System.out.println(qwe);
-//        List parse = JSONUtil.parse(qwe, List.class);
-//        System.out.println(parse);
-//        JSON.parseObject("123",new TypeReference<List<ProductPO>>(){});
-//        System.out.println(productPO1);
+//        ProductPO productPO = new ProductPO();
+//        productPO.setId(123);
+//        productPO.setIsSales(1);
+////        rocketMQTemplate.
+//        rocketMQTemplate.convertAndSend("first-topic",productPO);
     }
 
 //    public int S (Object a){

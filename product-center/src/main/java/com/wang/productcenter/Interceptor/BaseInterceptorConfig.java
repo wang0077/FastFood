@@ -20,7 +20,7 @@ public class BaseInterceptorConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestInterceptor)
-                .addPathPatterns("/*");
+                .addPathPatterns("/**");
         super.addInterceptors(registry);
     }
 }

@@ -17,6 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @Component
 public class RequestInterceptor implements HandlerInterceptor {
+
+    static {
+        log.error("init !!!!!-------");
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String method = request.getMethod();
@@ -36,7 +41,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         String IP = request.getLocalAddr();
         String remoteName = request.getServerName();
         log.info("[Request Out] ==> IP : [{}] | Method : [{}] | URI : [{}] | remoteName : [{}] | \n " +
-                "status : [{}] | body : [{}]",IP,method,requestURI,remoteName,status,body.toString());
+                "status : [{}] | body : [{}]",IP,method,requestURI,remoteName,status,body);
     }
 
 }
