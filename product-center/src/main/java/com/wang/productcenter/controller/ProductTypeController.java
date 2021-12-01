@@ -1,10 +1,11 @@
 package com.wang.productcenter.controller;
 
+import com.wang.fastfood.apicommons.Util.BOUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
-import com.wang.productcenter.entity.BO.ProductType;
+import com.wang.fastfood.apicommons.entity.DTO.ProductTypeDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
+import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.service.impl.ProductTypeServiceImpl;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: wAnG
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("type")
+@SuppressWarnings("all")
 public class ProductTypeController {
 
     @Autowired
@@ -31,31 +34,35 @@ public class ProductTypeController {
     private DiscoveryClient discoveryClient;
 
     @GetMapping("/getAll")
-    public Response<List<ProductType>> getAll(){
+    public Response<List<ProductTypeDTO>> getAll(){
         List<ProductType> typePOList = productTypeService.getAll();
-        return ResponseUtil.success(typePOList);
+        return ResponseUtil.success(typePOList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
     }
 
     @PostMapping("/getById")
-    public Response<ProductType> getTypeById(ProductType productType){
+    public Response<ProductTypeDTO> getTypeById(ProductType productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
         ProductType type = productTypeService.getById(productType);
-        return ResponseUtil.success(type);
+        return ResponseUtil.success(type.doBackward());
     }
 
     @PostMapping("/getByName")
-    public Response<List<ProductType>> getTypeByName(ProductType productType){
+    public Response<List<ProductTypeDTO>> getTypeByName(ProductType productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
         List<ProductType> typeList = productTypeService.getByName(productType);
-        return ResponseUtil.success(typeList);
+        return ResponseUtil.success(typeList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
     }
 
     @PostMapping("/delete")
-    public Response remove(ProductType productType){
+    public Response remove(ProductType productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
         productTypeService.removeType(productType);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
-    public Response update(ProductType productType){
+    public Response update(ProductTypeDTO productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
         productTypeService.updateType(productType);
         return ResponseUtil.success();
     }

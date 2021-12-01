@@ -25,6 +25,11 @@ public class ProductProductDetailPO implements Serializable {
 	 */
 	private Integer productDetailId;
 
+	/**
+	 * 数据是否有效
+	 */
+	private Integer valid;
+
 	private Date crateTime;
 
 	private Date updateTime;

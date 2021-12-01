@@ -1,4 +1,4 @@
-package com.wang.fastfoodapi.entity.common;
+package com.wang.fastfood.apicommons.entity.common;
 
 /**
  * @Auther: wAnG
@@ -7,6 +7,6 @@ package com.wang.fastfoodapi.entity.common;
  */
 public interface Validity {
 
-    public void validity();
+    void validity();
 
 }

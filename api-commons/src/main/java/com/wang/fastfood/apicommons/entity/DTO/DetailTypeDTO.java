@@ -8,28 +8,28 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @Auther: wAnG
- * @Date: 2021/12/2 00:52
+ * @Date: 2021/12/2 02:45
  * @Description:
  */
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ProductTypeDTO extends BaseRequest {
+public class DetailTypeDTO extends BaseRequest {
 
     /**
-     * 种类ID
+     * 商品详情分类ID
      */
     private Integer id;
     /**
-     * 种类名称
+     * 商品详情分类名称
      */
-    private String name;
+    private String detailTypeName;
 
     @Override
     public void validity(){
         try {
-            if(Strings.isNullOrEmpty(name)){
-                throw new ParamException("参数name为空");
+            if(Strings.isNullOrEmpty(detailTypeName)){
+                throw new ParamException("参数detailTypeName为空");
             }
         }catch (ParamException e){
             e.printStackTrace();

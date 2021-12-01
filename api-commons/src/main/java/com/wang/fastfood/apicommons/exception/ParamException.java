@@ -1,4 +1,4 @@
-package com.wang.fastfoodapi.Exception;
+package com.wang.fastfood.apicommons.exception;
 
 /**
  * @Auther: wAnG

@@ -1,6 +1,5 @@
 package com.wang.productcenter.Interceptor;
 
-import com.google.common.collect.Lists;
 import com.wang.productcenter.config.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -60,7 +59,9 @@ public class SqlCostInterceptor implements Interceptor {
         if(parameterObject != null){
             sql = getFllSql(boundSql, parameterObject);
         }
-        log.info("[MySQL (totalTime : {}ms)] ==> SQL : [{}] | total : [{}] |\n Result : [{}]",sqlCost,sql,resultList.size(),resultList.toString());
+        int total = resultList == null ? 0 : resultList.size();
+        sql = sql.replace("\n", " ").replaceAll("\\s{1,}", " ");
+        log.info("[MySQL (totalTime : {}ms)] ==> total : [{}]  \n>>> SQL : [{}] \n>>> Result : [{}]",sqlCost,total,sql,resultList);
     }
 
     public String getFllSql(BoundSql boundSql, Object parameterObject) {

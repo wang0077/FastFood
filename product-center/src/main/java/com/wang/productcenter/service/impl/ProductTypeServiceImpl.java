@@ -24,33 +24,33 @@ public class ProductTypeServiceImpl implements IProductTypeService {
 
     @Override
     public List<ProductType> getAll() {
-        List<ProductTypePO> typePOList = productTypeDao.getAll();
-        return typePOList.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
+        List<ProductTypePO> result = productTypeDao.getAll();
+        return result.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
     }
 
     @Override
     public ProductType getById(ProductType productType) {
-        ProductTypePO productTypePO = productType.convertToProductTypePO();
-        ProductTypePO productTypeWithId = productTypeDao.getById(productTypePO);
-        if(productTypeWithId == null){
+        ProductTypePO productTypePO = productType.doForward();
+        ProductTypePO result = productTypeDao.getById(productTypePO);
+        if(result == null){
             return null;
         }
-        return productTypeWithId.convertToProductType();
+        return result.convertToProductType();
     }
 
     public List<ProductType> getByName(ProductType productType){
-        ProductTypePO productTypePO = productType.convertToProductTypePO();
-        List<ProductTypePO> productTypePOList = productTypeDao.getByName(productTypePO);
-        return productTypePOList.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
+        ProductTypePO productTypePO = productType.doForward();
+        List<ProductTypePO> result = productTypeDao.getByName(productTypePO);
+        return result.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
     }
 
     public void removeType(ProductType productType){
-        ProductTypePO productTypePO = productType.convertToProductTypePO();
+        ProductTypePO productTypePO = productType.doForward();
         productTypeDao.remove(productTypePO);
     }
 
     public void updateType(ProductType productType){
-        ProductTypePO productTypePO = productType.convertToProductTypePO();
+        ProductTypePO productTypePO = productType.doForward();
         productTypeDao.update(productTypePO);
     }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.productcenter.dao.DetailTypeDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.productcenter.entity.PO.DetailTypePO" id="detailTypeMap">
+        <result property="id" column="id"/>
+        <result property="detailTypeName" column="Detail_type_name"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        detail_type.id, detail_type.Detail_type_name
+    </sql>
+
+    <sql id="SelectByParam">
+        valid = 1
+        <if test="detail_type.id != null">
+            and id = #{detail_type.id}
+        </if>
+        <if test="detail_type.detailTypeName != null">
+            and Detail_type_name like CONCAT('%',#{detail_type.detailTypeName},'%')
+        </if>
+    </sql>
+
+    <update id="remove">
+        update detail_type set valid = 0
+        where id = #{detail_type.id}
+    </update>
+
+    <update id="update">
+        update detail_type set
+        <if test="detail_type.detailTypeName != null">
+            Detail_type_name = #{detail_type.detailTypeName}
+        </if>
+        <where>
+            <if test="detail_type.id != null">
+                id = #{detail_type.id}
+            </if>
+        </where>
+    </update>
+
+    <select id="getAll" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type where valid = 1;
+    </select>
+
+    <select id="getById" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
+
+    <select id="getByName" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
+
+</mapper>

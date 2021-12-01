@@ -1,11 +1,11 @@
 package com.wang.productcenter.entity.PO;
 
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import lombok.Data;
 
 /**
  * 
@@ -37,6 +37,11 @@ public class ProductDetailPO implements Serializable {
 	 * 可选种类列表
 	 */
 	private List<DetailTypePO> detailTypePOList;
+
+	/**
+	 * 数据是否有效
+	 */
+	private Integer valid;
 
 	private Date crateTime;
 

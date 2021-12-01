@@ -23,7 +23,6 @@
         <if test="productType.name != null">
             and name = #{productType.name}
         </if>
-
     </sql>
 
     <update id="remove">
@@ -38,7 +37,7 @@
         </if>
         <where>
             <if test="productType.id != null">
-                id = #{productType.id}
+                id = "%"#{productType.id}"%"
             </if>
         </where>
     </update>

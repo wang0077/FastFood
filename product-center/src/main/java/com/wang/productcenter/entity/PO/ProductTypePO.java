@@ -1,7 +1,7 @@
 package com.wang.productcenter.entity.PO;
 
 
-import com.wang.productcenter.common.BOConvert;
+import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
 import com.wang.productcenter.entity.BO.ProductType;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;

@@ -1,4 +1,4 @@
-package com.wang.fastfoodapi.entity.common;
+package com.wang.fastfood.apicommons.entity.common;
 
 import java.util.Date;
 

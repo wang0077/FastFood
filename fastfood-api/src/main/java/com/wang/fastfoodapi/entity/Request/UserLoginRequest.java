@@ -2,9 +2,9 @@ package com.wang.fastfoodapi.entity.Request;
 
 import com.google.common.base.Strings;
 import com.wang.fastfood.apicommons.entity.BO.User;
-import com.wang.fastfoodapi.Exception.ParamException;
-import com.wang.fastfoodapi.entity.common.BaseRequest;
-import com.wang.fastfoodapi.entity.common.DTOConvert;
+import com.wang.fastfood.apicommons.exception.ParamException;
+import com.wang.fastfood.apicommons.entity.common.BaseRequest;
+import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

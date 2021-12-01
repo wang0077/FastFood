@@ -1,7 +1,9 @@
 package com.wang.productcenter.entity.BO;
 
+import com.wang.fastfood.apicommons.entity.DTO.ProductTypeDTO;
+import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
 import com.wang.productcenter.entity.PO.ProductTypePO;
-import com.wang.productcenter.common.POConvert;
+import com.wang.fastfood.apicommons.entity.common.convert.POConvert;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
@@ -22,8 +24,13 @@ public class ProductType {
      */
     private String name;
 
-    public ProductTypePO convertToProductTypePO(){
+    public ProductTypePO doForward(){
         ProductTypePOConvert convert = new ProductTypePOConvert();
+        return convert.convert(this);
+    }
+
+    public ProductTypeDTO doBackward(){
+        ProductTypeDTOConvert convert = new ProductTypeDTOConvert();
         return convert.convert(this);
     }
 
@@ -35,6 +42,16 @@ public class ProductType {
             ProductTypePO productTypePO = new ProductTypePO();
             BeanUtils.copyProperties(productType,productTypePO);
             return productTypePO;
+        }
+    }
+
+    private static class ProductTypeDTOConvert implements DTOConvert<ProductType, ProductTypeDTO>{
+
+        @Override
+        public ProductTypeDTO convert(ProductType productType) {
+            ProductTypeDTO productTypeDTO = new ProductTypeDTO();
+            BeanUtils.copyProperties(productType,productTypeDTO);
+            return productTypeDTO;
         }
     }
 }
