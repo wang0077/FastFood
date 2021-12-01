@@ -1,4 +1,4 @@
-package com.wang.fastfood.apicommons.entity.common;
+package com.wang.productcenter.common;
 
 /**
  * @Auther: wAnG
@@ -6,5 +6,5 @@ package com.wang.fastfood.apicommons.entity.common;
  * @Description:
  */
 public interface BOConvert <S,T>{
-    public T convert(S s);
+    T convert(S s);
 }

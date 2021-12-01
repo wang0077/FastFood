@@ -1,9 +1,8 @@
-package com.wang.fastfood.apicommons.entity.PO;
+package com.wang.productcenter.entity.PO;
 
 
-import com.wang.fastfood.apicommons.entity.BO.ProductType;
-import com.wang.fastfood.apicommons.entity.BO.User;
-import com.wang.fastfood.apicommons.entity.common.BOConvert;
+import com.wang.productcenter.common.BOConvert;
+import com.wang.productcenter.entity.BO.ProductType;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
@@ -44,7 +43,7 @@ public class ProductTypePO implements Serializable{
 		return productTypeBOConvert.convert(this);
 	}
 
-	private static class ProductTypeBOConvert implements BOConvert<ProductTypePO, ProductType>{
+	private static class ProductTypeBOConvert implements BOConvert<ProductTypePO, ProductType> {
 
 		@Override
 		public ProductType convert(ProductTypePO productTypePO) {

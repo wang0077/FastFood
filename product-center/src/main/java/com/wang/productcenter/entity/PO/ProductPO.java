@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.wang.fastfood.apicommons.entity.PO.ProductTypePO;
 import lombok.Data;
 
 /**

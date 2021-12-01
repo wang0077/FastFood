@@ -39,10 +39,10 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 159.75.20.118
+    host: 121.196.168.154
     port: 6379
     database: 0
-    password: 228913
+    password: Wangsi12
     jedis:
       pool:
         max-active: 8

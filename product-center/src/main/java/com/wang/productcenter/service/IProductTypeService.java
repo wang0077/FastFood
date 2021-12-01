@@ -1,7 +1,6 @@
 package com.wang.productcenter.service;
 
-import com.wang.fastfood.apicommons.entity.BO.ProductType;
-import com.wang.fastfood.apicommons.entity.PO.ProductTypePO;
+import com.wang.productcenter.entity.BO.ProductType;
 
 import java.util.List;
 
@@ -12,5 +11,13 @@ import java.util.List;
  */
 public interface IProductTypeService {
 
-    public List<ProductType> getAll();
+    List<ProductType> getAll();
+
+    ProductType getById(ProductType productType);
+
+    List<ProductType> getByName(ProductType productType);
+
+    void removeType(ProductType productType);
+
+    void updateType(ProductType productType);
 }

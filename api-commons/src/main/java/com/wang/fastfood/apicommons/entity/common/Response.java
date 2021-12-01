@@ -18,7 +18,7 @@ public class Response<T> {
     /**
      * 响应码对应的内容
      */
-    private String errorMsg;
+    private String Message;
 
     /**
      * 响应数据
@@ -27,7 +27,7 @@ public class Response<T> {
 
     public Response(Integer code, String msg, T data) {
         this.errorCode = code;
-        this.errorMsg = msg;
+        this.Message = msg;
         this.data = data;
     }
 
@@ -40,11 +40,11 @@ public class Response<T> {
     }
 
     public String getErrorMsg() {
-        return errorMsg;
+        return Message;
     }
 
     public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
+        this.Message = errorMsg;
     }
 
     public T getData() {

@@ -1,7 +1,8 @@
 package com.wang.productcenter.dao;
 
-import com.wang.fastfood.apicommons.entity.PO.ProductTypePO;
+import com.wang.productcenter.entity.PO.ProductTypePO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,5 +16,13 @@ import java.util.List;
 public interface ProductTypeDao {
 
     List<ProductTypePO> getAll();
+
+    ProductTypePO getById(@Param("productType") ProductTypePO productTypePO);
+
+    List<ProductTypePO> getByName(@Param("productType") ProductTypePO productTypePO);
+
+    void remove(@Param("productType") ProductTypePO productTypePO);
+
+    void update(@Param("productType") ProductTypePO productTypePO);
 
 }

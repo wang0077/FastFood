@@ -1,4 +1,4 @@
-package com.wang.fastfood.apicommons.entity.PO;
+package com.wang.productcenter.entity.PO;
 
 
 import java.io.Serializable;
