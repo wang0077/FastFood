@@ -17,12 +17,16 @@ public interface DetailTypeDao {
 
     List<DetailTypePO> getAll();
 
+    int insert(@Param("detail_type")DetailTypePO detailTypePO);
+
     DetailTypePO getById(@Param("detail_type")DetailTypePO detailTypePO);
 
-    List<DetailTypePO> getByName(@Param("detail_type")DetailTypePO detailTypePO);
+    List<DetailTypePO> getLikeName(@Param("detail_type")DetailTypePO detailTypePO);
 
     void remove(@Param("detail_type")DetailTypePO detailTypePO);
 
-    void update(@Param("detail_type")DetailTypePO detailTypePO);
+    int update(@Param("detail_type")DetailTypePO detailTypePO);
+
+    DetailTypePO getByName(@Param("detail_type")DetailTypePO detailTypePO);
 
 }

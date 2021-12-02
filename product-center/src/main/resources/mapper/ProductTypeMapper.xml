@@ -16,7 +16,7 @@
     </sql>
 
     <sql id="SelectByParam">
-            valid = 1
+        valid = 1
         <if test="productType.id != null">
             and id = #{productType.id}
         </if>
@@ -24,9 +24,14 @@
             and name = #{productType.name}
         </if>
     </sql>
+    <insert id="insert">
+        insert into product_type (name, valid)
+        VALUES (#{productType.name}, 1)
+    </insert>
 
     <update id="remove">
-        update product_type set product_type.valid = 0
+        update product_type
+        set product_type.valid = 0
         where id = #{productType.id}
     </update>
 
@@ -37,7 +42,7 @@
         </if>
         <where>
             <if test="productType.id != null">
-                id = "%"#{productType.id}"%"
+                id = #{productType.id}
             </if>
         </where>
     </update>
@@ -55,6 +60,13 @@
         <where>
             <include refid="SelectByParam"/>
         </where>
+    </select>
+
+    <select id="getLikeName" resultMap="productTypeMap">
+        select
+        <include refid="SelectBy"/>
+        from product_type
+        where name like concat('%',#{productType.name},'%')
     </select>
 
     <select id="getByName" resultMap="productTypeMap">

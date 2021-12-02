@@ -2,6 +2,7 @@ package com.wang.productcenter.controller;
 
 import com.wang.fastfood.apicommons.Util.BOUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
+import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductTypeDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.productcenter.entity.BO.ProductType;
@@ -39,6 +40,13 @@ public class ProductTypeController {
         return ResponseUtil.success(typePOList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
     }
 
+    @PostMapping("/insert")
+    public Response insert(ProductTypeDTO productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+        int result = productTypeService.insert(productType);
+        return SqlResultUtil.insertResult(result);
+    }
+
     @PostMapping("/getById")
     public Response<ProductTypeDTO> getTypeById(ProductType productTypeDTO){
         ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
@@ -46,11 +54,18 @@ public class ProductTypeController {
         return ResponseUtil.success(type.doBackward());
     }
 
-    @PostMapping("/getByName")
-    public Response<List<ProductTypeDTO>> getTypeByName(ProductType productTypeDTO){
+    @PostMapping("/getLikeName")
+    public Response<List<ProductTypeDTO>> getTypeLikeName(ProductType productTypeDTO){
         ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
-        List<ProductType> typeList = productTypeService.getByName(productType);
+        List<ProductType> typeList = productTypeService.getLikeName(productType);
         return ResponseUtil.success(typeList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
+    }
+
+    @PostMapping("/getByName")
+    public Response<ProductTypeDTO> getTypeByName(ProductTypeDTO productTypeDTO){
+        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+        ProductType result = productTypeService.getByName(productType);
+        return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/delete")
@@ -63,8 +78,8 @@ public class ProductTypeController {
     @PostMapping("/update")
     public Response update(ProductTypeDTO productTypeDTO){
         ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
-        productTypeService.updateType(productType);
-        return ResponseUtil.success();
+        int result = productTypeService.updateType(productType);
+        return SqlResultUtil.updateResult(result);
     }
 
 

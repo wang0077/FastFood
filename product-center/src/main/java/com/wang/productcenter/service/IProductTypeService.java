@@ -13,11 +13,15 @@ public interface IProductTypeService {
 
     List<ProductType> getAll();
 
+    int insert(ProductType productType);
+
     ProductType getById(ProductType productType);
 
-    List<ProductType> getByName(ProductType productType);
+    ProductType getByName(ProductType productType);
+
+    List<ProductType> getLikeName(ProductType productType);
 
     void removeType(ProductType productType);
 
-    void updateType(ProductType productType);
+    int updateType(ProductType productType);
 }

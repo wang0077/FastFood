@@ -1,5 +1,6 @@
 package com.wang.productcenter.service.impl;
 
+import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.PO.DetailTypePO;
@@ -22,6 +23,15 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Autowired
     DetailTypeDao detailTypeDao;
 
+    public int insert(DetailType detailType){
+        DetailTypePO detailTypePO = detailType.doForward();
+        DetailTypePO result = detailTypeDao.getByName(detailTypePO);
+        if(result != null){
+            return SqlResultEnum.REPEAT_INSERT.getValue();
+        }
+        return detailTypeDao.insert(detailTypePO);
+    }
+
     @Override
     public List<DetailType> getAll() {
         List<DetailTypePO> result = detailTypeDao.getAll();
@@ -36,9 +46,16 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public List<DetailType> getByName(DetailType detailType) {
+    public DetailType getByName(DetailType detailType) {
         DetailTypePO detailTypePO = detailType.doForward();
-        List<DetailTypePO> result = detailTypeDao.getByName(detailTypePO);
+        DetailTypePO result = detailTypeDao.getByName(detailTypePO);
+        return result != null ? result.convertToDetailType() : null;
+    }
+
+    @Override
+    public List<DetailType> getLikeName(DetailType detailType){
+        DetailTypePO detailTypePO = detailType.doForward();
+        List<DetailTypePO> result = detailTypeDao.getLikeName(detailTypePO);
         return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
     }
 
@@ -49,8 +66,8 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public void update(DetailType detailType) {
+    public int update(DetailType detailType) {
         DetailTypePO detailTypePO = detailType.doForward();
-        detailTypeDao.update(detailTypePO);
+        return detailTypeDao.update(detailTypePO);
     }
 }

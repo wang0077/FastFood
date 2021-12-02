@@ -22,12 +22,18 @@
             and id = #{detail_type.id}
         </if>
         <if test="detail_type.detailTypeName != null">
-            and Detail_type_name like CONCAT('%',#{detail_type.detailTypeName},'%')
+            and Detail_type_name = #{detail_type.detailTypeName}
         </if>
     </sql>
 
+    <insert id="insert">
+        insert into detail_type (Detail_type_name, valid)
+        VALUES (#{detail_type.detailTypeName}, 1);
+    </insert>
+
     <update id="remove">
-        update detail_type set valid = 0
+        update detail_type
+        set valid = 0
         where id = #{detail_type.id}
     </update>
 
@@ -56,6 +62,13 @@
         <where>
             <include refid="SelectByParam"/>
         </where>
+    </select>
+
+    <select id="getLikeName" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type
+        where Detail_type_name like CONCAT('%',#{detail_type.detailTypeName},'%')
     </select>
 
     <select id="getByName" resultMap="detailTypeMap">

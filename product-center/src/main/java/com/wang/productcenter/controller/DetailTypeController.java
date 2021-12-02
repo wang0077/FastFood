@@ -2,6 +2,7 @@ package com.wang.productcenter.controller;
 
 import com.wang.fastfood.apicommons.Util.BOUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
+import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.DetailTypeDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.productcenter.entity.BO.DetailType;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/detailType")
+@SuppressWarnings("all")
 public class DetailTypeController {
 
     @Autowired
@@ -34,6 +36,13 @@ public class DetailTypeController {
         return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
     }
 
+    @PostMapping("/insert")
+    public Response insert(DetailTypeDTO detailTypeDTO){
+        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        int result = detailTypeService.insert(detailType);
+        return SqlResultUtil.insertResult(result);
+    }
+
     @PostMapping("/getById")
     public Response<DetailTypeDTO> getById(DetailTypeDTO detailTypeDTO){
         DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
@@ -42,9 +51,16 @@ public class DetailTypeController {
     }
 
     @PostMapping("/getByName")
-    public Response<List<DetailTypeDTO>> getByName(DetailTypeDTO detailTypeDTO){
+    public Response<DetailTypeDTO> getByName(DetailTypeDTO detailTypeDTO){
         DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
-        List<DetailType> result = detailTypeService.getByName(detailType);
+        DetailType result = detailTypeService.getByName(detailType);
+        return ResponseUtil.success(result != null ? result.doBackward() : null);
+    }
+
+    @PostMapping("/getLikeName")
+    public Response<List<DetailTypeDTO>> getLikeName(DetailTypeDTO detailTypeDTO){
+        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        List<DetailType> result = detailTypeService.getLikeName(detailType);
         return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
     }
 
@@ -58,8 +74,8 @@ public class DetailTypeController {
     @PostMapping("/update")
     public Response update(DetailTypeDTO detailTypeDTO){
         DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
-        detailTypeService.update(detailType);
-        return ResponseUtil.success();
+        int result = detailTypeService.update(detailType);
+        return SqlResultUtil.updateResult(result);
     }
 
 }

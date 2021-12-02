@@ -10,7 +10,11 @@ public enum ErrorCodeEnum implements BaseEnum {
     SUCCESS(10000, "成功"),
 
     // [20000,29999] 表示系统错误
-    SERVER_ERROR(20000, "服务器异常");
+    SERVER_ERROR(20000, "服务器异常"),
+    SQL_ERROR(30000,"数据库异常"),
+    SQL_INSERT_ERROR(30001,"数据添加异常"),
+    SQL_REPEAT_INSERT_ERROR(30002,"数据重复添加"),
+    SQL_UPDATE_ERROR(30010,"数据更新异常");
 
     private final int code;
 

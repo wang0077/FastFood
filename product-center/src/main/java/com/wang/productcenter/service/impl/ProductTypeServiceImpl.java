@@ -1,7 +1,8 @@
 package com.wang.productcenter.service.impl;
 
-import com.wang.productcenter.entity.BO.ProductType;
+import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.ProductTypeDao;
+import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.entity.PO.ProductTypePO;
 import com.wang.productcenter.service.IProductTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,16 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     }
 
     @Override
+    public int insert(ProductType productType){
+        ProductTypePO productTypePO = productType.doForward();
+        ProductTypePO result = productTypeDao.getByName(productTypePO);
+        if(result != null){
+            return SqlResultEnum.REPEAT_INSERT.getValue();
+        }
+        return productTypeDao.insert(productTypePO);
+    }
+
+    @Override
     public ProductType getById(ProductType productType) {
         ProductTypePO productTypePO = productType.doForward();
         ProductTypePO result = productTypeDao.getById(productTypePO);
@@ -38,10 +49,16 @@ public class ProductTypeServiceImpl implements IProductTypeService {
         return result.convertToProductType();
     }
 
-    public List<ProductType> getByName(ProductType productType){
+    public List<ProductType> getLikeName(ProductType productType){
         ProductTypePO productTypePO = productType.doForward();
-        List<ProductTypePO> result = productTypeDao.getByName(productTypePO);
+        List<ProductTypePO> result = productTypeDao.getLikeName(productTypePO);
         return result.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
+    }
+
+    public ProductType getByName(ProductType productType){
+        ProductTypePO productTypePO = productType.doForward();
+        ProductTypePO result = productTypeDao.getByName(productTypePO);
+        return result != null ? result.convertToProductType() : null;
     }
 
     public void removeType(ProductType productType){
@@ -49,8 +66,8 @@ public class ProductTypeServiceImpl implements IProductTypeService {
         productTypeDao.remove(productTypePO);
     }
 
-    public void updateType(ProductType productType){
+    public int updateType(ProductType productType){
         ProductTypePO productTypePO = productType.doForward();
-        productTypeDao.update(productTypePO);
+        return productTypeDao.update(productTypePO);
     }
 }

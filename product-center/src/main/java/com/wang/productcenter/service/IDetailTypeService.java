@@ -13,11 +13,15 @@ public interface IDetailTypeService {
 
     List<DetailType> getAll();
 
+    int insert(DetailType detailType);
+
     DetailType getById(DetailType detailType);
 
-    List<DetailType> getByName(DetailType detailType);
+    DetailType getByName(DetailType detailType);
+
+    List<DetailType> getLikeName(DetailType detailType);
 
     void remove(DetailType detailType);
 
-    void update(DetailType detailType);
+    int update(DetailType detailType);
 }

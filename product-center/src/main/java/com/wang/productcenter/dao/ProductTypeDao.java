@@ -17,12 +17,16 @@ public interface ProductTypeDao {
 
     List<ProductTypePO> getAll();
 
+    int insert(@Param("productType") ProductTypePO productTypePO);
+
     ProductTypePO getById(@Param("productType") ProductTypePO productTypePO);
 
-    List<ProductTypePO> getByName(@Param("productType") ProductTypePO productTypePO);
+    List<ProductTypePO> getLikeName(@Param("productType") ProductTypePO productTypePO);
+
+    ProductTypePO getByName(@Param("productType") ProductTypePO productTypePO);
 
     void remove(@Param("productType") ProductTypePO productTypePO);
 
-    void update(@Param("productType") ProductTypePO productTypePO);
+    int update(@Param("productType") ProductTypePO productTypePO);
 
 }
