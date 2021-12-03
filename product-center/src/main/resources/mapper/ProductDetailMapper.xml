@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.productcenter.dao.ProductDetailDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.productcenter.entity.PO.ProductDetailPO" id="productDetailMap">
+        <result property="id" column="id"/>
+        <result property="productDetailName" column="product_detail_name"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        product_detail.id, product_detail.product_detail_name
+    </sql>
+
+    <sql id="SelectByParam">
+        valid = 1
+        <if test="product_detail.id != null">
+            and id = #{product_detail.id}
+        </if>
+        <if test="product_detail.productDetailName != null">
+            and product_detail_name = #{product_detail.productDetailName}
+        </if>
+    </sql>
+    <insert id="insert">
+        insert into product_detail (product_detail_name, valid) VALUES (#{product_detail.productDetailName}, 1);
+    </insert>
+
+    <update id="remove">
+        update product_detail
+        set valid = 0
+        where id = #{product_detail.id}
+    </update>
+
+    <update id="update">
+        update product_detail set
+        <if test="product_detail.productDetailName != null">
+            product_detail_name = #{product_detail.productDetailName}
+        </if>
+        <where>
+            <if test="product_detail.id != null">
+                id = #{product_detail.id}
+            </if>
+        </where>
+    </update>
+
+    <select id="getAll" resultMap="productDetailMap">
+        select
+        <include refid="SelectTo"/>
+        from product_detail where valid = 1;
+    </select>
+
+    <select id="getByName" resultMap="productDetailMap">
+        select
+        <include refid="SelectTo"/>
+        from product_detail
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
+
+    <select id="getById" resultMap="productDetailMap">
+        select
+        <include refid="SelectTo"/>
+        from product_detail
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
+    <select id="getLikeName" resultMap="productDetailMap">
+        select
+        <include refid="SelectTo"/>
+        from product_detail
+        where product_detail_name like CONCAT('%',#{product_detail.productDetailName},'%')
+    </select>
+
+
+</mapper>

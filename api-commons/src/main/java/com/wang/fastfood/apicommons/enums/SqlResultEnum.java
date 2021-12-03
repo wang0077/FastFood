@@ -7,6 +7,7 @@ package com.wang.fastfood.apicommons.enums;
  */
 public enum SqlResultEnum {
 
+    ERROR_INSERT(0,"添加错误"),
     REPEAT_INSERT(-1,"重复添加");
 
     private final int value;

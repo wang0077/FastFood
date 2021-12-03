@@ -29,4 +29,6 @@ public interface DetailTypeDao {
 
     DetailTypePO getByName(@Param("detail_type")DetailTypePO detailTypePO);
 
+    List<DetailTypePO> getByProductDetailId(List<Integer> idList);
+
 }

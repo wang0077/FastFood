@@ -1,11 +1,13 @@
 package com.wang.productcenter.entity.PO;
 
 
+import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
+import com.wang.productcenter.entity.BO.ProductDetail;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 
@@ -24,19 +26,10 @@ public class ProductDetailPO implements Serializable {
 	private Integer id;
 
 	/**
-	 * 商品详情种类ID
-	 */
-	private Integer detailTypeId;
-
-	/**
 	 * 商品详情名称
 	 */
 	private String productDetailName;
 
-	/**
-	 * 可选种类列表
-	 */
-	private List<DetailTypePO> detailTypePOList;
 
 	/**
 	 * 数据是否有效
@@ -46,5 +39,20 @@ public class ProductDetailPO implements Serializable {
 	private Date crateTime;
 
 	private Date updateTime;
+
+	public ProductDetail convertToProductDetail(){
+		ProductDetailBOConvert convert = new ProductDetailBOConvert();
+		return convert.convert(this);
+	}
+
+	private static class ProductDetailBOConvert implements BOConvert<ProductDetailPO, ProductDetail> {
+
+		@Override
+		public ProductDetail convert(ProductDetailPO productDetailPO) {
+			ProductDetail productDetail = new ProductDetail();
+			BeanUtils.copyProperties(productDetailPO,productDetail);
+			return productDetail;
+		}
+	}
 
 }

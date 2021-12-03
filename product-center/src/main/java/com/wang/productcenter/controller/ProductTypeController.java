@@ -42,46 +42,48 @@ public class ProductTypeController {
 
     @PostMapping("/insert")
     public Response insert(ProductTypeDTO productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+        ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.insert(productType);
         return SqlResultUtil.insertResult(result);
     }
 
     @PostMapping("/getById")
-    public Response<ProductTypeDTO> getTypeById(ProductType productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
-        ProductType type = productTypeService.getById(productType);
-        return ResponseUtil.success(type.doBackward());
+    public Response<ProductTypeDTO> getTypeById(ProductTypeDTO productTypeDTO){
+        ProductType productType = buildBO(productTypeDTO);
+        ProductType result = productTypeService.getById(productType);
+        return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getLikeName")
-    public Response<List<ProductTypeDTO>> getTypeLikeName(ProductType productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+    public Response<List<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO){
+        ProductType productType = buildBO(productTypeDTO);
         List<ProductType> typeList = productTypeService.getLikeName(productType);
         return ResponseUtil.success(typeList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
     }
 
     @PostMapping("/getByName")
     public Response<ProductTypeDTO> getTypeByName(ProductTypeDTO productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+        ProductType productType = buildBO(productTypeDTO);
         ProductType result = productTypeService.getByName(productType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/delete")
-    public Response remove(ProductType productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+    public Response remove(ProductTypeDTO productTypeDTO){
+        ProductType productType = buildBO(productTypeDTO);
         productTypeService.removeType(productType);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
     public Response update(ProductTypeDTO productTypeDTO){
-        ProductType productType = BOUtils.convert(ProductType.class, productTypeDTO);
+        ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.updateType(productType);
         return SqlResultUtil.updateResult(result);
     }
 
-
+    private ProductType buildBO(ProductTypeDTO productTypeDTO){
+        return BOUtils.convert(ProductType.class, productTypeDTO);
+    }
 
 }

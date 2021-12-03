@@ -7,13 +7,14 @@
     <resultMap type="com.wang.productcenter.entity.PO.DetailTypePO" id="detailTypeMap">
         <result property="id" column="id"/>
         <result property="detailTypeName" column="Detail_type_name"/>
+        <result property="productDetailId" column="product_detail_id"/>
         <result property="valid" column="valid"/>
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="SelectTo">
-        detail_type.id, detail_type.Detail_type_name
+        detail_type.id, detail_type.Detail_type_name, detail_type.product_detail_id
     </sql>
 
     <sql id="SelectByParam">
@@ -78,6 +79,16 @@
         <where>
             <include refid="SelectByParam"/>
         </where>
+    </select>
+    <select id="getByProductDetailId" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type
+        where product_detail_id
+        in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

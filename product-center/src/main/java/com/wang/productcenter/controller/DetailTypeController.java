@@ -38,44 +38,55 @@ public class DetailTypeController {
 
     @PostMapping("/insert")
     public Response insert(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         int result = detailTypeService.insert(detailType);
         return SqlResultUtil.insertResult(result);
     }
 
     @PostMapping("/getById")
     public Response<DetailTypeDTO> getById(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         DetailType result = detailTypeService.getById(detailType);
         return ResponseUtil.success(result.doBackward());
     }
 
+    @PostMapping("/getByProductDetailId")
+    public Response<List<DetailTypeDTO>> getByProductDetailId(DetailTypeDTO detailTypeDTO){
+        DetailType detailType = buildBO(detailTypeDTO);
+        List<DetailType> result = detailTypeService.getByProductDetailId(detailType);
+        return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
+    }
+
     @PostMapping("/getByName")
     public Response<DetailTypeDTO> getByName(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         DetailType result = detailTypeService.getByName(detailType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getLikeName")
     public Response<List<DetailTypeDTO>> getLikeName(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         List<DetailType> result = detailTypeService.getLikeName(detailType);
         return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
     }
 
     @PostMapping("/delete")
     public Response remove(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         detailTypeService.remove(detailType);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
     public Response update(DetailTypeDTO detailTypeDTO){
-        DetailType detailType = BOUtils.convert(DetailType.class, detailTypeDTO);
+        DetailType detailType = buildBO(detailTypeDTO);
         int result = detailTypeService.update(detailType);
         return SqlResultUtil.updateResult(result);
+    }
+
+    private DetailType buildBO(DetailTypeDTO detailTypeDTO){
+        return BOUtils.convert(DetailType.class, detailTypeDTO);
     }
 
 }

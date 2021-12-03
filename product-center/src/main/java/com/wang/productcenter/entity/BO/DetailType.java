@@ -23,6 +23,10 @@ public class DetailType {
 	 */
 	private Integer id;
 	/**
+	 * 商品详情ID
+	 */
+	private Integer productDetailId;
+	/**
 	 * 商品详情分类名称
 	 */
 	private String detailTypeName;

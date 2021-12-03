@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 
 public class BOUtils {
 
+    // todo BeanUtil是浅拷贝，存在无法深拷贝风险
     public static <S,T> T convert(Class<T> clazz, S s){
         try {
             T t = clazz.newInstance();

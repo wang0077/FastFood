@@ -24,6 +24,12 @@ public class DetailTypePO implements Serializable {
 	 * 商品详情分类ID
 	 */
 	private Integer id;
+
+	/**
+	 * 商品详情ID
+	 */
+	private Integer productDetailId;
+
 	/**
 	 * 商品详情分类名称
 	 */

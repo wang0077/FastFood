@@ -6,34 +6,36 @@ import com.wang.fastfood.apicommons.exception.ParamException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * @Auther: wAnG
- * @Date: 2021/12/2 02:45
+ * @Date: 2021/12/4 00:52
  * @Description:
  */
-
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class DetailTypeDTO extends BaseRequest {
-
-    /**
-     * 商品详情分类ID
-     */
-    private Integer id;
+public class ProductDetailDTO extends BaseRequest {
     /**
      * 商品详情ID
      */
-    private Integer productDetailId;
+    private Integer id;
+
     /**
-     * 商品详情分类名称
+     * 商品详情名称
      */
-    private String detailTypeName;
+    private String productDetailName;
+
+    /**
+     * 可选种类列表
+     */
+    private List<DetailTypeDTO> detailTypeDTOList;
 
     @Override
-    public void validity(){
+    public void validity() {
         try {
-            if(Strings.isNullOrEmpty(detailTypeName)){
-                throw new ParamException("参数detailTypeName为空");
+            if(Strings.isNullOrEmpty(productDetailName)){
+                throw new ParamException("参数productDetailName为空");
             }
         }catch (ParamException e){
             e.printStackTrace();

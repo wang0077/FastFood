@@ -1,5 +1,6 @@
 package com.wang.productcenter.service.impl;
 
+import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +27,10 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     public int insert(DetailType detailType){
         DetailTypePO detailTypePO = detailType.doForward();
+        // 商品详情ID未传入或商品详情ID在对应表不存在返回插入失败
+        if(detailTypePO.getProductDetailId() == null || getByProductDetailId(detailType).size() == 0){
+            return SqlResultEnum.ERROR_INSERT.getValue();
+        }
         DetailTypePO result = detailTypeDao.getByName(detailTypePO);
         if(result != null){
             return SqlResultEnum.REPEAT_INSERT.getValue();
@@ -70,4 +76,26 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         DetailTypePO detailTypePO = detailType.doForward();
         return detailTypeDao.update(detailTypePO);
     }
+
+    @Override
+    public List<DetailType> getByProductDetailId(DetailType detailType) {
+        DetailTypePO detailTypePO = detailType.doForward();
+        List<DetailTypePO> result = getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
+        return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Integer,List<DetailType>> groupByProductDetailId(List<Integer> idList) {
+        List<DetailTypePO> result = getByProductDetailId(idList);
+        List<DetailType> detailTypes = result.stream()
+                .map(DetailTypePO::convertToDetailType)
+                .collect(Collectors.toList());
+        return detailTypes.stream()
+                .collect(Collectors.groupingBy(DetailType::getProductDetailId));
+    }
+
+    private List<DetailTypePO> getByProductDetailId(List<Integer> idList){
+        return detailTypeDao.getByProductDetailId(idList);
+    }
+
 }
