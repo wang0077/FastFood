@@ -1,17 +1,19 @@
 package com.wang.productcenter.entity.PO;
 
-import java.math.BigDecimal;
+import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
+import com.wang.productcenter.entity.BO.Product;
+import lombok.Data;
+import org.springframework.beans.BeanUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import lombok.Data;
-
 /**
  * 商品表
- * 
- * @author chenshun
- * @email sunlightcs@gmail.com
- * @date 2021-11-27 02:06:31
+ *
+ * @author wAnG
+ * @Date 2021-11-24 00:15:32
+ * @Description: 商品表
  */
 @Data
 public class ProductPO implements Serializable {
@@ -21,22 +23,22 @@ public class ProductPO implements Serializable {
 	 * 商品ID
 	 */
 	private Integer id;
+
 	/**
 	 * 种类ID
 	 */
 	private Integer typeId;
-	/**
-	 * 商品详情ID
-	 */
-	private Integer productProductDetailId;
+
 	/**
 	 * 商品名称
 	 */
 	private String productName;
+
 	/**
 	 * 商品价格
 	 */
-	private BigDecimal productPrice;
+	private Double productPrice;
+
 	/**
 	 * 商品图片
 	 */
@@ -65,4 +67,19 @@ public class ProductPO implements Serializable {
 
 	private Date updateTime;
 
+
+	public Product convertToProduct(){
+		ProductBOConvert convert = new ProductBOConvert();
+		return convert.convert(this);
+	}
+
+	private static class ProductBOConvert implements BOConvert<ProductPO, Product> {
+
+		@Override
+		public Product convert(ProductPO productPO) {
+			Product product = new Product();
+			BeanUtils.copyProperties(productPO,product);
+			return product;
+		}
+	}
 }

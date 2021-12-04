@@ -1,6 +1,7 @@
 package com.wang.productcenter.dao;
 
 import com.wang.productcenter.entity.PO.ProductDetailPO;
+import com.wang.productcenter.entity.PO.Product_Detail_Middle;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,5 +29,10 @@ public interface ProductDetailDao {
     List<ProductDetailPO> getLikeName(@Param("product_detail") ProductDetailPO productDetailPO);
 
     int update(@Param("product_detail") ProductDetailPO productDetailPO);
+
+    List<ProductDetailPO> getByIds(List<Integer> idList);
+
+    List<Product_Detail_Middle> getProductDetailIdByProductId(List<Integer> idList);
+
 
 }

@@ -11,7 +11,7 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <sql id="SelectBy">
+    <sql id="SelectTO">
         product_type.id, product_type.name
     </sql>
 
@@ -49,13 +49,13 @@
 
     <select id="getAll" resultMap="productTypeMap">
         select
-        <include refid="SelectBy"/>
+        <include refid="SelectTO"/>
         from product_type where valid = 1;
     </select>
 
     <select id="getById" resultMap="productTypeMap">
         select
-        <include refid="SelectBy"/>
+        <include refid="SelectTO"/>
         from product_type
         <where>
             <include refid="SelectByParam"/>
@@ -64,19 +64,30 @@
 
     <select id="getLikeName" resultMap="productTypeMap">
         select
-        <include refid="SelectBy"/>
+        <include refid="SelectTO"/>
         from product_type
         where name like concat('%',#{productType.name},'%')
     </select>
 
     <select id="getByName" resultMap="productTypeMap">
         select
-        <include refid="SelectBy"/>
+        <include refid="SelectTO"/>
         from product_type
         <where>
             <include refid="SelectByParam"/>
         </where>
     </select>
+    <select id="groupById" resultMap="productTypeMap">
+        select
+        <include refid="SelectTO"/>
+        from product_type
+        where id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
 
 
 </mapper>

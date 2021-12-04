@@ -12,6 +12,11 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <resultMap type="com.wang.productcenter.entity.PO.Product_Detail_Middle" id="Middle">
+        <result property="productId" column="product_id"/>
+        <result property="productDetailId" column="product_detail_id"/>
+    </resultMap>
+
     <sql id="SelectTo">
         product_detail.id, product_detail.product_detail_name
     </sql>
@@ -75,6 +80,27 @@
         <include refid="SelectTo"/>
         from product_detail
         where product_detail_name like CONCAT('%',#{product_detail.productDetailName},'%')
+    </select>
+
+    <select id="getProductDetailIdByProductId" resultMap="Middle">
+        select product_id,product_detail_id
+        from product__product_detail
+        where product_id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getByIds" resultMap="productDetailMap">
+        select
+        <include refid="SelectTo"/>
+        from product_detail
+        where id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
     </select>
 
 

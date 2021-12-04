@@ -3,6 +3,7 @@ package com.wang.productcenter.service;
 import com.wang.productcenter.entity.BO.ProductDetail;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wAnG
@@ -24,5 +25,7 @@ public interface IProductDetailService {
     List<ProductDetail> getLikeName(ProductDetail productDetail);
 
     int update(ProductDetail productDetail);
+
+    Map<Integer,List<ProductDetail>> getByProductIds(List<Integer> idList);
 
 }

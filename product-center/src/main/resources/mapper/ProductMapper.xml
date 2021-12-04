@@ -7,7 +7,6 @@
     <resultMap type="com.wang.productcenter.entity.PO.ProductPO" id="productMap">
         <result property="id" column="id"/>
         <result property="typeId" column="type_id"/>
-        <result property="productProductDetailId" column="product_product_detail_id"/>
         <result property="productName" column="product_name"/>
         <result property="productPrice" column="product_price"/>
         <result property="productImagePath" column="product_image_path"/>
@@ -17,16 +16,21 @@
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
-    <select id="findAll" resultMap="productMap">
-        select * from product;
-    </select>
 
-    <sql id="WhereParam">
+    <sql id="SelectTo">
+        id,
+        type_id,
+        product_name,
+        product_price,
+        product_image_path,
+        sales,
+        is_sales
+    </sql>
+
+    <sql id="SelectByParam">
+            valid = 1
         <if test="typeId != null">
             and type_id = ${product.typeId}
-        </if>
-        <if test="productProductDetailId != null">
-            and product_product_detail_id = ${product.productProductDetailId}
         </if>
         <if test="productName != null">
             and product_name = ${product.productName}
@@ -47,6 +51,15 @@
             and valid = ${product.valid}
         </if>
     </sql>
+
+    <select id="getAll" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from product
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
 
 
 </mapper>

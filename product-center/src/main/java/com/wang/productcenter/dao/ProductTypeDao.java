@@ -29,4 +29,7 @@ public interface ProductTypeDao {
 
     int update(@Param("productType") ProductTypePO productTypePO);
 
+    List<ProductTypePO> groupById(List<Integer> idList);
+
+
 }

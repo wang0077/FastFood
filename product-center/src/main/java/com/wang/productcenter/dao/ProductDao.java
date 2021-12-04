@@ -2,7 +2,8 @@ package com.wang.productcenter.dao;
 
 import com.wang.productcenter.entity.PO.ProductPO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Auther: wAnG
@@ -13,5 +14,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ProductDao {
 
-    ProductPO findAll(@Param("id") int id);
+    List<ProductPO> getAll();
 }

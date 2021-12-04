@@ -3,6 +3,7 @@ package com.wang.productcenter.service;
 import com.wang.productcenter.entity.BO.ProductType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wAnG
@@ -24,4 +25,7 @@ public interface IProductTypeService {
     void removeType(ProductType productType);
 
     int updateType(ProductType productType);
+
+    Map<Integer,ProductType> groupById(List<Integer> idList);
+
 }

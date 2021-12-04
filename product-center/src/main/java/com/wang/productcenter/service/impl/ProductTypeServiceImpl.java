@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class ProductTypeServiceImpl implements IProductTypeService {
 
     @Autowired
-    ProductTypeDao productTypeDao;
+    private ProductTypeDao productTypeDao;
 
     @Override
     public List<ProductType> getAll() {
@@ -70,4 +71,18 @@ public class ProductTypeServiceImpl implements IProductTypeService {
         ProductTypePO productTypePO = productType.doForward();
         return productTypeDao.update(productTypePO);
     }
+
+    @Override
+    public Map<Integer,ProductType> groupById(List<Integer> idList){
+        List<ProductTypePO> result = getByIdList(idList);
+        List<ProductType> productTypes = result.stream()
+                .map(ProductTypePO::convertToProductType)
+                .collect(Collectors.toList());
+        return productTypes.stream().collect(Collectors.toMap(ProductType::getId,productType -> productType));
+    }
+
+    private List<ProductTypePO> getByIdList(List<Integer> idList) {
+        return productTypeDao.groupById(idList);
+    }
+
 }
