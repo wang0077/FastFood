@@ -1,5 +1,6 @@
 package com.wang.productcenter.service.impl;
 
+import com.google.common.collect.Lists;
 import com.wang.productcenter.dao.ProductDao;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
@@ -41,6 +42,56 @@ public class ProductServiceImpl implements IProductService {
         getProductType(products);
         getProductDetail(products);
         return products;
+    }
+
+    @Override
+    public Product getById(Product product) {
+        ProductPO productPO = product.doForward();
+        ProductPO result = productDao.getById(productPO);
+        Product productResult = result.convertToProduct();
+        getProductDetailAndProductType(productResult);
+        return productResult;
+    }
+
+    @Override
+    public Product getByName(Product product) {
+        ProductPO productPO = product.doForward();
+        ProductPO result = productDao.getByName(productPO);
+        Product productResult = result.convertToProduct();
+        getProductDetailAndProductType(productResult);
+        return productResult;
+    }
+
+    @Override
+    public List<Product> likeByName(Product product) {
+        ProductPO productPO = product.doForward();
+        List<ProductPO> result = productDao.likeByName(productPO);
+        List<Product> productList = result.stream()
+                .map(ProductPO::convertToProduct)
+                .collect(Collectors.toList());
+        getProductDetailAndProductType(productList);
+        return productList;
+    }
+
+    @Override
+    public void remove(Product product) {
+        ProductPO productPO = product.doForward();
+        productDao.remove(productPO);
+    }
+
+    @Override
+    public int update(Product product) {
+        ProductPO productPO = product.doForward();
+        return productDao.update(productPO);
+    }
+
+    private void getProductDetailAndProductType(Product products){
+        getProductDetailAndProductType(Lists.newArrayList(products));
+    }
+
+    private void getProductDetailAndProductType(List<Product> products){
+        getProductType(products);
+        getProductDetail(products);
     }
 
     private void getProductDetail(List<Product> products){

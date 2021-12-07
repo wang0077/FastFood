@@ -1,6 +1,8 @@
 package com.wang.fastfood.apicommons.entity.DTO;
 
+import com.wang.fastfood.apicommons.entity.common.BaseRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -11,7 +13,8 @@ import java.util.List;
  */
 
 @Data
-public class ProductDTO {
+@EqualsAndHashCode(callSuper = false)
+public class ProductDTO extends BaseRequest {
 
     /**
      * 商品ID
@@ -54,4 +57,8 @@ public class ProductDTO {
 
     private ProductTypeDTO productTypeDTO;
 
+    @Override
+    public void validity() {
+
+    }
 }

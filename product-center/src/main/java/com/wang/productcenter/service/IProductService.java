@@ -15,4 +15,13 @@ public interface IProductService {
 
     List<Product> getAll();
 
+    Product getById(Product product);
+
+    Product getByName(Product product);
+
+    List<Product> likeByName(Product product);
+
+    void remove(Product product);
+
+    int update(Product product);
 }

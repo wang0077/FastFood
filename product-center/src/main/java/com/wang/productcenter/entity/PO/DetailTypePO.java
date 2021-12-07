@@ -1,9 +1,11 @@
 package com.wang.productcenter.entity.PO;
 
 
-import com.wang.productcenter.entity.BO.DetailType;
+import com.wang.fastfood.apicommons.entity.common.BasePO;
 import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
+import com.wang.productcenter.entity.BO.DetailType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
@@ -17,7 +19,8 @@ import java.util.Date;
  * @Description: 可选项种类（商品可选项,温度，甜度，配料等等）
  */
 @Data
-public class DetailTypePO implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class DetailTypePO extends BasePO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

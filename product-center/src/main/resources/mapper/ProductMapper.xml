@@ -3,7 +3,7 @@
 
 <mapper namespace="com.wang.productcenter.dao.ProductDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.wang.productcenter.entity.PO.ProductPO" id="productMap">
         <result property="id" column="id"/>
         <result property="typeId" column="type_id"/>
@@ -28,37 +28,90 @@
     </sql>
 
     <sql id="SelectByParam">
-            valid = 1
-        <if test="typeId != null">
-            and type_id = ${product.typeId}
+        valid = 1
+        <if test="product.id != null">
+            and id = #{product.id}
         </if>
-        <if test="productName != null">
-            and product_name = ${product.productName}
+        <if test="product.typeId != null">
+            and type_id = #{product.typeId}
         </if>
-        <if test="productPrice != null">
-            and product_price = ${product.productPrice}
+        <if test="product.productName != null">
+            and product_name = #{product.productName}
         </if>
-        <if test="productImagePath != null">
-            and product_image_path = ${product.productImagePath}
+        <if test="product.productPrice != null">
+            and product_price = #{product.productPrice}
         </if>
-        <if test="sales != null">
-            and sales = ${product.sales}
+        <if test="product.productImagePath != null">
+            and product_image_path = #{product.productImagePath}
         </if>
-        <if test="isSales != null">
-            and is_sales = ${product.isSales}
+        <if test="product.sales != null">
+            and sales = #{product.sales}
         </if>
-        <if test="valid != null">
-            and valid = ${product.valid}
+        <if test="product.isSales != null">
+            and is_sales = #{product.isSales}
         </if>
     </sql>
 
+    <sql id="updateParam">
+        <trim prefix="set" suffixOverrides=",">
+            <if test="product.productName != null">
+                product_name = #{product.productName},
+            </if>
+            <if test="product.productPrice != null">
+                product_price = #{product.productPrice},
+            </if>
+            <if test="product.productImagePath != null">
+                product_image_path = #{product.productImagePath},
+            </if>
+            <if test="product.sales != null">
+                sales = #{product.sales},
+            </if>
+            <if test="product.isSales != null">
+                is_sales = #{product.isSales},
+            </if>
+        </trim>
+    </sql>
+
+    <update id="remove">
+        update product
+        set valid = 0
+        where id = #{product.id}
+    </update>
+
+    <update id="update">
+        update product
+        <include refid="updateParam"/>
+        where id = #{product.id} and valid = 1
+    </update>
+
     <select id="getAll" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from product where valid = 1;
+    </select>
+
+    <select id="getById" resultMap="productMap">
         select
         <include refid="SelectTo"/>
         from product
         <where>
             <include refid="SelectByParam"/>
         </where>
+    </select>
+
+    <select id="getByName" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from product
+        <where>
+            <include refid="SelectByParam"/>
+        </where>
+    </select>
+    <select id="likeByName" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from product
+        where product.product_name like CONCAT('%',#{product.productName},'%')
     </select>
 
 

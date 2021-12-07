@@ -1,8 +1,10 @@
 package com.wang.productcenter.entity.PO;
 
+import com.wang.fastfood.apicommons.entity.common.BasePO;
 import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
 import com.wang.productcenter.entity.BO.Product;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
@@ -16,7 +18,8 @@ import java.util.Date;
  * @Description: 商品表
  */
 @Data
-public class ProductPO implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class ProductPO extends BasePO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

@@ -1,6 +1,7 @@
 package com.wang.productcenter.entity.PO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Auther: wAnG

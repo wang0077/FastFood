@@ -2,6 +2,7 @@ package com.wang.productcenter.dao;
 
 import com.wang.productcenter.entity.PO.ProductPO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +16,14 @@ import java.util.List;
 public interface ProductDao {
 
     List<ProductPO> getAll();
+
+    ProductPO getById(@Param("product")ProductPO productPO);
+
+    ProductPO getByName(@Param("product")ProductPO productPO);
+
+    List<ProductPO> likeByName(@Param("product")ProductPO productPO);
+
+    void remove(@Param("product")ProductPO productPO);
+
+    int update(@Param("product")ProductPO productP);
 }

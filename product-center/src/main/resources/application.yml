@@ -1,5 +1,8 @@
 server:
   port: 8091
+
+project:
+
 rocketmq:
   name-server: 106.13.206.235:9876
   producer:
