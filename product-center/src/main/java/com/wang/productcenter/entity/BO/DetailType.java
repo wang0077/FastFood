@@ -2,10 +2,12 @@ package com.wang.productcenter.entity.BO;
 
 
 import com.wang.fastfood.apicommons.entity.DTO.DetailTypeDTO;
+import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
 import com.wang.fastfood.apicommons.entity.common.convert.POConvert;
 import com.wang.productcenter.entity.PO.DetailTypePO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -16,7 +18,8 @@ import org.springframework.beans.BeanUtils;
  * @Description: 可选项种类（商品可选项,温度，甜度，配料等等）
  */
 @Data
-public class DetailType {
+@EqualsAndHashCode(callSuper = true)
+public class DetailType extends Page {
 
 	/**
 	 * 商品详情分类ID

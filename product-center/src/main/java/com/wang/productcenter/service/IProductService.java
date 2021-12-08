@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface IProductService {
 
-    List<Product> getAll();
+    List<Product> getAll(Product product);
 
     Product getById(Product product);
 

@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface IDetailTypeService {
 
-    List<DetailType> getAll();
+    List<DetailType> getAll(DetailType detailType);
 
     int insert(DetailType detailType);
 

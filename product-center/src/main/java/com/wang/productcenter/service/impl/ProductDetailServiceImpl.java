@@ -1,6 +1,7 @@
 package com.wang.productcenter.service.impl;
 
 import com.google.common.collect.Lists;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.ProductDetailDao;
 import com.wang.productcenter.entity.BO.DetailType;
@@ -33,7 +34,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
 
     @Override
-    public List<ProductDetail> getAll() {
+    public List<ProductDetail> getAll(ProductDetail productDetail) {
+        PageUtils.startPage(productDetail);
         List<ProductDetailPO> result = productDetailDao.getAll();
         List<ProductDetail> productDetails = result
                 .stream()
@@ -80,6 +82,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
     @Override
     public List<ProductDetail> getLikeName(ProductDetail productDetail) {
+        PageUtils.startPage(productDetail);
         ProductDetailPO productDetailPO = productDetail.doForward();
         List<ProductDetailPO> result = productDetailDao.getLikeName(productDetailPO);
         List<ProductDetail> productDetails = result.stream()

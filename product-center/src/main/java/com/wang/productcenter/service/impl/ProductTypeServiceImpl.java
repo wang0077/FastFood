@@ -1,5 +1,6 @@
 package com.wang.productcenter.service.impl;
 
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.ProductTypeDao;
 import com.wang.productcenter.entity.BO.ProductType;
@@ -25,7 +26,8 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     private ProductTypeDao productTypeDao;
 
     @Override
-    public List<ProductType> getAll() {
+    public List<ProductType> getAll(ProductType productType) {
+        PageUtils.startPage(productType);
         List<ProductTypePO> result = productTypeDao.getAll();
         return result.stream().map(ProductTypePO::convertToProductType).collect(Collectors.toList());
     }

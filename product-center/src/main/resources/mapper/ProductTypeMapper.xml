@@ -50,7 +50,7 @@
     <select id="getAll" resultMap="productTypeMap">
         select
         <include refid="SelectTO"/>
-        from product_type where valid = 1;
+        from product_type where valid = 1
     </select>
 
     <select id="getById" resultMap="productTypeMap">

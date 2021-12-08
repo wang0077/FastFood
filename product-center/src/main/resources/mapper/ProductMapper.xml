@@ -87,7 +87,7 @@
     <select id="getAll" resultMap="productMap">
         select
         <include refid="SelectTo"/>
-        from product where valid = 1;
+        from product where valid = 1
     </select>
 
     <select id="getById" resultMap="productMap">

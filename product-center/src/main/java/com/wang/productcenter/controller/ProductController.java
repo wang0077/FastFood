@@ -1,6 +1,8 @@
 package com.wang.productcenter.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.BOUtils;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductDTO;
@@ -31,11 +33,12 @@ public class ProductController {
     private IProductService productService;
 
     @GetMapping("/getAll")
-    public Response<List<ProductDTO>> getAll(){
-        List<Product> result = productService.getAll();
-        return ResponseUtil.success(result.stream()
+    public Response<PageInfo<ProductDTO>> getAll(ProductDTO productDTO){
+        Product product = buildBO(productDTO);
+        List<Product> result = productService.getAll(product);
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
                 .map(Product::doBackward)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/getById")
@@ -53,12 +56,12 @@ public class ProductController {
     }
 
     @PostMapping("/likeByName")
-    public Response<List<ProductDTO>> likeByName(ProductDTO productDTO){
+    public Response<PageInfo<ProductDTO>> likeByName(ProductDTO productDTO){
         Product product = buildBO(productDTO);
         List<Product> result = productService.likeByName(product);
-        return ResponseUtil.success(result.stream()
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
                 .map(Product::doBackward)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/delete")

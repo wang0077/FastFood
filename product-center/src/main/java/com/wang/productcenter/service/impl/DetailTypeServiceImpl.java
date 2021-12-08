@@ -1,6 +1,7 @@
 package com.wang.productcenter.service.impl;
 
 import com.google.common.collect.Lists;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
@@ -39,7 +40,8 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public List<DetailType> getAll() {
+    public List<DetailType> getAll(DetailType detailType) {
+        PageUtils.startPage(detailType);
         List<DetailTypePO> result = detailTypeDao.getAll();
         return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
     }
@@ -60,6 +62,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     @Override
     public List<DetailType> getLikeName(DetailType detailType){
+        PageUtils.startPage(detailType);
         DetailTypePO detailTypePO = detailType.doForward();
         List<DetailTypePO> result = detailTypeDao.getLikeName(detailTypePO);
         return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
@@ -79,6 +82,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     @Override
     public List<DetailType> getByProductDetailId(DetailType detailType) {
+        PageUtils.startPage(detailType);
         DetailTypePO detailTypePO = detailType.doForward();
         List<DetailTypePO> result = getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
         return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());

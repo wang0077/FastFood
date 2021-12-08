@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface IProductTypeService {
 
-    List<ProductType> getAll();
+    List<ProductType> getAll(ProductType productType);
 
     int insert(ProductType productType);
 

@@ -1,6 +1,7 @@
 package com.wang.productcenter.service.impl;
 
 import com.google.common.collect.Lists;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.productcenter.dao.ProductDao;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
@@ -34,7 +35,8 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private IProductDetailService productDetailService;
 
-    public List<Product> getAll(){
+    public List<Product> getAll(Product product){
+        PageUtils.startPage(product);
         List<ProductPO> result = productDao.getAll();
         List<Product> products = result.stream()
                 .map(ProductPO::convertToProduct)
@@ -64,6 +66,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> likeByName(Product product) {
+        PageUtils.startPage(product);
         ProductPO productPO = product.doForward();
         List<ProductPO> result = productDao.likeByName(productPO);
         List<Product> productList = result.stream()

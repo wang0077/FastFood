@@ -1,10 +1,12 @@
 package com.wang.productcenter.entity.BO;
 
 import com.wang.fastfood.apicommons.entity.DTO.ProductDTO;
+import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
 import com.wang.fastfood.apicommons.entity.common.convert.POConvert;
 import com.wang.productcenter.entity.PO.ProductPO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -17,7 +19,8 @@ import java.util.stream.Collectors;
  */
 
 @Data
-public class Product {
+@EqualsAndHashCode(callSuper = true)
+public class Product extends Page {
     /**
      * 商品ID
      */

@@ -53,7 +53,7 @@
     <select id="getAll" resultMap="detailTypeMap">
         select
         <include refid="SelectTo"/>
-        from detail_type where valid = 1;
+        from detail_type where valid = 1
     </select>
 
     <select id="getById" resultMap="detailTypeMap">

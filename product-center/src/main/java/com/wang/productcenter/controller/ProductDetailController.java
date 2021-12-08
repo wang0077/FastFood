@@ -1,6 +1,8 @@
 package com.wang.productcenter.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.BOUtils;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductDetailDTO;
@@ -31,13 +33,12 @@ public class ProductDetailController {
     private IProductDetailService productDetailService;
 
     @GetMapping("/getAll")
-    public Response<List<ProductDetailDTO>> getAll(){
-        List<ProductDetail> result = productDetailService.getAll();
-        List<ProductDetailDTO> productDetailDTOS = result
-                .stream()
+    public Response<PageInfo<ProductDetailDTO>> getAll(ProductDetailDTO productDetailDTO){
+        ProductDetail productDetail = buildBO(productDetailDTO);
+        List<ProductDetail> result = productDetailService.getAll(productDetail);
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
                 .map(ProductDetail::doBackward)
-                .collect(Collectors.toList());
-        return ResponseUtil.success(productDetailDTOS);
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/insert")
@@ -69,10 +70,12 @@ public class ProductDetailController {
     }
 
     @PostMapping("getLikeName")
-    public Response<List<ProductDetailDTO>> getLikeName(ProductDetailDTO productDetailDTO){
+    public Response<PageInfo<ProductDetailDTO>> getLikeName(ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
         List<ProductDetail> result = productDetailService.getLikeName(productDetail);
-        return ResponseUtil.success(result.stream().map(ProductDetail::doBackward).collect(Collectors.toList()));
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+                .map(ProductDetail::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/update")

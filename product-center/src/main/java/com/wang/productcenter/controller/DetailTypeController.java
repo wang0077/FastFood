@@ -1,6 +1,8 @@
 package com.wang.productcenter.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.BOUtils;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.DetailTypeDTO;
@@ -8,10 +10,7 @@ import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.service.IDetailTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
  */
 
 @RestController
+@CrossOrigin
 @RequestMapping("/detailType")
 @SuppressWarnings("all")
 public class DetailTypeController {
@@ -31,9 +31,12 @@ public class DetailTypeController {
     IDetailTypeService detailTypeService;
 
     @GetMapping("/getAll")
-    public Response<List<DetailTypeDTO>> getAll(){
-        List<DetailType> result = detailTypeService.getAll();
-        return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
+    public Response<PageInfo<DetailTypeDTO>> getAll(DetailTypeDTO detailTypeDTO){
+        DetailType detailType = buildBO(detailTypeDTO);
+        List<DetailType> result = detailTypeService.getAll(detailType);
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+                .map(DetailType::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/insert")
@@ -51,10 +54,12 @@ public class DetailTypeController {
     }
 
     @PostMapping("/getByProductDetailId")
-    public Response<List<DetailTypeDTO>> getByProductDetailId(DetailTypeDTO detailTypeDTO){
+    public Response<PageInfo<DetailTypeDTO>> getByProductDetailId(DetailTypeDTO detailTypeDTO){
         DetailType detailType = buildBO(detailTypeDTO);
         List<DetailType> result = detailTypeService.getByProductDetailId(detailType);
-        return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+                .map(DetailType::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/getByName")
@@ -65,10 +70,12 @@ public class DetailTypeController {
     }
 
     @PostMapping("/getLikeName")
-    public Response<List<DetailTypeDTO>> getLikeName(DetailTypeDTO detailTypeDTO){
+    public Response<PageInfo<DetailTypeDTO>> getLikeName(DetailTypeDTO detailTypeDTO){
         DetailType detailType = buildBO(detailTypeDTO);
         List<DetailType> result = detailTypeService.getLikeName(detailType);
-        return ResponseUtil.success(result.stream().map(DetailType::doBackward).collect(Collectors.toList()));
+        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+                .map(DetailType::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/delete")

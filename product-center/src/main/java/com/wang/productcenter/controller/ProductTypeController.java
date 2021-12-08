@@ -1,6 +1,8 @@
 package com.wang.productcenter.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.BOUtils;
+import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductTypeDTO;
@@ -35,9 +37,12 @@ public class ProductTypeController {
     private DiscoveryClient discoveryClient;
 
     @GetMapping("/getAll")
-    public Response<List<ProductTypeDTO>> getAll(){
-        List<ProductType> typePOList = productTypeService.getAll();
-        return ResponseUtil.success(typePOList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
+    public Response<PageInfo<ProductTypeDTO>> getAll(ProductTypeDTO productTypeDTO){
+        ProductType productType = buildBO(productTypeDTO);
+        List<ProductType> typePOList = productTypeService.getAll(productType);
+        return ResponseUtil.success(PageUtils.convertPage(typePOList.stream()
+                .map(ProductType::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/insert")
@@ -55,10 +60,12 @@ public class ProductTypeController {
     }
 
     @PostMapping("/getLikeName")
-    public Response<List<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO){
+    public Response<PageInfo<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO){
         ProductType productType = buildBO(productTypeDTO);
         List<ProductType> typeList = productTypeService.getLikeName(productType);
-        return ResponseUtil.success(typeList.stream().map(ProductType::doBackward).collect(Collectors.toList()));
+        return ResponseUtil.success(PageUtils.convertPage(typeList.stream()
+                .map(ProductType::doBackward)
+                .collect(Collectors.toList())));
     }
 
     @PostMapping("/getByName")

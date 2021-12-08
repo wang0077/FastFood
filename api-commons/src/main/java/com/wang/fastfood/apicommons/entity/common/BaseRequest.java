@@ -8,7 +8,7 @@ import java.util.Date;
  * @Description:
  */
 
-public abstract class BaseRequest implements Validity{
+public abstract class BaseRequest extends Page implements Validity{
 
     /**
      * IP

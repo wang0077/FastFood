@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface IProductDetailService {
 
-    List<ProductDetail> getAll();
+    List<ProductDetail> getAll(ProductDetail productDetail);
 
     int insert(ProductDetail productDetail);
 
