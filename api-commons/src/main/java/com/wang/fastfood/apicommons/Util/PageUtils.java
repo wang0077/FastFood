@@ -15,6 +15,9 @@ import java.util.List;
 
 public class PageUtils {
 
+    /**
+     * 使用PageHelper开启分页，直接传入对应的Bean会自动判断是否需要进行分页
+     */
     public static<T> void startPage(T Bean){
         try {
             if(Bean instanceof Page){
@@ -34,10 +37,14 @@ public class PageUtils {
         }
     }
 
-    public static<T> PageInfo<T> convertPage(List<T> Bean){
-        return new PageInfo<T>(Bean);
-    }
 
+    /**
+     * 绕过PageHelper对带有分页数据的list进行操作会破坏分页数据的设计问题(or BUG?)
+     * 将pageHelper带有分页数据的List进行转换一个新的list并携带之前的分页数据
+     * @param sourceList PageHelper查询出来的Page类型转换为List的list
+     * @param destList 需要转换的list
+     * @return 返回一个PageInfo，内部包装的分页数据和list，可从PageInfo中获取list
+     */
     public static<T,S> PageInfo<S> getPageInfo(List<T> sourceList,List<S> destList){
         PageInfo<T> source = new PageInfo<>(sourceList);
         return getPageInfo(source,destList);
