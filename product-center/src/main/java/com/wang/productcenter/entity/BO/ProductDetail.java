@@ -37,6 +37,11 @@ public class ProductDetail extends Page {
      */
     private List<DetailType> detailTypeList;
 
+    /**
+     * 是否获取子节点
+     */
+    private boolean isDetail;
+
     public ProductDetailPO doForward(){
         productDetailPOConvert convert = new productDetailPOConvert();
         return convert.convert(this);

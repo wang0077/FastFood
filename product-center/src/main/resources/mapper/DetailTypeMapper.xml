@@ -8,13 +8,14 @@
         <result property="id" column="id"/>
         <result property="detailTypeName" column="Detail_type_name"/>
         <result property="productDetailId" column="product_detail_id"/>
+        <result property="price" column="price"/>
         <result property="valid" column="valid"/>
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="SelectTo">
-        detail_type.id, detail_type.Detail_type_name, detail_type.product_detail_id
+        detail_type.id,detail_type.price, detail_type.Detail_type_name, detail_type.product_detail_id
     </sql>
 
     <sql id="SelectByParam">
@@ -28,8 +29,8 @@
     </sql>
 
     <insert id="insert">
-        insert into detail_type (Detail_type_name, valid)
-        VALUES (#{detail_type.detailTypeName}, 1);
+        insert into detail_type (Detail_type_name, product_detail_id,price, valid)
+        VALUES (#{detail_type.detailTypeName}, #{detail_type.productDetailId},#{detail_type.price}, 1);
     </insert>
 
     <update id="remove">
@@ -39,15 +40,16 @@
     </update>
 
     <update id="update">
-        update detail_type set
-        <if test="detail_type.detailTypeName != null">
-            Detail_type_name = #{detail_type.detailTypeName}
-        </if>
-        <where>
-            <if test="detail_type.id != null">
-                id = #{detail_type.id}
+        update detail_type
+        <trim prefix="set" suffixOverrides=",">
+            <if test="detail_type.detailTypeName != null">
+                Detail_type_name = #{detail_type.detailTypeName},
             </if>
-        </where>
+            <if test="detail_type.price != null">
+                price = #{detail_type.price},
+            </if>
+        </trim>
+        where id = #{detail_type.id}
     </update>
 
     <select id="getAll" resultMap="detailTypeMap">

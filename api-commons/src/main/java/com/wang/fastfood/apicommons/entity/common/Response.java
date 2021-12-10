@@ -13,12 +13,12 @@ public class Response<T> {
     /**
      * 响应码
      */
-    private int errorCode;
+    private int code;
 
     /**
      * 响应码对应的内容
      */
-    private String Message;
+    private String msg;
 
     /**
      * 响应数据
@@ -26,25 +26,25 @@ public class Response<T> {
     private T data;
 
     public Response(Integer code, String msg, T data) {
-        this.errorCode = code;
-        this.Message = msg;
+        this.code = code;
+        this.msg = msg;
         this.data = data;
     }
 
     public int getErrorCode() {
-        return errorCode;
+        return code;
     }
 
     public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+        this.code = errorCode;
     }
 
     public String getErrorMsg() {
-        return Message;
+        return msg;
     }
 
     public void setErrorMsg(String errorMsg) {
-        this.Message = errorMsg;
+        this.msg = errorMsg;
     }
 
     public T getData() {

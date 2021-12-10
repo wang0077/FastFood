@@ -29,6 +29,17 @@ public class DetailTypeDTO extends BaseRequest {
      */
     private String detailTypeName;
 
+    /**
+     * 价格
+     */
+    private double price;
+
+    /**
+     * 商品详情
+     */
+    private ProductDetailDTO productDetailDTO;
+
+
     @Override
     public void validity(){
         try {

@@ -34,6 +34,16 @@ public class DetailType extends Page {
 	 */
 	private String detailTypeName;
 
+	/**
+	 * 价格
+	 */
+	private double price;
+
+	/**
+	 * 商品详情
+	 */
+	private ProductDetail productDetail;
+
 	public DetailTypePO doForward(){
 		DetailTypePOConvert convert = new DetailTypePOConvert();
 		return convert.convert(this);
@@ -61,6 +71,9 @@ public class DetailType extends Page {
 		public DetailTypeDTO convert(DetailType detailType) {
 			DetailTypeDTO detailTypeDTO = new DetailTypeDTO();
 			BeanUtils.copyProperties(detailType,detailTypeDTO);
+			if(detailType.getProductDetail() != null){
+				detailTypeDTO.setProductDetailDTO(detailType.getProductDetail().doBackward());
+			}
 			return detailTypeDTO;
 		}
 	}

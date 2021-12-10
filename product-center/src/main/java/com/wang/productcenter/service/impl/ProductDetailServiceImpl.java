@@ -41,7 +41,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .stream()
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
-        return getDetailType(productDetails);
+        getDetailType(productDetails,productDetail.isDetail());
+        return productDetails;
     }
 
     public int insert(ProductDetail productDetail) {
@@ -60,7 +61,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             return null;
         }
         ProductDetail productDetailResult = result.convertToProductDetail();
-        return getDetailType(productDetailResult);
+        getDetailType(productDetailResult);
+        return productDetailResult;
     }
 
     @Override
@@ -71,7 +73,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             return null;
         }
         ProductDetail productDetailResult = result.convertToProductDetail();
-        return getDetailType(productDetailResult);
+        getDetailType(productDetailResult);
+        return productDetailResult;
     }
 
     @Override
@@ -88,13 +91,22 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         List<ProductDetail> productDetails = result.stream()
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
-        return getDetailType(productDetails);
+        getDetailType(productDetails);
+        return productDetails;
     }
 
     @Override
     public int update(ProductDetail productDetail) {
         ProductDetailPO productDetailPO = productDetail.doForward();
         return productDetailDao.update(productDetailPO);
+    }
+
+    @Override
+    public List<ProductDetail> getByIds(List<Integer> idList){
+        List<ProductDetailPO> result = productDetailDao.getByIds(idList);
+        return result.stream()
+                .map(ProductDetailPO::convertToProductDetail)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -136,11 +148,18 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         return productDetailDao.getProductDetailIdByProductId(idList);
     }
 
-    private ProductDetail getDetailType(ProductDetail productDetail) {
-        return getDetailType(Lists.newArrayList(productDetail)).get(0);
+    private void getDetailType(ProductDetail productDetail) {
+        getDetailType(Lists.newArrayList(productDetail));
     }
 
-    private List<ProductDetail> getDetailType(List<ProductDetail> productDetails) {
+    private void getDetailType(List<ProductDetail> productDetails,boolean isDetail){
+        if(!isDetail){
+            return;
+        }
+        getDetailType(productDetails);
+    }
+
+    private void getDetailType(List<ProductDetail> productDetails) {
         List<Integer> idList = productDetails
                 .stream()
                 .map(ProductDetail::getId)
@@ -149,6 +168,5 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         productDetails.get(0).setDetailTypeList(detailTypes.get(productDetails.get(0).getId()));
         productDetails
                 .forEach(productDetail -> productDetail.setDetailTypeList(detailTypes.get(productDetail.getId())));
-        return productDetails;
     }
 }

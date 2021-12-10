@@ -1,5 +1,6 @@
 package com.wang.productcenter.service;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.DetailType;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public interface IDetailTypeService {
 
-    List<DetailType> getAll(DetailType detailType);
+    PageInfo<DetailType> getAll(DetailType detailType);
 
     int insert(DetailType detailType);
 
@@ -20,7 +21,7 @@ public interface IDetailTypeService {
 
     DetailType getByName(DetailType detailType);
 
-    List<DetailType> getLikeName(DetailType detailType);
+    PageInfo<DetailType> getLikeName(DetailType detailType);
 
     void remove(DetailType detailType);
 
@@ -28,5 +29,5 @@ public interface IDetailTypeService {
 
     Map<Integer,List<DetailType>> groupByProductDetailId(List<Integer> idList);
 
-    List<DetailType> getByProductDetailId(DetailType detailType);
+    PageInfo<DetailType> getByProductDetailId(DetailType detailType);
 }

@@ -26,6 +26,8 @@ public interface IProductDetailService {
 
     int update(ProductDetail productDetail);
 
+    List<ProductDetail> getByIds(List<Integer> idList);
+
     Map<Integer,List<ProductDetail>> getByProductIds(List<Integer> idList);
 
 }

@@ -38,4 +38,21 @@ public class PageUtils {
         return new PageInfo<T>(Bean);
     }
 
+    public static<T,S> PageInfo<S> getPageInfo(List<T> sourceList,List<S> destList){
+        PageInfo<T> source = new PageInfo<>(sourceList);
+        return getPageInfo(source,destList);
+    }
+
+    public static <T,S> PageInfo<S> getPageInfo(PageInfo<T> source,List<S> destList){
+        if(source != null){
+            com.github.pagehelper.Page<S> dest =
+                    new com.github.pagehelper.Page<>(source.getPageNum(), source.getPageSize());
+            dest.setTotal(source.getTotal());
+            PageInfo<S> result = new PageInfo<>(dest);
+            result.setList(destList);
+            return result;
+        }
+        return null;
+    }
+
 }

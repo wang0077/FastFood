@@ -31,6 +31,11 @@ public class ProductDetailDTO extends BaseRequest {
      */
     private List<DetailTypeDTO> detailTypeDTOList;
 
+    /**
+     * 是否获取子节点
+     */
+    private boolean isDetail;
+
     @Override
     public void validity() {
         try {

@@ -6,8 +6,7 @@ package com.wang.fastfood.apicommons.entity.common;
  * @Description:
  */
 
-public class BasePO {
+public class BasePO extends Page{
 
-    private int limit = 10;
 
 }

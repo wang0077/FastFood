@@ -39,6 +39,11 @@ public class DetailTypePO extends BasePO implements Serializable {
 	private String detailTypeName;
 
 	/**
+	 * 价格
+	 */
+	private double price;
+
+	/**
 	 * 数据是否有效
 	 */
 	private Integer valid;

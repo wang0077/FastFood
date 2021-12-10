@@ -1,12 +1,15 @@
 package com.wang.productcenter.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
+import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.entity.PO.DetailTypePO;
 import com.wang.productcenter.service.IDetailTypeService;
+import com.wang.productcenter.service.IProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +29,13 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Autowired
     DetailTypeDao detailTypeDao;
 
+    @Autowired
+    IProductDetailService productDetailService;
+
     public int insert(DetailType detailType){
         DetailTypePO detailTypePO = detailType.doForward();
         // 商品详情ID未传入或商品详情ID在对应表不存在返回插入失败
-        if(detailTypePO.getProductDetailId() == null || getByProductDetailId(detailType).size() == 0){
+        if(detailTypePO.getProductDetailId() == null || validityProductDetailId(detailType)){
             return SqlResultEnum.ERROR_INSERT.getValue();
         }
         DetailTypePO result = detailTypeDao.getByName(detailTypePO);
@@ -40,10 +46,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public List<DetailType> getAll(DetailType detailType) {
+    public PageInfo<DetailType> getAll(DetailType detailType) {
         PageUtils.startPage(detailType);
         List<DetailTypePO> result = detailTypeDao.getAll();
-        return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
+        List<DetailType> detailTypeList = result.stream()
+                .map(DetailTypePO::convertToDetailType)
+                .collect(Collectors.toList());
+        getProductDetail(detailTypeList);
+        return PageUtils.getPageInfo(result,detailTypeList);
     }
 
     @Override
@@ -61,11 +71,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public List<DetailType> getLikeName(DetailType detailType){
+    public PageInfo<DetailType> getLikeName(DetailType detailType){
         PageUtils.startPage(detailType);
         DetailTypePO detailTypePO = detailType.doForward();
         List<DetailTypePO> result = detailTypeDao.getLikeName(detailTypePO);
-        return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
+        return PageUtils.getPageInfo(result,result
+                .stream()
+                .map(DetailTypePO::convertToDetailType)
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -81,25 +94,47 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
-    public List<DetailType> getByProductDetailId(DetailType detailType) {
+    public PageInfo<DetailType> getByProductDetailId(DetailType detailType) {
         PageUtils.startPage(detailType);
         DetailTypePO detailTypePO = detailType.doForward();
-        List<DetailTypePO> result = getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
-        return result.stream().map(DetailTypePO::convertToDetailType).collect(Collectors.toList());
+        return getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
     }
 
     @Override
     public Map<Integer,List<DetailType>> groupByProductDetailId(List<Integer> idList) {
-        List<DetailTypePO> result = getByProductDetailId(idList);
-        List<DetailType> detailTypes = result.stream()
-                .map(DetailTypePO::convertToDetailType)
-                .collect(Collectors.toList());
+        PageInfo<DetailType> result = getByProductDetailId(idList);
+        List<DetailType> detailTypes = result.getList();
         return detailTypes.stream()
                 .collect(Collectors.groupingBy(DetailType::getProductDetailId));
     }
 
-    private List<DetailTypePO> getByProductDetailId(List<Integer> idList){
-        return detailTypeDao.getByProductDetailId(idList);
+    private void getProductDetail(List<DetailType> detailTypes){
+        List<Integer> idList = detailTypes.stream()
+                .map(DetailType::getProductDetailId)
+                .collect(Collectors.toList());
+        List<ProductDetail> productDetails = productDetailService.getByIds(idList);
+        productDetails.forEach(productDetail -> {
+            detailTypes.forEach(detailType -> {
+                if(detailType.getProductDetailId().equals(productDetail.getId())){
+                    detailType.setProductDetail(productDetail);
+                }
+            });
+        });
+    }
+
+    private boolean validityProductDetailId(DetailType detailType){
+        ProductDetail productDetail = new ProductDetail();
+        productDetail.setId(detailType.getProductDetailId());
+        ProductDetail result = productDetailService.getById(productDetail);
+        return result == null;
+    }
+
+    private PageInfo<DetailType> getByProductDetailId(List<Integer> idList){
+        List<DetailTypePO> result = detailTypeDao.getByProductDetailId(idList);
+        List<DetailType> detailTypeList = result.stream()
+                .map(DetailTypePO::convertToDetailType)
+                .collect(Collectors.toList());
+        return PageUtils.getPageInfo(result,detailTypeList);
     }
 
 }
