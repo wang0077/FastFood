@@ -1,8 +1,7 @@
 package com.wang.productcenter.service;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.Product;
-
-import java.util.List;
 
 /**
  * @Auther: wAnG
@@ -13,13 +12,13 @@ import java.util.List;
 
 public interface IProductService {
 
-    List<Product> getAll(Product product);
+    PageInfo<Product> getAll(Product product);
 
     Product getById(Product product);
 
     Product getByName(Product product);
 
-    List<Product> likeByName(Product product);
+    PageInfo<Product> likeByName(Product product);
 
     void remove(Product product);
 
