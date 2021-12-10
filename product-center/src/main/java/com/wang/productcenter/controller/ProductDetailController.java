@@ -12,7 +12,6 @@ import com.wang.productcenter.service.IProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +32,9 @@ public class ProductDetailController {
     @PostMapping("/getAll")
     public Response<PageInfo<ProductDetailDTO>> getAll(@RequestBody ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
-        List<ProductDetail> result = productDetailService.getAll(productDetail);
-        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+        PageInfo<ProductDetail> result = productDetailService.getAll(productDetail);
+        return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()
+                .stream()
                 .map(ProductDetail::doBackward)
                 .collect(Collectors.toList())));
     }
@@ -70,8 +70,9 @@ public class ProductDetailController {
     @PostMapping("getLikeName")
     public Response<PageInfo<ProductDetailDTO>> getLikeName(ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
-        List<ProductDetail> result = productDetailService.getLikeName(productDetail);
-        return ResponseUtil.success(PageUtils.convertPage(result.stream()
+        PageInfo<ProductDetail> result = productDetailService.getLikeName(productDetail);
+        return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()
+                .stream()
                 .map(ProductDetail::doBackward)
                 .collect(Collectors.toList())));
     }

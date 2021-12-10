@@ -1,5 +1,6 @@
 package com.wang.productcenter.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
@@ -34,7 +35,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
 
     @Override
-    public List<ProductDetail> getAll(ProductDetail productDetail) {
+    public PageInfo<ProductDetail> getAll(ProductDetail productDetail) {
         PageUtils.startPage(productDetail);
         List<ProductDetailPO> result = productDetailDao.getAll();
         List<ProductDetail> productDetails = result
@@ -42,7 +43,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
         getDetailType(productDetails,productDetail.isDetail());
-        return productDetails;
+        return PageUtils.getPageInfo(result,productDetails);
     }
 
     public int insert(ProductDetail productDetail) {
@@ -84,7 +85,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     }
 
     @Override
-    public List<ProductDetail> getLikeName(ProductDetail productDetail) {
+    public PageInfo<ProductDetail> getLikeName(ProductDetail productDetail) {
         PageUtils.startPage(productDetail);
         ProductDetailPO productDetailPO = productDetail.doForward();
         List<ProductDetailPO> result = productDetailDao.getLikeName(productDetailPO);
@@ -92,7 +93,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
         getDetailType(productDetails);
-        return productDetails;
+        return PageUtils.getPageInfo(result,productDetails);
     }
 
     @Override
@@ -134,9 +135,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         return middles.stream()
                 .collect(Collectors.toMap(Product_Detail_Middle::getProductId,
                         middle -> productDetails.stream()
-                                .filter(productDetail -> {
-                                    return productDetail.getId().equals(middle.getProductDetailId());
-                                })
+                                .filter(productDetail -> productDetail.getId().equals(middle.getProductDetailId()))
                                 .collect(Collectors.toList()),
                         (List<ProductDetail> n1, List<ProductDetail> n2) -> {
                             n1.addAll(n2);
