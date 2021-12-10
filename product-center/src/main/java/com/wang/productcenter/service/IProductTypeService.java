@@ -1,5 +1,6 @@
 package com.wang.productcenter.service;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.ProductType;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public interface IProductTypeService {
 
-    List<ProductType> getAll(ProductType productType);
+    PageInfo<ProductType> getAll(ProductType productType);
 
     int insert(ProductType productType);
 
@@ -20,7 +21,7 @@ public interface IProductTypeService {
 
     ProductType getByName(ProductType productType);
 
-    List<ProductType> getLikeName(ProductType productType);
+    PageInfo<ProductType> getLikeName(ProductType productType);
 
     void removeType(ProductType productType);
 

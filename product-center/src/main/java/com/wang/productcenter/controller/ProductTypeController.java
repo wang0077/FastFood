@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -37,59 +36,61 @@ public class ProductTypeController {
     private DiscoveryClient discoveryClient;
 
     @GetMapping("/getAll")
-    public Response<PageInfo<ProductTypeDTO>> getAll(ProductTypeDTO productTypeDTO){
+    public Response<PageInfo<ProductTypeDTO>> getAll(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
-        List<ProductType> typePOList = productTypeService.getAll(productType);
-        return ResponseUtil.success(PageUtils.convertPage(typePOList.stream()
+        PageInfo<ProductType> result = productTypeService.getAll(productType);
+        return ResponseUtil.success(PageUtils.getPageInfo(result, result.getList()
+                .stream()
                 .map(ProductType::doBackward)
                 .collect(Collectors.toList())));
     }
 
     @PostMapping("/insert")
-    public Response insert(ProductTypeDTO productTypeDTO){
+    public Response insert(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.insert(productType);
         return SqlResultUtil.insertResult(result);
     }
 
     @PostMapping("/getById")
-    public Response<ProductTypeDTO> getTypeById(ProductTypeDTO productTypeDTO){
+    public Response<ProductTypeDTO> getTypeById(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         ProductType result = productTypeService.getById(productType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getLikeName")
-    public Response<PageInfo<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO){
+    public Response<PageInfo<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
-        List<ProductType> typeList = productTypeService.getLikeName(productType);
-        return ResponseUtil.success(PageUtils.convertPage(typeList.stream()
+        PageInfo<ProductType> result = productTypeService.getLikeName(productType);
+        return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()
+                .stream()
                 .map(ProductType::doBackward)
                 .collect(Collectors.toList())));
     }
 
     @PostMapping("/getByName")
-    public Response<ProductTypeDTO> getTypeByName(ProductTypeDTO productTypeDTO){
+    public Response<ProductTypeDTO> getTypeByName(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         ProductType result = productTypeService.getByName(productType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/delete")
-    public Response remove(ProductTypeDTO productTypeDTO){
+    public Response remove(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         productTypeService.removeType(productType);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
-    public Response update(ProductTypeDTO productTypeDTO){
+    public Response update(ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.updateType(productType);
         return SqlResultUtil.updateResult(result);
     }
 
-    private ProductType buildBO(ProductTypeDTO productTypeDTO){
+    private ProductType buildBO(ProductTypeDTO productTypeDTO) {
         return BOUtils.convert(ProductType.class, productTypeDTO);
     }
 
