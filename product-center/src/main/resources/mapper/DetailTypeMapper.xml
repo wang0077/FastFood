@@ -14,6 +14,11 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <resultMap type="com.wang.productcenter.entity.PO.Product_DetailType_Middle" id="middle">
+        <result property="productId" column="product_id"/>
+        <result property="detailTypeId" column="detail_type_id"/>
+    </resultMap>
+
     <sql id="SelectTo">
         detail_type.id,detail_type.price, detail_type.Detail_type_name, detail_type.product_detail_id
     </sql>
@@ -89,6 +94,26 @@
         where product_detail_id
         in
         <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getDetailTypeByProductId" resultMap="middle">
+        select product_id,detail_type_id
+        from product__detail_type
+        where product_id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getByIds" resultMap="detailTypeMap">
+        select
+        <include refid="SelectTo"/>
+        from detail_type
+        where detail_type.id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
             #{id}
         </foreach>
     </select>

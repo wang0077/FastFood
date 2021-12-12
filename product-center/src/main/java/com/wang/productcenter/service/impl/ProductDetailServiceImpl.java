@@ -8,6 +8,7 @@ import com.wang.productcenter.dao.ProductDetailDao;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.entity.PO.ProductDetailPO;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 import com.wang.productcenter.entity.PO.Product_Detail_Middle;
 import com.wang.productcenter.service.IDetailTypeService;
 import com.wang.productcenter.service.IProductDetailService;
@@ -42,8 +43,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .stream()
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
-        getDetailType(productDetails,productDetail.isDetail());
-        return PageUtils.getPageInfo(result,productDetails);
+        getDetailType(productDetails, productDetail.isDetail());
+        return PageUtils.getPageInfo(result, productDetails);
     }
 
     public int insert(ProductDetail productDetail) {
@@ -93,7 +94,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
         getDetailType(productDetails);
-        return PageUtils.getPageInfo(result,productDetails);
+        return PageUtils.getPageInfo(result, productDetails);
     }
 
     @Override
@@ -103,7 +104,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     }
 
     @Override
-    public List<ProductDetail> getByIds(List<Integer> idList){
+    public List<ProductDetail> getByIds(List<Integer> idList) {
         List<ProductDetailPO> result = productDetailDao.getByIds(idList);
         return result.stream()
                 .map(ProductDetailPO::convertToProductDetail)
@@ -114,33 +115,86 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     public Map<Integer, List<ProductDetail>> getByProductIds(List<Integer> idList) {
 
         // 通过ProductId查询中间表获取和ProductDetail关联关系
-        List<Product_Detail_Middle> middles = getProductMiddle(idList);
+        List<Product_Detail_Middle> productDetailMiddles = getProductMiddle(idList);
+
+        // 通过ProductId查询中间表获取和DetailType关联关系
+        List<Product_DetailType_Middle> productDetailTypeMiddles = detailTypeService.getByProductId(idList);
 
         // 去重获取所有的ProductDetailId
-        List<Integer> productDetailIds = middles.stream()
+        List<Integer> productDetailIds = productDetailMiddles.stream()
                 .map(Product_Detail_Middle::getProductDetailId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 去重获取所有的DetailTypeId
+        List<Integer> detailTypeIds = productDetailTypeMiddles.stream()
+                .map(Product_DetailType_Middle::getDetailTypeId)
                 .distinct()
                 .collect(Collectors.toList());
 
         // 查询出所有的ProductDetail
         List<ProductDetailPO> result = productDetailDao.getByIds(productDetailIds);
+
         List<ProductDetail> productDetails = result.stream()
                 .map(ProductDetailPO::convertToProductDetail)
                 .collect(Collectors.toList());
 
-        // 把ProductDetail关联的DetailType查询出来并储存
-        getDetailType(productDetails);
+        // 查询出所有的detailTypes
+        List<DetailType> detailTypes = detailTypeService.getByIds(detailTypeIds);
 
-        // 返回一个Map<ProductId,List -> ProductDetail> 结构的数据
-        return middles.stream()
-                .collect(Collectors.toMap(Product_Detail_Middle::getProductId,
-                        middle -> productDetails.stream()
-                                .filter(productDetail -> productDetail.getId().equals(middle.getProductDetailId()))
-                                .collect(Collectors.toList()),
-                        (List<ProductDetail> n1, List<ProductDetail> n2) -> {
-                            n1.addAll(n2);
-                            return n1;
+        Map<Integer, List<DetailType>> productMap = productDetailTypeMiddles.stream()
+                .collect(Collectors.toMap(Product_DetailType_Middle::getProductId
+                        , productId -> detailTypes.stream()
+                                .filter(detailType -> detailType.getId().equals(productId.getDetailTypeId()))
+                                .collect(Collectors.toList())
+                        , (List<DetailType> v1, List<DetailType> v2) -> {
+                            v1.addAll(v2);
+                            return v1;
                         }));
+        return  productDetailMiddles.stream()
+                .collect(Collectors.toMap(Product_Detail_Middle::getProductId
+                        , middle -> productDetails.stream()
+                                .filter(productDetail -> {
+                                    Integer productId = middle.getProductId();
+                                    List<DetailType> detailTypeList = productMap.get(productId);
+                                    List<DetailType> list = detailTypeList.stream()
+                                            .filter(detailType -> detailType.getProductDetailId().equals(productDetail.getId()))
+                                            .collect(Collectors.toList());
+                                    if (list.size() == 0) {
+                                        return false;
+                                    }
+                                    productDetail.setDetailTypeList(list);
+                                    return true;
+                                })
+                                .collect(Collectors.toList())
+                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> {
+                            return v1;
+                        }));
+//        productMap.entrySet().stream()
+//                .collect(Collectors.toMap(Map.Entry::getKey,productDetailMiddles
+//                        .stream()
+//                        .map(middle -> {
+//                            Integer productId = middle.getProductId();
+
+//                            List<Integer> detailTypeList = productMap.get(productId);
+//                        })))
+//        productDetailMiddles.stream()
+//                .map(middle -> {
+//                    Integer productId = middle.getProductId();
+//                    productMap.get(productId);
+//                })
+
+
+        // 返回一个Map<Integer<ProductId>,List<ProductDetail>> 结构的数据
+//        return productDetailMiddles.stream()
+//                .collect(Collectors.toMap(Product_Detail_Middle::getProductId,
+//                        middle -> productDetails.stream()
+//                                .filter(productDetail -> productDetail.getId().equals(middle.getProductDetailId()))
+//                                .collect(Collectors.toList()),
+//                        (List<ProductDetail> n1, List<ProductDetail> n2) -> {
+//                            n1.addAll(n2);
+//                            return n1;
+//                        }));
     }
 
     private List<Product_Detail_Middle> getProductMiddle(List<Integer> idList) {
@@ -151,8 +205,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         getDetailType(Lists.newArrayList(productDetail));
     }
 
-    private void getDetailType(List<ProductDetail> productDetails,boolean isDetail){
-        if(!isDetail){
+    private void getDetailType(List<ProductDetail> productDetails, boolean isDetail) {
+        if (!isDetail) {
             return;
         }
         getDetailType(productDetails);

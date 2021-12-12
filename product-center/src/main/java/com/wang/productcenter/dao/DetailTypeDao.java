@@ -1,6 +1,7 @@
 package com.wang.productcenter.dao;
 
 import com.wang.productcenter.entity.PO.DetailTypePO;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,5 +31,10 @@ public interface DetailTypeDao {
     DetailTypePO getByName(@Param("detail_type")DetailTypePO detailTypePO);
 
     List<DetailTypePO> getByProductDetailId(List<Integer> idList);
+
+    List<Product_DetailType_Middle> getDetailTypeByProductId(List<Integer> idList);
+
+    List<DetailTypePO> getByIds(List<Integer> idList);
+
 
 }

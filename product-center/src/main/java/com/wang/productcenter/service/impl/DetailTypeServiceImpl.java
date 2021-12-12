@@ -8,6 +8,7 @@ import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.entity.PO.DetailTypePO;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 import com.wang.productcenter.service.IDetailTypeService;
 import com.wang.productcenter.service.IProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,19 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         PageUtils.startPage(detailType);
         DetailTypePO detailTypePO = detailType.doForward();
         return getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
+    }
+
+    @Override
+    public List<Product_DetailType_Middle> getByProductId(List<Integer> idList) {
+        return detailTypeDao.getDetailTypeByProductId(idList);
+    }
+
+    @Override
+    public List<DetailType> getByIds(List<Integer> idList) {
+        List<DetailTypePO> result = detailTypeDao.getByIds(idList);
+        return result.stream()
+                .map(DetailTypePO::convertToDetailType)
+                .collect(Collectors.toList());
     }
 
     @Override

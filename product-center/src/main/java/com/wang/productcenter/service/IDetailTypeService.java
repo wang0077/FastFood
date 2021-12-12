@@ -2,6 +2,7 @@ package com.wang.productcenter.service;
 
 import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.DetailType;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 
 import java.util.List;
 import java.util.Map;
@@ -30,4 +31,8 @@ public interface IDetailTypeService {
     Map<Integer,List<DetailType>> groupByProductDetailId(List<Integer> idList);
 
     PageInfo<DetailType> getByProductDetailId(DetailType detailType);
+
+    List<Product_DetailType_Middle> getByProductId(List<Integer> idList);
+
+    List<DetailType> getByIds(List<Integer> idList);
 }

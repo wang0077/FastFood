@@ -10,10 +10,7 @@ import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
@@ -33,7 +30,7 @@ public class ProductController {
     private IProductService productService;
 
     @PostMapping("/getAll")
-    public Response<PageInfo<ProductDTO>> getAll(ProductDTO productDTO){
+    public Response<PageInfo<ProductDTO>> getAll(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         PageInfo<Product> result = productService.getAll(product);
         return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()
