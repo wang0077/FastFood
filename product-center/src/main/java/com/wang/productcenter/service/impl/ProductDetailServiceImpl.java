@@ -142,6 +142,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         // 查询出所有的detailTypes
         List<DetailType> detailTypes = detailTypeService.getByIds(detailTypeIds);
 
+        // 归纳出ProductId和DetailType映射关系
         Map<Integer, List<DetailType>> productMap = productDetailTypeMiddles.stream()
                 .collect(Collectors.toMap(Product_DetailType_Middle::getProductId
                         , productId -> detailTypes.stream()
@@ -151,6 +152,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                             v1.addAll(v2);
                             return v1;
                         }));
+        // 通过Product和DetailType映射关系再和Product和ProductDetail关系
+        // 整合出Product对应的ProductDetail封装和Product对应的DetailType
         return  productDetailMiddles.stream()
                 .collect(Collectors.toMap(Product_Detail_Middle::getProductId
                         , middle -> productDetails.stream()
@@ -167,34 +170,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                                     return true;
                                 })
                                 .collect(Collectors.toList())
-                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> {
-                            return v1;
-                        }));
-//        productMap.entrySet().stream()
-//                .collect(Collectors.toMap(Map.Entry::getKey,productDetailMiddles
-//                        .stream()
-//                        .map(middle -> {
-//                            Integer productId = middle.getProductId();
-
-//                            List<Integer> detailTypeList = productMap.get(productId);
-//                        })))
-//        productDetailMiddles.stream()
-//                .map(middle -> {
-//                    Integer productId = middle.getProductId();
-//                    productMap.get(productId);
-//                })
-
-
-        // 返回一个Map<Integer<ProductId>,List<ProductDetail>> 结构的数据
-//        return productDetailMiddles.stream()
-//                .collect(Collectors.toMap(Product_Detail_Middle::getProductId,
-//                        middle -> productDetails.stream()
-//                                .filter(productDetail -> productDetail.getId().equals(middle.getProductDetailId()))
-//                                .collect(Collectors.toList()),
-//                        (List<ProductDetail> n1, List<ProductDetail> n2) -> {
-//                            n1.addAll(n2);
-//                            return n1;
-//                        }));
+                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> v1));
     }
 
     private List<Product_Detail_Middle> getProductMiddle(List<Integer> idList) {
