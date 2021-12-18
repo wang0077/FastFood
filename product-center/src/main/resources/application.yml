@@ -1,10 +1,8 @@
 server:
   port: 8091
 
-project:
-
 rocketmq:
-  name-server: 106.13.206.235:9876
+  name-server: 159.75.20.118:9876
   producer:
     group: Product-Center-Group
 spring:
@@ -19,14 +17,14 @@ spring:
   # Mybatis配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://159.75.20.118:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     username: root
     password: Wangsi12
     # Druid配置
     type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 5
-    minIdle: 5
-    maxActive: 20
+    initialSize: 250
+    minIdle: 250
+    maxActive: 600
     maxWait: 60000
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
@@ -59,6 +57,9 @@ management:
     web:
       exposure:
         include: '*'
+metrics:
+  tags:
+    application: ${spring.application.name} # 暴露的数据中添加application label
 # Mybatis配置
 mybatis:
   mapper-locations: classpath:mapper/*.xml

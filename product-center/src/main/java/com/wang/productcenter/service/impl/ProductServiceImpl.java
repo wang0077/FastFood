@@ -11,6 +11,7 @@ import com.wang.productcenter.entity.PO.ProductPO;
 import com.wang.productcenter.service.IProductDetailService;
 import com.wang.productcenter.service.IProductService;
 import com.wang.productcenter.service.IProductTypeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,9 @@ public class ProductServiceImpl implements IProductService {
     public Product getById(Product product) {
         ProductPO productPO = product.doForward();
         ProductPO result = productDao.getById(productPO);
+        if(result == null){
+            return null;
+        }
         Product productResult = result.convertToProduct();
         getProductDetailAndProductType(productResult);
         return productResult;
@@ -60,6 +64,9 @@ public class ProductServiceImpl implements IProductService {
     public Product getByName(Product product) {
         ProductPO productPO = product.doForward();
         ProductPO result = productDao.getByName(productPO);
+        if(result == null){
+            return null;
+        }
         Product productResult = result.convertToProduct();
         getProductDetailAndProductType(productResult);
         return productResult;
@@ -90,10 +97,16 @@ public class ProductServiceImpl implements IProductService {
     }
 
     private void getProductDetailAndProductType(Product products){
+        if(products == null){
+            return;
+        }
         getProductDetailAndProductType(Lists.newArrayList(products));
     }
 
     private void getProductDetailAndProductType(List<Product> products){
+        if(products.size() == 0){
+            return;
+        }
         getProductType(products);
         getProductDetail(products);
     }

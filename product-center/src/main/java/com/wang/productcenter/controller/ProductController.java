@@ -40,21 +40,21 @@ public class ProductController {
     }
 
     @PostMapping("/getById")
-    public Response<ProductDTO> getById(ProductDTO productDTO){
+    public Response<ProductDTO> getById(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         Product result = productService.getById(product);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getByName")
-    public Response<ProductDTO> getByName(ProductDTO productDTO){
+    public Response<ProductDTO> getByName(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         Product result = productService.getByName(product);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/likeByName")
-    public Response<PageInfo<ProductDTO>> likeByName(ProductDTO productDTO){
+    public Response<PageInfo<ProductDTO>> likeByName(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         PageInfo<Product> result = productService.likeByName(product);
         return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()
@@ -64,14 +64,14 @@ public class ProductController {
     }
 
     @PostMapping("/delete")
-    public Response delete(ProductDTO productDTO){
+    public Response delete(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         productService.remove(product);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
-    public Response update(ProductDTO productDTO){
+    public Response update(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);
         int result = productService.update(product);
         return ResponseUtil.success(SqlResultUtil.updateResult(result));
