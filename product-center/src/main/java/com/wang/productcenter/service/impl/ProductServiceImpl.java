@@ -11,7 +11,6 @@ import com.wang.productcenter.entity.PO.ProductPO;
 import com.wang.productcenter.service.IProductDetailService;
 import com.wang.productcenter.service.IProductService;
 import com.wang.productcenter.service.IProductTypeService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

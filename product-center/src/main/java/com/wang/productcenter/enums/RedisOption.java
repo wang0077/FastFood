@@ -9,9 +9,12 @@ public enum RedisOption {
 
     GET("get"),
     SET("set"),
+    SETEX("setex"),
     INCR("incr"),
     INCRBY("incrBy"),
     DECR("decr"),
+    DECRBY("decrBy"),
+    EXPIRE("expire"),
     DEL("del");
 
     private final String opName;
