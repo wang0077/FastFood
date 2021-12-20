@@ -9,6 +9,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: wAnG
@@ -52,6 +54,30 @@ public class RedisUtil {
         if (jedis != null) {
             jedis.close();
         }
+    }
+
+    public static <T> List<T> mget(Class<T> clazz, String... keys) {
+        return mget(0, clazz, keys);
+    }
+
+    public static <T> List<T> mget(int indexDB, Class<T> clazz, String... keys) {
+        List<String> jsonList = null;
+        List<T> result = null;
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.select(indexDB);
+            jsonList = jedis.mget(keys);
+            result = jsonList.stream()
+                    .map(json -> JSONUtil.parse(json,clazz))
+                    .collect(Collectors.toList());
+            RedisLog.LogReadResultSuccess(RedisOption.GET, Arrays.toString(keys), indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogReadResultError(RedisOption.GET, Arrays.toString(keys), indexDB, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
     }
 
     public String setex(String key, Object value, int seconds) {
