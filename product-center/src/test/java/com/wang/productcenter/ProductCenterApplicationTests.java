@@ -1,6 +1,5 @@
 package com.wang.productcenter;
 
-import com.wang.productcenter.entity.PO.ProductPO;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
