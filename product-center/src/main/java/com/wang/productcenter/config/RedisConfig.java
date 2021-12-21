@@ -1,11 +1,9 @@
 package com.wang.productcenter.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.spring.cache.CacheConfigSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -53,6 +51,7 @@ public class RedisConfig {
         config.setMaxWaitMillis(maxWaitMillis);
         config.setMinIdle(minIdle);
         config.setMaxTotal(maxActive);
+        config.setBlockWhenExhausted(true);
         JedisPool pool = new JedisPool(config, host, port, timeout, password, database);
         log.info("[Spring init] ==> redisPool创建成功 | redis地址 : [{}]",host + ":" + port);
         return pool;

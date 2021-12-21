@@ -10,7 +10,7 @@ echo "==================================="
 echo "============传输最新JAR包==========="
 echo "==================================="
 # shellcheck disable=SC2086
-scp $targetPath/$serverName$suffix$type root@106.13.206.235:/root/project
+scp $targetPath/$serverName$suffix$type root@106.55.239.37:/root/project
 
 
 ssh root@106.13.206.235 << eeooff

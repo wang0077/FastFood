@@ -1,5 +1,6 @@
 package com.wang.productcenter.Util;
 
+import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.enums.RedisOption;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
@@ -48,6 +49,14 @@ public class RedisUtil {
 
     private static <T> T Deserialization(String json, Class<T> clazz) {
         return JSONUtil.parse(json, clazz);
+    }
+
+    private static <T> List<T> DeserializationToList(String json, Class<T> clazz) {
+        return JSONUtil.parseToList(json,clazz);
+    }
+
+    private static <T> PageInfo<T> DeserializationToPageInfo(String json, Class<T> clazz) {
+        return JSONUtil.parseToPageInfo(json,clazz);
     }
 
     public static void returnResource(Jedis jedis) {
@@ -101,6 +110,62 @@ public class RedisUtil {
         return null;
     }
 
+    public static <T> PageInfo<T> getByPageInfo(String key,Class<T> clazz){
+        return getByPageInfo(key,clazz,0);
+    }
+
+    public static <T> PageInfo<T> getByPageInfo(String key, Class<T> clazz, int indexDB){
+        long startTime = System.currentTimeMillis();
+        Jedis jedis = null;
+        String valueJson = null;
+        PageInfo<T> value = null;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            valueJson = jedis.get(key);
+            if(valueJson == null){
+                return null;
+            }
+            value = DeserializationToPageInfo(valueJson, clazz);
+            RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
+        } catch (Exception e) {
+            long endTime = System.currentTimeMillis();
+            log.error("totalTime : {}ms",endTime - startTime);
+            log.error("线程等待数 : " + jedisPool.getNumWaiters());
+            RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
+    public static <T> List<T> getByList(String key,Class<T> clazz){
+        return getByList(key,clazz,0);
+    }
+
+    public static <T> List<T> getByList(String key,Class<T> clazz,int indexDB){
+        Jedis jedis = null;
+        String valueJson = null;
+        List<T> value = null;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            valueJson = jedis.get(key);
+            if(valueJson == null){
+                return null;
+            }
+            value = DeserializationToList(valueJson, clazz);
+            RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
+        } catch (Exception e) {
+            RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
     public static <T> T get(String key, Class<T> clazz) {
         return get(key, clazz, 0);
     }
@@ -113,6 +178,9 @@ public class RedisUtil {
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
+            if(valueJson == null){
+                return null;
+            }
             value = Deserialization(valueJson, clazz);
             RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
         } catch (Exception e) {
