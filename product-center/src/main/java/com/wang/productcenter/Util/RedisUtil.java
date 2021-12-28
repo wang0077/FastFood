@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,8 +43,15 @@ public class RedisUtil {
         RedisUtil.redisson = redisson;
     }
 
-    public static Jedis getResource() {
+    private static Jedis getResource() {
         return jedisPool.getResource();
+    }
+
+    public static Pipeline getPipeline(){
+        Jedis jedis = getResource();
+        Pipeline pipelined = jedis.pipelined();
+        pipelined.close();
+        return jedis.pipelined();
     }
 
     private static String Serialization(Object value) {
@@ -68,8 +76,41 @@ public class RedisUtil {
         }
     }
 
+    private static void returnResource(Jedis jedis,Pipeline pipeline){
+        if(pipeline != null){
+            pipeline.close();
+        }
+        if(jedis != null){
+            jedis.close();
+        }
+    }
+
     public static RLock getLock(String lockName){
         return redisson.getLock(lockName + LOCK);
+    }
+
+    public static List<String> keys(List<String> keys){
+        return keys(keys,0);
+    }
+
+    public static List<String> keys(List<String> keys,int indexDB){
+        List<String> result = new ArrayList<>();
+        Jedis jedis = null;
+        Pipeline pipeline = null;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            pipeline = jedis.pipelined();
+            keys.forEach(pipeline::keys);
+            pipeline.sync();
+            result = (List<String>)(List) pipeline.syncAndReturnAll();
+            RedisLog.LogReadResultSuccess(RedisOption.PIPEKEYS,keys.toString(),indexDB,result);
+        }catch (Exception e){
+            RedisLog.LogReadResultError(RedisOption.KEYS, keys.toString(), indexDB, e);
+        }finally {
+            returnResource(jedis,pipeline);
+        }
+        return result;
     }
 
     public static List<String> keys(String key){
@@ -90,6 +131,32 @@ public class RedisUtil {
             RedisLog.LogReadResultError(RedisOption.KEYS, key, indexDB, e);
         } finally {
             returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static<T> String mset(List<String> key,List<T> value){
+        return mset(key,value,0);
+    }
+
+    public static<T> String mset(List<String> key,List<T> value,int indexDB){
+        Jedis jedis = null;
+        Pipeline pipelined = null;
+        String result = null;
+        try {
+            jedis = getResource();
+            pipelined = jedis.pipelined();
+            jedis.select(indexDB);
+            for(int i = 0;i < key.size();i++){
+                pipelined.set(key.get(i),Serialization(value.get(i)));
+            }
+            pipelined.sync();
+            result = (String) pipelined.syncAndReturnAll().get(0);
+            RedisLog.LogWriteResultSuccess(RedisOption.MSET,key.toString(),value.toString(),indexDB,result);
+        }catch (Exception e){
+            RedisLog.LogWriteResultError(RedisOption.MSET,key.toString(),value.toString(),indexDB,e);
+        }finally {
+            returnResource(jedis,pipelined);
         }
         return result;
     }

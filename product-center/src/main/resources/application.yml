@@ -17,15 +17,15 @@ spring:
   # Mybatis配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://159.75.20.118:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     username: root
     password: Wangsi12
     # Druid配置
     type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 250
-    minIdle: 250
+    initialSize: 100
+    minIdle: 100
     maxActive: 600
-    maxWait: 60000
+    maxWait: 2000
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
     validationQuery: SELECT 1 FROM DUAL

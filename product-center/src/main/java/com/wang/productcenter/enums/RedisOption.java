@@ -8,6 +8,8 @@ package com.wang.productcenter.enums;
 public enum RedisOption {
 
     KEYS("keys"),
+    PIPEKEYS("pipe-Keys"),
+    MSET("mset"),
     GET("get"),
     SET("set"),
     SETEX("setex"),

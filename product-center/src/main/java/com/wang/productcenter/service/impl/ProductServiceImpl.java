@@ -65,20 +65,15 @@ public class ProductServiceImpl implements IProductService {
             RLock lock = RedisUtil.getLock(redisName);
             if (lock.tryLock()) {
                 try {
-                    result = RedisUtil.getByPageInfo(redisName, Product.class);
-                    if (result == null) {
-                        PageUtils.startPage(product);
-                        List<ProductPO> poResult = productDao.getAll();
-                        List<Product> products = poResult.stream()
-                                .map(ProductPO::convertToProduct)
-                                .collect(Collectors.toList());
-                        getProductType(products);
-                        getProductDetail(products);
-                        result = PageUtils.getPageInfo(poResult, products);
-                        redisService.set(redisName, result);
-                    } else {
-                        return result;
-                    }
+                    PageUtils.startPage(product);
+                    List<ProductPO> poResult = productDao.getAll();
+                    List<Product> products = poResult.stream()
+                            .map(ProductPO::convertToProduct)
+                            .collect(Collectors.toList());
+                    getProductType(products);
+                    getProductDetail(products);
+                    result = PageUtils.getPageInfo(poResult, products);
+                    redisService.set(redisName, result);
                 } finally {
                     lock.unlock();
                 }

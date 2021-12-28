@@ -44,6 +44,29 @@ public class RedisService implements Serializable {
         return result;
     }
 
+    public <T> String mset(List<String> keys, List<T> value) {
+        return mset(keys, value, 0);
+    }
+
+    public <T> String mset(List<String> keys, List<T> value, int indexDB) {
+        String result = null;
+        int count = 0;
+        while (count < retryCount && !"OK".equals(result)) {
+            count++;
+            result = RedisUtil.mset(keys, value, indexDB);
+        }
+        // todo 这部分批量set但是没有判断set失败的指令进行重试
+        //      现有逻辑是第一个指令成功就判断全体成功，逻辑有问题(虽然出错概率不大)
+        if (count >= retryCount && !"OK".equals(result)) {
+            for (int i = 0; i < keys.size(); i++) {
+                RedisMessage message = buildMessage(keys.get(i), value.get(i), indexDB, RedisOption.SET);
+                sendMessage(message);
+                result = "MQ-Retry";
+            }
+        }
+        return result;
+    }
+
     public String set(String key, Object body) {
         return set(key, body, 0);
     }
@@ -63,7 +86,7 @@ public class RedisService implements Serializable {
         return result;
     }
 
-    public String del(List<String> keys){
+    public String del(List<String> keys) {
         return del(keys.toArray(new String[0]));
     }
 
@@ -135,8 +158,8 @@ public class RedisService implements Serializable {
         return result == 0L ? "MQ-Retry" : result.toString();
     }
 
-    public String decrBy(String key,Long value){
-        return decrBy(key,value,0);
+    public String decrBy(String key, Long value) {
+        return decrBy(key, value, 0);
     }
 
     public String decrBy(String key, Long value, int indexDB) {
@@ -147,13 +170,13 @@ public class RedisService implements Serializable {
             result = RedisUtil.decrBy(key, value, indexDB);
         }
         if (count >= retryCount && result == 0) {
-            RedisMessage message = buildMessage(key,value, indexDB, RedisOption.DECRBY);
+            RedisMessage message = buildMessage(key, value, indexDB, RedisOption.DECRBY);
             sendMessage(message);
         }
         return result == 0L ? "MQ-Retry" : result.toString();
     }
 
-    public String expire(String key,int value,int indexDB){
+    public String expire(String key, int value, int indexDB) {
         Long result = 0L;
         int count = 0;
         while (count < retryCount && result == 0) {
@@ -161,7 +184,7 @@ public class RedisService implements Serializable {
             result = RedisUtil.expire(key, value, indexDB);
         }
         if (count >= retryCount && result == 0) {
-            RedisMessage message = buildMessage(key,value, indexDB, RedisOption.EXPIRE);
+            RedisMessage message = buildMessage(key, value, indexDB, RedisOption.EXPIRE);
             sendMessage(message);
         }
         return result == 0L ? "MQ-Retry" : result.toString();
