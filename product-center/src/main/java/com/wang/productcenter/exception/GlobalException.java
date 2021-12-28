@@ -3,7 +3,6 @@ package com.wang.productcenter.exception;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 
 
-@ControllerAdvice
+//@ControllerAdvice
 public class GlobalException {
 
     @ResponseBody

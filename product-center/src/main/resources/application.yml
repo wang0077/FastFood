@@ -17,7 +17,7 @@ spring:
   # Mybatis配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://gz-cynosdbmysql-grp-fq35p4ib.sql.tencentcdb.com:27878/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://159.75.20.118:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     username: root
     password: Wangsi12
     # Druid配置

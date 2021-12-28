@@ -11,10 +11,7 @@ import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.service.impl.ProductTypeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
@@ -35,8 +32,8 @@ public class ProductTypeController {
     @Autowired
     private DiscoveryClient discoveryClient;
 
-    @GetMapping("/getAll")
-    public Response<PageInfo<ProductTypeDTO>> getAll(ProductTypeDTO productTypeDTO) {
+    @PostMapping("/getAll")
+    public Response<PageInfo<ProductTypeDTO>> getAll(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         PageInfo<ProductType> result = productTypeService.getAll(productType);
         return ResponseUtil.success(PageUtils.getPageInfo(result, result.getList()
@@ -46,21 +43,21 @@ public class ProductTypeController {
     }
 
     @PostMapping("/insert")
-    public Response insert(ProductTypeDTO productTypeDTO) {
+    public Response insert(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.insert(productType);
         return SqlResultUtil.insertResult(result);
     }
 
     @PostMapping("/getById")
-    public Response<ProductTypeDTO> getTypeById(ProductTypeDTO productTypeDTO) {
+    public Response<ProductTypeDTO> getTypeById(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         ProductType result = productTypeService.getById(productType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getLikeName")
-    public Response<PageInfo<ProductTypeDTO>> getTypeLikeName(ProductTypeDTO productTypeDTO) {
+    public Response<PageInfo<ProductTypeDTO>> getTypeLikeName(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         PageInfo<ProductType> result = productTypeService.getLikeName(productType);
         return ResponseUtil.success(PageUtils.getPageInfo(result,result.getList()

@@ -1,4 +1,4 @@
-package com.wang.productcenter.service.impl;
+package com.wang.productcenter.Redis;
 
 import com.wang.productcenter.Util.JSONUtil;
 import com.wang.productcenter.Util.RedisUtil;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Auther: wAnG
@@ -60,6 +61,10 @@ public class RedisService implements Serializable {
             result = "MQ-Retry";
         }
         return result;
+    }
+
+    public String del(List<String> keys){
+        return del(keys.toArray(new String[0]));
     }
 
     public String del(String... keys) {

@@ -1,8 +1,8 @@
-package com.wang.productcenter.RedisRetry;
+package com.wang.productcenter.Redis.RedisRetry;
 
-import com.wang.productcenter.RedisRetry.Functional.RedisRetryFunctional;
+import com.wang.productcenter.Redis.RedisRetry.Functional.RedisRetryFunctional;
 import com.wang.productcenter.entity.RocketMQ.RedisMessage;
-import com.wang.productcenter.service.impl.RedisService;
+import com.wang.productcenter.Redis.RedisService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

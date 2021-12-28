@@ -3,14 +3,14 @@ package com.wang.productcenter.Util;
 import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.enums.RedisOption;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,11 +30,14 @@ public class RedisUtil {
 
     private static RedissonClient redisson;
 
+    private static final String LOCK = "-lock";
+
     @Autowired
     public void setJedisPool(JedisPool jedisPool) {
         RedisUtil.jedisPool = jedisPool;
     }
 
+    @Autowired
     public void setRedisson(RedissonClient redisson) {
         RedisUtil.redisson = redisson;
     }
@@ -59,10 +62,44 @@ public class RedisUtil {
         return JSONUtil.parseToPageInfo(json,clazz);
     }
 
-    public static void returnResource(Jedis jedis) {
+    private static void returnResource(Jedis jedis) {
         if (jedis != null) {
             jedis.close();
         }
+    }
+
+    public static RLock getLock(String lockName){
+        return redisson.getLock(lockName + LOCK);
+    }
+
+    public static List<String> keys(String key){
+        return keys(key,0);
+    }
+
+    public static List<String> keys(String key,int indexDB){
+        Set<String> set = null;
+        List<String> result = null;
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.select(indexDB);
+            set = jedis.keys(key);
+            result = new ArrayList<>(set);
+            RedisLog.LogReadResultSuccess(RedisOption.KEYS, key, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogReadResultError(RedisOption.KEYS, key, indexDB, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static <T> List<T> mget(Class<T> clazz,List<String> keys){
+        if(keys == null){
+            return null;
+        }
+        String[] strings = keys.toArray(new String[0]);
+        return mget(clazz,strings);
     }
 
     public static <T> List<T> mget(Class<T> clazz, String... keys) {
@@ -73,6 +110,9 @@ public class RedisUtil {
         List<String> jsonList = null;
         List<T> result = null;
         Jedis jedis = null;
+        if(keys.length == 0){
+            return null;
+        }
         try {
             jedis = jedisPool.getResource();
             jedis.select(indexDB);
@@ -119,6 +159,9 @@ public class RedisUtil {
         Jedis jedis = null;
         String valueJson = null;
         PageInfo<T> value = null;
+        if(key == null){
+            return null;
+        }
         try {
             jedis = getResource();
             jedis.select(indexDB);
@@ -212,6 +255,10 @@ public class RedisUtil {
             returnResource(jedis);
         }
         return result;
+    }
+
+    public static Long del(List<String> keys){
+        return del(keys.toArray(new String[0]));
     }
 
     public static Long del(String... keys) {
