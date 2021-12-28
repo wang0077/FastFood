@@ -13,6 +13,7 @@ target/
 .springBeans
 .sts4-cache
 
+
 *.cmd
 .mvn
 mvnw
@@ -21,6 +22,7 @@ target
 logs
 *.log
 test
+rebel.xml
 
 ### IntelliJ IDEA ###
 .idea
