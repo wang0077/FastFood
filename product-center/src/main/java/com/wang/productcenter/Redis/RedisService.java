@@ -87,6 +87,9 @@ public class RedisService implements Serializable {
     }
 
     public String del(List<String> keys) {
+        if(keys.size() == 0){
+            return null;
+        }
         return del(keys.toArray(new String[0]));
     }
 

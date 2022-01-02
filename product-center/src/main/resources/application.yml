@@ -15,6 +15,7 @@ spring:
     nacos:
       server-addr: 121.196.168.154:8848
   # Mybatis配置
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
@@ -40,17 +41,17 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 159.75.20.118
+    host: 121.196.168.154
     port: 6379
     database: 0
-    password: 228913
+    password: Wangsi12
     jedis:
       pool:
-        max-active: 300
-        min-idle: 200
+        max-active: 100
+        min-idle: 100
         max-wait: -1
-        max-idle: 200
-    timeout: 20000
+        max-idle: 100
+    timeout: 2000
 
 management:
   endpoints:
