@@ -1,0 +1,70 @@
+server:
+  port: 8093
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: FastFood-API
+  cloud:
+    nacos:
+      server-addr: 121.196.168.154:8848
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: Wangsi12
+    # Druid配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 100
+    minIdle: 100
+    maxActive: 600
+    maxWait: 2000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    filters: stat,wall
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+# Mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.wang.productcenter.entity
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+logging:
+  level:
+    root: info
+  config: classpath:logback-dev.xml
+
+token:
+  # 1000 * 60 * 60 * 24 * 3 \u4E09\u5929
+  expireTime: 259200000
+  secretKey: abcdefghijklmnopqrstuvwxyz
+  # JWT 负载中拿到开头
+  tokenHead: Bearer
+  # JWT存储的请求头
+  tokenHeader: authorization
+
+
+
+

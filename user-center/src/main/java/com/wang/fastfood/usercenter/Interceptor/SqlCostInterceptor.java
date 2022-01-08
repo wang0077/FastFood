@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Statement;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * @Auther: wAnG
@@ -96,7 +97,7 @@ public class SqlCostInterceptor implements Interceptor {
         }
         String sql = boundSql.getSql();
         for (Object o : paramList) {
-            sql = sql.replaceFirst("\\?", formatParamValue(o));
+            sql = sql.replaceFirst("\\?", Matcher.quoteReplacement(formatParamValue(o)));
         }
         return sql;
     }

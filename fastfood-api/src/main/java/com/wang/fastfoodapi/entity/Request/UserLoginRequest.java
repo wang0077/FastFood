@@ -1,14 +1,11 @@
 package com.wang.fastfoodapi.entity.Request;
 
 import com.google.common.base.Strings;
-import com.wang.fastfood.apicommons.entity.BO.User;
-import com.wang.fastfood.apicommons.exception.ParamException;
 import com.wang.fastfood.apicommons.entity.common.BaseRequest;
-import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
+import com.wang.fastfood.apicommons.exception.ParamException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.BeanUtils;
 
 /**
  * @Auther: wAnG
@@ -32,10 +29,6 @@ public class UserLoginRequest extends BaseRequest {
     private String telephone;
 
 
-    public User convertToUser(){
-        UserDTOConvert userDTOConvert = new UserDTOConvert();
-        return userDTOConvert.convert(this);
-    }
 
     @Override
     public void validity() {
@@ -48,16 +41,6 @@ public class UserLoginRequest extends BaseRequest {
             }
         }catch (ParamException e){
             e.printStackTrace();
-        }
-    }
-
-
-    private static class UserDTOConvert implements DTOConvert<UserLoginRequest,User> {
-        @Override
-        public User convert(UserLoginRequest userRequest) {
-            User user = new User();
-            BeanUtils.copyProperties(userRequest,user);
-            return user;
         }
     }
 }

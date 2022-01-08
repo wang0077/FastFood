@@ -19,7 +19,7 @@ public class GlobalException {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Response<String> exceptionHandler(Exception e){
-        return ResponseUtil.fail(ErrorCodeEnum.SERVER_ERROR);
+        return ResponseUtil.fail(ErrorCodeEnum.SERVER_ERROR,e.getMessage());
     }
 
 }

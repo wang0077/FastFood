@@ -6,7 +6,7 @@ package com.wang.fastfood.apicommons.exception;
  * @Description:
  */
 
-public class ParamException extends Exception {
+public class ParamException extends RuntimeException {
     public ParamException(String msg){
         super(msg);
     }

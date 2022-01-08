@@ -25,6 +25,10 @@ public class ResponseUtil {
         return buildResult(errorCode, data);
     }
 
+    public static<T> Response<T> fail(BaseEnum errorCode,T data) {
+        return buildResult(errorCode, data);
+    }
+
     public static<T> Response<T> fail(BaseEnum errorCode) {
         return buildResult(errorCode, null);
     }

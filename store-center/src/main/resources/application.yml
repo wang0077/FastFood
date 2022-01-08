@@ -1,0 +1,77 @@
+server:
+  port: 8093
+
+rocketmq:
+  name-server: 159.75.20.118:9876
+  producer:
+    group: Product-Store-Group
+spring:
+  application:
+    name: Store-Center
+  cache:
+    type: redis
+  cloud:
+    # Nacos配置
+    nacos:
+      server-addr: 121.196.168.154:8848
+  # Mybatis配置
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: Wangsi12
+    # Druid配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 100
+    minIdle: 100
+    maxActive: 600
+    maxWait: 2000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    filters: stat,wall
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  redis:
+    redisson:
+      config: classpath:redisson.yml
+    host: 121.196.168.154
+    port: 6379
+    database: 0
+    password: Wangsi12
+    jedis:
+      pool:
+        max-active: 100
+        min-idle: 100
+        max-wait: -1
+        max-idle: 100
+    timeout: 2000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+metrics:
+  tags:
+    application: ${spring.application.name} # 暴露的数据中添加application label
+# Mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.wang.productcenter.entity
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    root: info
+  config: classpath:logback-dev.xml

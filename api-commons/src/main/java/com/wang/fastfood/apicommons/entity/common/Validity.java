@@ -1,5 +1,7 @@
 package com.wang.fastfood.apicommons.entity.common;
 
+import com.wang.fastfood.apicommons.exception.ParamException;
+
 /**
  * @Auther: wAnG
  * @Date: 2021/11/23 22:29
@@ -7,6 +9,6 @@ package com.wang.fastfood.apicommons.entity.common;
  */
 public interface Validity {
 
-    void validity();
+    void validity() throws ParamException;
 
 }
