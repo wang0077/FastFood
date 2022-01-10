@@ -1,7 +1,7 @@
 package com.wang.fastfood.apicommons.Util;
 
 import com.wang.fastfood.apicommons.entity.common.Response;
-import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 
 /**
  * @Auther: wAnG
@@ -12,21 +12,29 @@ import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
 @SuppressWarnings("all")
 public class SqlResultUtil {
 
-    public static Response insertResult(int result) {
+    public static Response<String> insertResult(int result) {
         if (result > 0) {
-            return ResponseUtil.success(null);
+            return ResponseUtil.success(CodeEnum.SQL_INSERT_SUCCESS);
         } else if (result == -1) {
-            return ResponseUtil.fail(ErrorCodeEnum.SQL_REPEAT_INSERT_ERROR);
+            return ResponseUtil.fail(CodeEnum.SQL_REPEAT_INSERT_ERROR);
         } else {
-            return ResponseUtil.fail(ErrorCodeEnum.SQL_INSERT_ERROR);
+            return ResponseUtil.fail(CodeEnum.SQL_INSERT_ERROR);
         }
     }
 
-    public static Response updateResult(int result){
-        if(result != 0){
-            return ResponseUtil.success(null);
+    public static Response<String> updateResult(int result){
+        if(result > 0){
+            return ResponseUtil.success(CodeEnum.SQL_UPDATE_SUCCESS);
         }else {
-            return ResponseUtil.fail(ErrorCodeEnum.SQL_INSERT_ERROR);
+            return ResponseUtil.fail(CodeEnum.SQL_UPDATE_ERROR);
+        }
+    }
+
+    public static Response<String> deleteResult(int result){
+        if(result > 0){
+            return ResponseUtil.success(CodeEnum.SQL_DELETE_SUCCESS);
+        }else {
+            return ResponseUtil.fail(CodeEnum.SQL_DELETE_ERROR);
         }
     }
 

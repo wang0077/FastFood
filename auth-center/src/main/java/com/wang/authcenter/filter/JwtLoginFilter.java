@@ -6,7 +6,7 @@ import com.wang.authcenter.exception.BadRequestException;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.entity.DTO.UserDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
-import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -45,7 +45,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("token", jwt);
-        Response<Map<String, Object>> result = ResponseUtil.success(ErrorCodeEnum.LOGIN_SUCCESS, map);
+        Response<Map<String, Object>> result = ResponseUtil.success(CodeEnum.LOGIN_SUCCESS, map);
         PrintWriter out = response.getWriter();
         out.write(JSONUtil.toJsonString(result));
         out.flush();
@@ -86,7 +86,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
             return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         }catch (BadRequestException exception) {
             response.setContentType("application/json;charset=utf-8");
-            Response<String> result = ResponseUtil.fail(ErrorCodeEnum.ILLEGAL_REQUEST);
+            Response<String> result = ResponseUtil.fail(CodeEnum.ILLEGAL_REQUEST);
             PrintWriter out = response.getWriter();
             out.write(JSONUtil.toJsonString(result));
             out.flush();

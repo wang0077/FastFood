@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.storeCenter.dao.StoreDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.storeCenter.entity.PO.StorePO" id="storeMap">
+        <result property="id" column="id"/>
+        <result property="storeLongitude" column="store_longitude"/>
+        <result property="storeLatitude" column="store_latitude"/>
+        <result property="storePhoneNumber" column="store_phone_number"/>
+        <result property="storeName" column="store_name"/>
+        <result property="address" column="address"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        id,store_name,store_latitude,store_longitude,store_phone_number,address
+    </sql>
+
+    <insert id="add">
+        insert into store (store_longitude, store_latitude, store_phone_number, store_name, valid)
+        values
+        (#{store.storeLongitude},#{store.storeLatitude},#{store.storePhoneNumber},#{store.storeName},1);
+    </insert>
+
+    <update id="update">
+        update store set
+        <if test="store.storeName != null">
+            store_name = #{store.storeName}
+        </if>
+        <if test="store.storeLongitude != null">
+            store_longitude = #{store.storeLongitude}
+        </if>
+        <if test="store.storeLatitude != null">
+            store_latitude = #{store.storeLatitude}
+        </if>
+        <if test="store.storePhoneNumber != null">
+            store_phone_number = #{store.storePhoneNumber}
+        </if>
+        <if test="store.storeName != null">
+            store_name = #{store.storeName}
+        </if>
+        where id = #{store.id} and valid = 1;
+    </update>
+
+
+    <delete id="remove">
+        update store set
+        valid = 0
+        where id = #{store.id}
+    </delete>
+
+
+    <select id="getStoreAll" resultMap="storeMap">
+        select
+        <include refid="SelectTo"/>
+        from store where valid = 1;
+    </select>
+
+
+    <select id="getById" resultMap="storeMap">
+        select
+        <include refid="SelectTo"/>
+        from store where id = #{store.id} and valid = 1;
+    </select>
+
+
+    <select id="getByName" resultMap="storeMap">
+        select
+        <include refid="SelectTo"/>
+        from store where store_name = #{store.storeName} and valid = 1;
+    </select>
+
+
+    <select id="getLikeName" resultMap="storeMap">
+        select
+        <include refid="SelectTo"/>
+        from store where store_name = concat('%',#{store.store_name},'%')
+        and valid = 1;
+    </select>
+
+    <select id="getByIds" resultMap="storeMap">
+        select
+        <include refid="SelectTo"/>
+        from store
+        where id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+</mapper>

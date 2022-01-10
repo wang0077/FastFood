@@ -1,5 +1,7 @@
 package com.wang.fastfood.apicommons.entity.common;
 
+import com.wang.fastfood.apicommons.exception.ParamException;
+
 import java.util.Date;
 
 /**
@@ -50,4 +52,7 @@ public abstract class BaseRequest extends Page implements Validity{
      */
     private Date createTime;
 
+    @Override
+    public void validity() throws ParamException {
+    }
 }

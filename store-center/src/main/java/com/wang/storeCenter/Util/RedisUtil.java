@@ -7,14 +7,10 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.*;
+import redis.clients.jedis.params.GeoRadiusParam;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +46,7 @@ public class RedisUtil {
         return jedisPool.getResource();
     }
 
-    public static Pipeline getPipeline(){
+    public static Pipeline getPipeline() {
         Jedis jedis = getResource();
         Pipeline pipelined = jedis.pipelined();
         pipelined.close();
@@ -66,11 +62,11 @@ public class RedisUtil {
     }
 
     private static <T> List<T> DeserializationToList(String json, Class<T> clazz) {
-        return JSONUtil.parseToList(json,clazz);
+        return JSONUtil.parseToList(json, clazz);
     }
 
     private static <T> PageInfo<T> DeserializationToPageInfo(String json, Class<T> clazz) {
-        return JSONUtil.parseToPageInfo(json,clazz);
+        return JSONUtil.parseToPageInfo(json, clazz);
     }
 
     private static void returnResource(Jedis jedis) {
@@ -79,24 +75,116 @@ public class RedisUtil {
         }
     }
 
-    private static void returnResource(Jedis jedis,Pipeline pipeline){
-        if(pipeline != null){
+    private static void returnResource(Jedis jedis, Pipeline pipeline) {
+        if (pipeline != null) {
             pipeline.close();
         }
-        if(jedis != null){
+        if (jedis != null) {
             jedis.close();
         }
     }
 
-    public static RLock getLock(String lockName){
+    public static RLock getLock(String lockName) {
         return redisson.getLock(lockName + LOCK);
     }
 
-    public static List<String> keys(List<String> keys){
-        return keys(keys,0);
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius) {
+        return geoRadius(key,geoCoordinate,radius,5);
     }
 
-    public static List<String> keys(List<String> keys,int indexDB){
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, int count) {
+        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM,count);
+    }
+
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius ,int indexDB, int count) {
+        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM, indexDB,count);
+    }
+
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, GeoUnit unit, int count) {
+        return geoRadius(key, geoCoordinate, radius, unit, 0, count);
+    }
+
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, GeoUnit unit, int indexDB, int count) {
+        Jedis jedis = null;
+        List<GeoRadiusResponse> result = null;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.georadius(key, geoCoordinate.getLongitude()
+                    , geoCoordinate.getLatitude(), radius, unit
+                    , GeoRadiusParam.geoRadiusParam().withDist().sortAscending().count(count));
+            RedisLog.LogWriteResultSuccess(RedisOption.RADIUS, key, geoCoordinate, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.RADIUS, key, geoCoordinate, indexDB, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static void setGeo(String key, Map<String, GeoCoordinate> geoCoordinateMap) {
+        setGeo(key, geoCoordinateMap, 0);
+    }
+
+    public static void setGeo(String key, Map<String, GeoCoordinate> geoCoordinateMap, int indexDB) {
+        Jedis jedis = null;
+        Long result;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.geoadd(key, geoCoordinateMap);
+            RedisLog.LogWriteResultSuccess(RedisOption.ADDGEO, key, geoCoordinateMap, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.ADDGEO, key, geoCoordinateMap, indexDB, e);
+        } finally {
+            returnResource(jedis);
+        }
+    }
+
+    public static Long delGeo(String key, String memberNum) {
+        return delGeo(key, memberNum, 0);
+    }
+
+    public static Long delGeo(String key, String memberNum, int indexDB) {
+        Jedis jedis = null;
+        Long result = null;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.zrem(key, memberNum);
+            RedisLog.LogDelResultSuccess(RedisOption.DELGEO, result, indexDB, memberNum);
+        } catch (Exception e) {
+            RedisLog.LogDelResultError(RedisOption.DELGEO, e, indexDB, memberNum);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static void setGeo(String key, GeoCoordinate geoCoordinate, String memberNum) {
+        setGeo(key, geoCoordinate, memberNum, 0);
+    }
+
+    public static void setGeo(String key, GeoCoordinate geoCoordinate, String memberNum, int indexDB) {
+        Jedis jedis = null;
+        Long result;
+        try {
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.geoadd(key, geoCoordinate.getLongitude(), geoCoordinate.getLatitude(), memberNum);
+            RedisLog.LogWriteResultSuccess(RedisOption.ADDGEO, memberNum, geoCoordinate, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.ADDGEO, memberNum, geoCoordinate, indexDB, e);
+        } finally {
+            returnResource(jedis);
+        }
+    }
+
+    public static List<String> keys(List<String> keys) {
+        return keys(keys, 0);
+    }
+
+    public static List<String> keys(List<String> keys, int indexDB) {
         List<String> result = new ArrayList<>();
         Jedis jedis = null;
         Pipeline pipeline = null;
@@ -106,22 +194,22 @@ public class RedisUtil {
             pipeline = jedis.pipelined();
             keys.forEach(pipeline::keys);
             pipeline.sync();
-            result = (List<String>)(List) pipeline.syncAndReturnAll();
-            RedisLog.LogReadResultSuccess(RedisOption.PIPEKEYS,keys.toString(),indexDB,result);
-        }catch (Exception e){
+            result = (List<String>) (List) pipeline.syncAndReturnAll();
+            RedisLog.LogReadResultSuccess(RedisOption.PIPEKEYS, keys.toString(), indexDB, result);
+        } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.KEYS, keys.toString(), indexDB, e);
-        }finally {
-            returnResource(jedis,pipeline);
+        } finally {
+            returnResource(jedis, pipeline);
         }
         return result;
     }
 
-    public static List<String> keys(String key){
-        return keys(key,0);
+    public static List<String> keys(String key) {
+        return keys(key, 0);
     }
 
-    public static List<String> keys(String key,int indexDB){
-        Set<String> set = null;
+    public static List<String> keys(String key, int indexDB) {
+        Set<String> set;
         List<String> result = null;
         Jedis jedis = null;
         try {
@@ -138,11 +226,11 @@ public class RedisUtil {
         return result;
     }
 
-    public static<T> String mset(List<String> key,List<T> value){
-        return mset(key,value,0);
+    public static <T> String mset(List<String> key, List<T> value) {
+        return mset(key, value, 0);
     }
 
-    public static<T> String mset(List<String> key,List<T> value,int indexDB){
+    public static <T> String mset(List<String> key, List<T> value, int indexDB) {
         Jedis jedis = null;
         Pipeline pipelined = null;
         String result = null;
@@ -150,26 +238,26 @@ public class RedisUtil {
             jedis = getResource();
             pipelined = jedis.pipelined();
             jedis.select(indexDB);
-            for(int i = 0;i < key.size();i++){
-                pipelined.set(key.get(i),Serialization(value.get(i)));
+            for (int i = 0; i < key.size(); i++) {
+                pipelined.set(key.get(i), Serialization(value.get(i)));
             }
             pipelined.sync();
             result = (String) pipelined.syncAndReturnAll().get(0);
-            RedisLog.LogWriteResultSuccess(RedisOption.MSET,key.toString(),value.toString(),indexDB,result);
-        }catch (Exception e){
-            RedisLog.LogWriteResultError(RedisOption.MSET,key.toString(),value.toString(),indexDB,e);
-        }finally {
-            returnResource(jedis,pipelined);
+            RedisLog.LogWriteResultSuccess(RedisOption.MSET, key.toString(), value.toString(), indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.MSET, key.toString(), value.toString(), indexDB, e);
+        } finally {
+            returnResource(jedis, pipelined);
         }
         return result;
     }
 
-    public static <T> List<T> mget(Class<T> clazz,List<String> keys){
-        if(keys == null){
+    public static <T> List<T> mget(Class<T> clazz, List<String> keys) {
+        if (keys == null) {
             return null;
         }
         String[] strings = keys.toArray(new String[0]);
-        return mget(clazz,strings);
+        return mget(clazz, strings);
     }
 
     public static <T> List<T> mget(Class<T> clazz, String... keys) {
@@ -177,10 +265,10 @@ public class RedisUtil {
     }
 
     public static <T> List<T> mget(int indexDB, Class<T> clazz, String... keys) {
-        List<String> jsonList = null;
+        List<String> jsonList;
         List<T> result = null;
         Jedis jedis = null;
-        if(keys.length == 0){
+        if (keys.length == 0) {
             return null;
         }
         try {
@@ -188,7 +276,7 @@ public class RedisUtil {
             jedis.select(indexDB);
             jsonList = jedis.mget(keys);
             result = jsonList.stream()
-                    .map(json -> JSONUtil.parse(json,clazz))
+                    .map(json -> JSONUtil.parse(json, clazz))
                     .collect(Collectors.toList());
             RedisLog.LogReadResultSuccess(RedisOption.GET, Arrays.toString(keys), indexDB, result);
         } catch (Exception e) {
@@ -220,30 +308,30 @@ public class RedisUtil {
         return null;
     }
 
-    public static <T> PageInfo<T> getByPageInfo(String key,Class<T> clazz){
-        return getByPageInfo(key,clazz,0);
+    public static <T> PageInfo<T> getByPageInfo(String key, Class<T> clazz) {
+        return getByPageInfo(key, clazz, 0);
     }
 
-    public static <T> PageInfo<T> getByPageInfo(String key, Class<T> clazz, int indexDB){
+    public static <T> PageInfo<T> getByPageInfo(String key, Class<T> clazz, int indexDB) {
         long startTime = System.currentTimeMillis();
         Jedis jedis = null;
-        String valueJson = null;
+        String valueJson;
         PageInfo<T> value = null;
-        if(key == null){
+        if (key == null) {
             return null;
         }
         try {
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
-            if(valueJson == null){
+            if (valueJson == null) {
                 return null;
             }
             value = DeserializationToPageInfo(valueJson, clazz);
             RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
         } catch (Exception e) {
             long endTime = System.currentTimeMillis();
-            log.error("totalTime : {}ms",endTime - startTime);
+            log.error("totalTime : {}ms", endTime - startTime);
             log.error("线程等待数 : " + jedisPool.getNumWaiters());
             RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
             e.printStackTrace();
@@ -253,19 +341,19 @@ public class RedisUtil {
         return value;
     }
 
-    public static <T> List<T> getByList(String key,Class<T> clazz){
-        return getByList(key,clazz,0);
+    public static <T> List<T> getByList(String key, Class<T> clazz) {
+        return getByList(key, clazz, 0);
     }
 
-    public static <T> List<T> getByList(String key,Class<T> clazz,int indexDB){
+    public static <T> List<T> getByList(String key, Class<T> clazz, int indexDB) {
         Jedis jedis = null;
-        String valueJson = null;
+        String valueJson;
         List<T> value = null;
         try {
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
-            if(valueJson == null){
+            if (valueJson == null) {
                 return null;
             }
             value = DeserializationToList(valueJson, clazz);
@@ -285,13 +373,13 @@ public class RedisUtil {
 
     public static <T> T get(String key, Class<T> clazz, int indexDB) {
         Jedis jedis = null;
-        String valueJson = null;
+        String valueJson;
         T value = null;
         try {
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
-            if(valueJson == null){
+            if (valueJson == null) {
                 return null;
             }
             value = Deserialization(valueJson, clazz);
@@ -327,7 +415,7 @@ public class RedisUtil {
         return result;
     }
 
-    public static Long del(List<String> keys){
+    public static Long del(List<String> keys) {
         return del(keys.toArray(new String[0]));
     }
 

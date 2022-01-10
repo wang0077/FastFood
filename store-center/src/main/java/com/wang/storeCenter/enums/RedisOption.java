@@ -9,6 +9,9 @@ public enum RedisOption {
 
     KEYS("keys"),
     PIPEKEYS("pipe-Keys"),
+    RADIUS("radius"),
+    ADDGEO("addGEO"),
+    DELGEO("delGEO"),
     MSET("mset"),
     GET("get"),
     SET("set"),

@@ -2,7 +2,7 @@ package com.wang.fastfoodapi.Exception;
 
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.entity.common.Response;
-import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +20,7 @@ public class GlobalException {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Response<String> exceptionHandler(Exception e){
-        return ResponseUtil.fail(ErrorCodeEnum.SERVER_ERROR,e.getMessage());
+        return ResponseUtil.fail(CodeEnum.SERVER_ERROR,e.getMessage());
     }
 
 }

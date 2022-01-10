@@ -26,4 +26,6 @@ public class RedisMessage implements Serializable {
 
     private RedisOption option;
 
+    private String memberNum;
+
 }

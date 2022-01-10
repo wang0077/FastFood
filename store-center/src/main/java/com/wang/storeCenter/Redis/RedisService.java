@@ -86,6 +86,24 @@ public class RedisService implements Serializable {
         return result;
     }
 
+    public String delGeo(String key,String memberNum){
+        return delGeo(key,memberNum,0);
+    }
+
+    public String delGeo(String key,String memberNum,int indexDB){
+        Long result = 0L;
+        int count = 0;
+        while(count < retryCount && result == 0){
+            count++;
+            result = RedisUtil.delGeo(key,memberNum);
+        }
+        if(count <= retryCount && result == 0){
+            RedisMessage message = buildMessage(indexDB, RedisOption.DELGEO, key, memberNum);
+            sendMessage(message);
+        }
+        return result == 0L ? "MQ-Retry" : result.toString();
+    }
+
     public String del(List<String> keys) {
         if(keys.size() == 0){
             return null;
@@ -196,6 +214,15 @@ public class RedisService implements Serializable {
     private void sendMessage(RedisMessage message) {
         String json = JSONUtil.toJsonString(message);
         mqTemplate.convertAndSend("RedisOption", json);
+    }
+
+    private RedisMessage buildMessage(String key,int indexDB,RedisOption option,String memberNum){
+        RedisMessage mq = new RedisMessage();
+        mq.setKey(key);
+        mq.setOption(option);
+        mq.setIndexDB(indexDB);
+        mq.setMemberNum(memberNum);
+        return mq;
     }
 
     private RedisMessage buildMessage(String key, int indexDB, RedisOption option) {

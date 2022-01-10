@@ -57,18 +57,13 @@ public class ProductTypeServiceImpl implements IProductTypeService {
             RLock lock = RedisUtil.getLock(redisName);
             if (lock.tryLock()) {
                 try {
-                    result = RedisUtil.getByPageInfo(redisName, ProductType.class);
-                    if (result == null) {
-                        PageUtils.startPage(productType);
-                        List<ProductTypePO> poResult = productTypeDao.getAll();
-                        result = PageUtils.getPageInfo(poResult, poResult
-                                .stream()
-                                .map(ProductTypePO::convertToProductType)
-                                .collect(Collectors.toList()));
-                        redisService.set(redisName, result);
-                    } else {
-                        return result;
-                    }
+                    PageUtils.startPage(productType);
+                    List<ProductTypePO> poResult = productTypeDao.getAll();
+                    result = PageUtils.getPageInfo(poResult, poResult
+                            .stream()
+                            .map(ProductTypePO::convertToProductType)
+                            .collect(Collectors.toList()));
+                    redisService.set(redisName, result);
                 } finally {
                     lock.unlock();
                 }
@@ -176,24 +171,24 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     }
 
     /**
-     *  同步清理分页缓存
+     * 同步清理分页缓存
      */
-    private void syncRemovePageCache(){
+    private void syncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
-        if(keys == null || keys.size() == 0){
+        if (keys == null || keys.size() == 0) {
             return;
         }
         RedisUtil.del(keys);
     }
 
     /**
-     *  异步清理分页缓存
+     * 异步清理分页缓存
      */
-    private void asyncRemovePageCache(){
+    private void asyncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
-        if(keys == null || keys.size() == 0){
+        if (keys == null || keys.size() == 0) {
             return;
         }
         redisService.del(keys);

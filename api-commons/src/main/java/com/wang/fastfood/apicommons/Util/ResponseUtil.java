@@ -2,7 +2,7 @@ package com.wang.fastfood.apicommons.Util;
 
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.fastfood.apicommons.enums.BaseEnum;
-import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 
 
 /**
@@ -14,11 +14,15 @@ import com.wang.fastfood.apicommons.enums.ErrorCodeEnum;
 public class ResponseUtil {
 
     public static Response success() {
-        return buildResult(ErrorCodeEnum.SUCCESS, null);
+        return buildResult(CodeEnum.SUCCESS, null);
     }
 
     public static<T> Response<T> success(T data) {
-        return buildResult(ErrorCodeEnum.SUCCESS, data);
+        return buildResult(CodeEnum.SUCCESS, data);
+    }
+
+    public static<T> Response<T> success(BaseEnum code) {
+        return buildResult(CodeEnum.SUCCESS,null);
     }
 
     public static<T> Response<T> success(BaseEnum errorCode, T data) {
