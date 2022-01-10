@@ -43,6 +43,9 @@
         <if test="store.storeName != null">
             store_name = #{store.storeName}
         </if>
+        <if test="store.address != null">
+            address = #{store.address}
+        </if>
         where id = #{store.id} and valid = 1;
     </update>
 
