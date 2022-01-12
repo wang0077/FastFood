@@ -41,17 +41,6 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 121.196.168.154
-    port: 6379
-    database: 0
-    password: Wangsi12
-    jedis:
-      pool:
-        max-active: 100
-        min-idle: 100
-        max-wait: -1
-        max-idle: 100
-    timeout: 2000
 
 management:
   endpoints:
@@ -75,3 +64,15 @@ logging:
   level:
     root: info
   config: classpath:logback-dev.xml
+
+redis:
+  host: 121.196.168.154
+  port: 6379
+  database: 0
+  password: Wangsi12
+  timeout: 2000
+  pool:
+    max-active: 100
+    min-idle: 100
+    max-idle: 100
+    max-wait-millis: -1

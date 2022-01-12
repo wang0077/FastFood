@@ -1,7 +1,7 @@
 package com.wang.fastfood.usercenter.service.impl;
 
 import com.wang.fastfood.apicommons.Util.EncoderUtil;
-import com.wang.fastfood.apicommons.Util.IdUtil;
+import com.wang.fastfood.apicommons.Util.IDUtil;
 import com.wang.fastfood.usercenter.dao.UserDao;
 import com.wang.fastfood.usercenter.entity.BO.User;
 import com.wang.fastfood.usercenter.entity.PO.UserPO;
@@ -38,7 +38,7 @@ public class userService implements IUserService {
             throw new UserAlreadyExistException("用户已存在");
         }
         user.setPassword(EncoderUtil.encoder(user.getPassword()));
-        user.setUid("U" + IdUtil.getID());
+        user.setUid("U" + IDUtil.getID());
         user.setUserLevel(0);
         user.setExperience(0);
         UserPO userPO = user.doForward();

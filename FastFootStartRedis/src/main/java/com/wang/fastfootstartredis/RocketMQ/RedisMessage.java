@@ -1,6 +1,6 @@
-package com.wang.storeCenter.entity.RocketMQ;
+package com.wang.fastfootstartredis.RocketMQ;
 
-import com.wang.storeCenter.enums.RedisOption;
+import com.wang.fastfootstartredis.enums.RedisOption;
 import lombok.Data;
 
 import java.io.Serializable;

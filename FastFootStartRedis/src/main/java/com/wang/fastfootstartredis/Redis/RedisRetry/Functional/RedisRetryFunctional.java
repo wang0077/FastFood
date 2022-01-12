@@ -1,4 +1,4 @@
-package com.wang.storeCenter.Redis.RedisRetry.Functional;
+package com.wang.fastfootstartredis.Redis.RedisRetry.Functional;
 
 /**
  * @Auther: wAnG

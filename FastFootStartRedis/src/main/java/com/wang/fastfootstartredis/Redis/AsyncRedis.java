@@ -1,12 +1,11 @@
-package com.wang.storeCenter.Redis;
+package com.wang.fastfootstartredis.Redis;
 
-import com.wang.storeCenter.Util.JSONUtil;
-import com.wang.storeCenter.Util.RedisUtil;
-import com.wang.storeCenter.entity.RocketMQ.RedisMessage;
-import com.wang.storeCenter.enums.RedisOption;
+import com.wang.fastfootstartredis.RocketMQ.RedisMessage;
+import com.wang.fastfootstartredis.Util.JSONUtil;
+import com.wang.fastfootstartredis.Util.RedisUtil;
+import com.wang.fastfootstartredis.enums.RedisOption;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,8 +16,7 @@ import java.util.List;
  * @Description:
  */
 
-@Service
-public class RedisService implements Serializable {
+public class AsyncRedis implements Serializable {
 
     @Autowired
     private RocketMQTemplate mqTemplate;
@@ -213,6 +211,7 @@ public class RedisService implements Serializable {
 
     private void sendMessage(RedisMessage message) {
         String json = JSONUtil.toJsonString(message);
+        // todo 后面可能考虑不同服务MQ重试需要放在不同的队列，所以可能需要抽取出配置Bean
         mqTemplate.convertAndSend("RedisOption", json);
     }
 

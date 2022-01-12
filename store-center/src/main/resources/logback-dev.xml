@@ -18,7 +18,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>Product-Center/logs/Product-Center_Info.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <FileNamePattern>Store-Center/logs/Store-Center_Info.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
             <!--日志文件最大的大小-->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
@@ -39,7 +39,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>Product-Center/logs/Product-Center_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <FileNamePattern>Store-Center/logs/Store-Center_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
             <!--日志文件最大的大小-->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>

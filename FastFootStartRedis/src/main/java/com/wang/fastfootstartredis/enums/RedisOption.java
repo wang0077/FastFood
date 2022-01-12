@@ -1,4 +1,4 @@
-package com.wang.storeCenter.enums;
+package com.wang.fastfootstartredis.enums;
 
 /**
  * @Auther: wAnG

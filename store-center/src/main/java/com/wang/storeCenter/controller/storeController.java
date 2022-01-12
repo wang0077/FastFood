@@ -36,14 +36,14 @@ public class storeController {
     private IStoreService storeService;
 
     @PostMapping("/update")
-    public Response<String> update(StoreDTO storeDTO) {
+    public Response<String> update(@RequestBody StoreDTO storeDTO) {
         Store store = buildBO(storeDTO);
         int result = storeService.update(store);
         return SqlResultUtil.updateResult(result);
     }
 
     @PostMapping("/delete")
-    public Response<String> delete(StoreDTO storeDTO) {
+    public Response<String> delete(@RequestBody StoreDTO storeDTO) {
         Store store = buildBO(storeDTO);
         int result = storeService.remove(store);
         return SqlResultUtil.deleteResult(result);
@@ -71,6 +71,13 @@ public class storeController {
     public Response<StoreDTO> getById(@RequestBody StoreDTO storeDTO) {
         Store store = buildBO(storeDTO);
         Store result = storeService.getById(store);
+        return ResponseUtil.success(result == null ? null : result.doBackward());
+    }
+
+    @PostMapping("/getByName")
+    public Response<StoreDTO> getByName(@RequestBody StoreDTO storeDTO){
+        Store store = buildBO(storeDTO);
+        Store result = storeService.getByName(store);
         return ResponseUtil.success(result == null ? null : result.doBackward());
     }
 

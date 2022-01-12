@@ -4,8 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
-import com.wang.storeCenter.Redis.RedisService;
-import com.wang.storeCenter.Util.RedisUtil;
+import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.storeCenter.dao.StoreDao;
 import com.wang.storeCenter.entity.BO.Store;
 import com.wang.storeCenter.entity.BO.StoreRadius;
@@ -35,7 +35,7 @@ public class storeService implements IStoreService {
     private StoreDao storeDao;
 
     @Autowired
-    private RedisService redisService;
+    private AsyncRedis asyncRedis;
 
     private static final String STORE_RADIUS = "storeRadius";
 
@@ -69,7 +69,7 @@ public class storeService implements IStoreService {
                             .map(StorePO::convertToDetailType)
                             .collect(Collectors.toList());
                     result = PageUtils.getPageInfo(poResult, storeList);
-                    redisService.set(redisName, result);
+                    asyncRedis.set(redisName, result);
                 } finally {
                     lock.unlock();
                 }
@@ -110,7 +110,7 @@ public class storeService implements IStoreService {
                     result = poResult == null ? null : poResult.convertToDetailType();
                     if (result != null) {
                         redisName = StoreGetRedisName(result);
-                        redisService.set(redisName, result);
+                        asyncRedis.set(redisName, result);
                     }
                 } finally {
                     lock.unlock();
@@ -138,7 +138,7 @@ public class storeService implements IStoreService {
                     result = poResult == null ? null : poResult.convertToDetailType();
                     if (result != null) {
                         redisName = StoreGetRedisName(result);
-                        redisService.set(redisName, result);
+                        asyncRedis.set(redisName, result);
                     }
                 } finally {
                     lock.unlock();
@@ -192,9 +192,9 @@ public class storeService implements IStoreService {
             redisName = keys.get(0);
         }
         // 删除门店缓存数据
-        redisService.del(redisName);
+        asyncRedis.del(redisName);
         // 删除门店地图数据
-        redisService.delGeo(STORE_RADIUS,redisName);
+        asyncRedis.delGeo(STORE_RADIUS,redisName);
         return result;
     }
 
@@ -263,7 +263,7 @@ public class storeService implements IStoreService {
         if (keys == null || keys.size() == 0) {
             return;
         }
-        redisService.del(keys);
+        asyncRedis.del(keys);
     }
 
     private String StoreGetRedisName(Store store) {

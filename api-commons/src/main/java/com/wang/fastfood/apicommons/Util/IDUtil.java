@@ -9,10 +9,13 @@ import java.util.UUID;
  * @Description:
  */
 
-public class IdUtil {
+public class IDUtil {
 
     public static String getID(){
-       return UUID.randomUUID().toString().replaceAll("-","").toUpperCase(Locale.ROOT);
+       return UUID.randomUUID()
+               .toString()
+               .replaceAll("-","")
+               .toUpperCase(Locale.ROOT);
     }
 
 }

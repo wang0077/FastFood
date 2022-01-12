@@ -1,7 +1,7 @@
-package com.wang.storeCenter.Util;
+package com.wang.fastfootstartredis.Util;
 
 import com.github.pagehelper.PageInfo;
-import com.wang.storeCenter.enums.RedisOption;
+import com.wang.fastfootstartredis.enums.RedisOption;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -12,6 +12,7 @@ import redis.clients.jedis.params.GeoRadiusParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 /**
  * @Auther: wAnG
@@ -31,6 +32,7 @@ public class RedisUtil {
     private static RedissonClient redisson;
 
     private static final String LOCK = "-lock";
+
 
     @Autowired
     public void setJedisPool(JedisPool jedisPool) {
@@ -89,15 +91,15 @@ public class RedisUtil {
     }
 
     public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius) {
-        return geoRadius(key,geoCoordinate,radius,5);
+        return geoRadius(key, geoCoordinate, radius, 5);
     }
 
     public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, int count) {
-        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM,count);
+        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM, count);
     }
 
-    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius ,int indexDB, int count) {
-        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM, indexDB,count);
+    public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, int indexDB, int count) {
+        return geoRadius(key, geoCoordinate, radius, GeoUnit.KM, indexDB, count);
     }
 
     public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, GeoUnit unit, int count) {
@@ -105,17 +107,21 @@ public class RedisUtil {
     }
 
     public static List<GeoRadiusResponse> geoRadius(String key, GeoCoordinate geoCoordinate, double radius, GeoUnit unit, int indexDB, int count) {
+        long totalTime;
         Jedis jedis = null;
         List<GeoRadiusResponse> result = null;
         try {
             jedis = getResource();
             jedis.select(indexDB);
+            long startTime = System.currentTimeMillis();
             result = jedis.georadius(key, geoCoordinate.getLongitude()
                     , geoCoordinate.getLatitude(), radius, unit
                     , GeoRadiusParam.geoRadiusParam().withDist().sortAscending().count(count));
-            RedisLog.LogWriteResultSuccess(RedisOption.RADIUS, key, geoCoordinate, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.RADIUS, key, indexDB, result);
         } catch (Exception e) {
-            RedisLog.LogWriteResultError(RedisOption.RADIUS, key, geoCoordinate, indexDB, e);
+            RedisLog.LogReadResultError(RedisOption.RADIUS, key, indexDB, e);
         } finally {
             returnResource(jedis);
         }
@@ -127,13 +133,17 @@ public class RedisUtil {
     }
 
     public static void setGeo(String key, Map<String, GeoCoordinate> geoCoordinateMap, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.geoadd(key, geoCoordinateMap);
-            RedisLog.LogWriteResultSuccess(RedisOption.ADDGEO, key, geoCoordinateMap, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.ADDGEO, key, geoCoordinateMap, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.ADDGEO, key, geoCoordinateMap, indexDB, e);
         } finally {
@@ -146,13 +156,17 @@ public class RedisUtil {
     }
 
     public static Long delGeo(String key, String memberNum, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.zrem(key, memberNum);
-            RedisLog.LogDelResultSuccess(RedisOption.DELGEO, result, indexDB, memberNum);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogDelResultSuccess(totalTime, RedisOption.DELGEO, result, indexDB, memberNum);
         } catch (Exception e) {
             RedisLog.LogDelResultError(RedisOption.DELGEO, e, indexDB, memberNum);
         } finally {
@@ -166,13 +180,17 @@ public class RedisUtil {
     }
 
     public static void setGeo(String key, GeoCoordinate geoCoordinate, String memberNum, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.geoadd(key, geoCoordinate.getLongitude(), geoCoordinate.getLatitude(), memberNum);
-            RedisLog.LogWriteResultSuccess(RedisOption.ADDGEO, memberNum, geoCoordinate, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.ADDGEO, memberNum, geoCoordinate, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.ADDGEO, memberNum, geoCoordinate, indexDB, e);
         } finally {
@@ -185,17 +203,21 @@ public class RedisUtil {
     }
 
     public static List<String> keys(List<String> keys, int indexDB) {
+        long totalTime;
         List<String> result = new ArrayList<>();
         Jedis jedis = null;
         Pipeline pipeline = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             pipeline = jedis.pipelined();
             keys.forEach(pipeline::keys);
             pipeline.sync();
             result = (List<String>) (List) pipeline.syncAndReturnAll();
-            RedisLog.LogReadResultSuccess(RedisOption.PIPEKEYS, keys.toString(), indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.PIPEKEYS, keys.toString(), indexDB, result);
         } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.KEYS, keys.toString(), indexDB, e);
         } finally {
@@ -209,15 +231,19 @@ public class RedisUtil {
     }
 
     public static List<String> keys(String key, int indexDB) {
+        long totalTime;
         Set<String> set;
         List<String> result = null;
         Jedis jedis = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = jedisPool.getResource();
             jedis.select(indexDB);
             set = jedis.keys(key);
             result = new ArrayList<>(set);
-            RedisLog.LogReadResultSuccess(RedisOption.KEYS, key, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.KEYS, key, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.KEYS, key, indexDB, e);
         } finally {
@@ -231,10 +257,12 @@ public class RedisUtil {
     }
 
     public static <T> String mset(List<String> key, List<T> value, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Pipeline pipelined = null;
         String result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             pipelined = jedis.pipelined();
             jedis.select(indexDB);
@@ -243,7 +271,9 @@ public class RedisUtil {
             }
             pipelined.sync();
             result = (String) pipelined.syncAndReturnAll().get(0);
-            RedisLog.LogWriteResultSuccess(RedisOption.MSET, key.toString(), value.toString(), indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.MSET, key.toString(), value.toString(), indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.MSET, key.toString(), value.toString(), indexDB, e);
         } finally {
@@ -265,6 +295,7 @@ public class RedisUtil {
     }
 
     public static <T> List<T> mget(int indexDB, Class<T> clazz, String... keys) {
+        long totalTime;
         List<String> jsonList;
         List<T> result = null;
         Jedis jedis = null;
@@ -272,13 +303,16 @@ public class RedisUtil {
             return null;
         }
         try {
+            long startTime = System.currentTimeMillis();
             jedis = jedisPool.getResource();
             jedis.select(indexDB);
             jsonList = jedis.mget(keys);
             result = jsonList.stream()
                     .map(json -> JSONUtil.parse(json, clazz))
                     .collect(Collectors.toList());
-            RedisLog.LogReadResultSuccess(RedisOption.GET, Arrays.toString(keys), indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.GET, Arrays.toString(keys), indexDB, result);
         } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.GET, Arrays.toString(keys), indexDB, e);
         } finally {
@@ -292,16 +326,22 @@ public class RedisUtil {
     }
 
     public String setex(String key, Object value, int seconds, int indexDB) {
+        long totalTime;
         String valueJson = Serialization(value);
         Jedis jedis = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             String result = jedis.setex(key, seconds, valueJson);
-            log.info("[Redis ({})] ==> option : [{}] | key : [{}] | setTime : [{}] | value : [{}] | indexDB : [{}] \n ", result, RedisOption.GET, key, seconds, value, indexDB);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.SETEX, key, value.toString() + "| Seconds : [" + seconds + "] |", indexDB, result);
+//            log.info("[Redis ({})] ==> option : [{}] | key : [{}] | setTime : [{}] | value : [{}] | indexDB : [{}] \n ", result, RedisOption.GET, key, seconds, value, indexDB);
         } catch (Exception e) {
-            log.error("[Redis] ==> option : [{}] | Key : [{}] | setTime : [{}] | value : [{}] | indexDB : [{}] \n | errorMsg : [{}]", RedisOption.SET, key, seconds, value, indexDB, e.getMessage());
-            e.printStackTrace();
+            RedisLog.LogWriteResultError(RedisOption.SETEX, key, value.toString() + "| Seconds : [" + seconds + "] |", indexDB, e);
+//            log.error("[Redis] ==> option : [{}] | Key : [{}] | setTime : [{}] | value : [{}] | indexDB : [{}] \n | errorMsg : [{}]", RedisOption.SET, key, seconds, value, indexDB, e.getMessage());
+//            e.printStackTrace();
         } finally {
             returnResource(jedis);
         }
@@ -313,7 +353,7 @@ public class RedisUtil {
     }
 
     public static <T> PageInfo<T> getByPageInfo(String key, Class<T> clazz, int indexDB) {
-        long startTime = System.currentTimeMillis();
+        long totalTime;
         Jedis jedis = null;
         String valueJson;
         PageInfo<T> value = null;
@@ -321,6 +361,7 @@ public class RedisUtil {
             return null;
         }
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
@@ -328,11 +369,10 @@ public class RedisUtil {
                 return null;
             }
             value = DeserializationToPageInfo(valueJson, clazz);
-            RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
-        } catch (Exception e) {
             long endTime = System.currentTimeMillis();
-            log.error("totalTime : {}ms", endTime - startTime);
-            log.error("线程等待数 : " + jedisPool.getNumWaiters());
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.GET, key, indexDB, value);
+        } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
             e.printStackTrace();
         } finally {
@@ -346,10 +386,12 @@ public class RedisUtil {
     }
 
     public static <T> List<T> getByList(String key, Class<T> clazz, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         String valueJson;
         List<T> value = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
@@ -357,7 +399,9 @@ public class RedisUtil {
                 return null;
             }
             value = DeserializationToList(valueJson, clazz);
-            RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.GET, key, indexDB, value);
         } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
             e.printStackTrace();
@@ -372,10 +416,12 @@ public class RedisUtil {
     }
 
     public static <T> T get(String key, Class<T> clazz, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         String valueJson;
         T value = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             valueJson = jedis.get(key);
@@ -383,7 +429,9 @@ public class RedisUtil {
                 return null;
             }
             value = Deserialization(valueJson, clazz);
-            RedisLog.LogReadResultSuccess(RedisOption.GET, key, indexDB, value);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime, RedisOption.GET, key, indexDB, value);
         } catch (Exception e) {
             RedisLog.LogReadResultError(RedisOption.GET, key, indexDB, e);
             e.printStackTrace();
@@ -398,14 +446,18 @@ public class RedisUtil {
     }
 
     public static String set(String key, Object value, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         String result = null;
         String resultJson = Serialization(value);
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.set(key, resultJson);
-            RedisLog.LogWriteResultSuccess(RedisOption.GET, key, value, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.GET, key, value, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.SET, key, value, indexDB, e);
             e.printStackTrace();
@@ -424,13 +476,17 @@ public class RedisUtil {
     }
 
     public static Long del(int indexDB, String... keys) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.del(keys);
-            RedisLog.LogDelResultSuccess(RedisOption.DEL, result, indexDB, keys);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogDelResultSuccess(totalTime, RedisOption.DEL, result, indexDB, keys);
         } catch (Exception e) {
             RedisLog.LogDelResultError(RedisOption.DEL, e, indexDB, keys);
             e.printStackTrace();
@@ -499,13 +555,17 @@ public class RedisUtil {
     }
 
     public static Long incr(String key, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.incr(key);
-            RedisLog.LogWriteResultSuccess(RedisOption.INCR, key, 1, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.INCR, key, 1, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.INCR, key, 1, indexDB, e);
             e.printStackTrace();
@@ -520,12 +580,16 @@ public class RedisUtil {
     }
 
     public static Long incrBy(String key, Long value, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             result = jedis.incrBy(key, value);
-            RedisLog.LogWriteResultSuccess(RedisOption.INCRBY, key, value, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.INCRBY, key, value, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.INCRBY, key, value, indexDB, e);
             e.printStackTrace();
@@ -541,13 +605,17 @@ public class RedisUtil {
 
 
     public static Long decr(String key, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = getResource();
             jedis.select(indexDB);
             result = jedis.decr(key);
-            RedisLog.LogWriteResultSuccess(RedisOption.DECR, key, -1, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.DECR, key, -1, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.DECR, key, -1, indexDB, e);
             e.printStackTrace();
@@ -563,13 +631,17 @@ public class RedisUtil {
 
 
     public static Long decrBy(String key, Long value, int indexDB) {
+        long totalTime;
         Jedis jedis = null;
         Long result = null;
         try {
+            long startTime = System.currentTimeMillis();
             jedis = jedisPool.getResource();
             jedis.select(indexDB);
             result = jedis.decrBy(key, value);
-            RedisLog.LogWriteResultSuccess(RedisOption.INCRBY, key, value, indexDB, result);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.INCRBY, key, value, indexDB, result);
         } catch (Exception e) {
             RedisLog.LogWriteResultError(RedisOption.DECR, key, -1, indexDB, e);
             e.printStackTrace();
@@ -581,29 +653,29 @@ public class RedisUtil {
 
 
     public static class RedisLog {
-        private static void LogReadResultSuccess(RedisOption op, String key, int indexDB, Object result) {
-            log.info("[Redis] ==> option : [{}] | key : [{}] | indexDB : [{}] \n | Result : [{}]", op.getOpName(), key, indexDB, result.toString());
+        private static void LogReadResultSuccess(Long totalTime, RedisOption op, String key, int indexDB, Object result) {
+            log.info("[Redis (totalTime : {}ms)] ==> option : [{}] | key : [{}] | indexDB : [{}] \n | Result : [{}]", totalTime, op.getOpName(), key, indexDB, result.toString());
         }
 
         private static void LogReadResultError(RedisOption op, String key, int indexDB, Exception e) {
             log.error("[Redis] ==> option : [{}] | Key : [{}] | indexDB : [{}] \n | errorMsg : [{}]", op.getOpName(), key, indexDB, e.getMessage());
         }
 
-        private static void LogWriteResultSuccess(RedisOption op, String key, Object value, int indexDB, Object result) {
-            if (("OK").equals(result)) {
+        private static void LogWriteResultSuccess(Long totalTime, RedisOption op, String key, Object value, int indexDB, Object result) {
+            if (("OK").equals(result) || (!(result instanceof String) && result != null)) {
                 result = "Success";
             } else {
                 result = "Fail";
             }
-            log.info("[Redis ({})] ==> option : [{}] | key : [{}] | value : [{}] | indexDB : [{}] \n ", result, op.getOpName(), key, value.toString(), indexDB);
+            log.info("[Redis ({}) == (TotalTime : {}ms)] ==> option : [{}] | key : [{}] | value : [{}] | indexDB : [{}] \n ", result, totalTime, op.getOpName(), key, value.toString(), indexDB);
         }
 
         private static void LogWriteResultError(RedisOption op, String key, Object value, int indexDB, Exception e) {
             log.error("[Redis] ==> option : [{}] | Key : [{}] | value : [{}] | indexDB : [{}] \n | errorMsg : [{}]", op.getOpName(), key, value.toString(), indexDB, e.getMessage());
         }
 
-        private static void LogDelResultSuccess(RedisOption op, Long result, int indexDB, String... keys) {
-            log.info("[Redis (OptionCount : {})] ==> option : [{}] | key : [{}] |  indexDB : [{}]", result, op.getOpName(), keys, indexDB);
+        private static void LogDelResultSuccess(Long totalTime, RedisOption op, Long result, int indexDB, String... keys) {
+            log.info("[Redis (OptionCount : {}) == (TotalTime : {}ms)] ==> option : [{}] | key : [{}] |  indexDB : [{}]", result, totalTime, op.getOpName(), keys, indexDB);
         }
 
         private static void LogDelResultError(RedisOption op, Exception e, int indexDB, String... keys) {

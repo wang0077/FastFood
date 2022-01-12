@@ -35,6 +35,12 @@
             <artifactId>redisson-spring-boot-starter</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.wang</groupId>
+            <artifactId>Fast-Foot-Start-Redis</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!--RocketMQ-->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
@@ -42,11 +48,6 @@
             <version>2.1.1</version>
         </dependency>
 
-        <!--Jedis-->
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

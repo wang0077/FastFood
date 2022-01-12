@@ -27,25 +27,27 @@
     </insert>
 
     <update id="update">
-        update store set
-        <if test="store.storeName != null">
-            store_name = #{store.storeName}
-        </if>
-        <if test="store.storeLongitude != null">
-            store_longitude = #{store.storeLongitude}
-        </if>
-        <if test="store.storeLatitude != null">
-            store_latitude = #{store.storeLatitude}
-        </if>
-        <if test="store.storePhoneNumber != null">
-            store_phone_number = #{store.storePhoneNumber}
-        </if>
-        <if test="store.storeName != null">
-            store_name = #{store.storeName}
-        </if>
-        <if test="store.address != null">
-            address = #{store.address}
-        </if>
+        update store
+        <trim prefix="set" suffixOverrides=",">
+            <if test="store.storeName != null">
+                store_name = #{store.storeName},
+            </if>
+            <if test="store.storeLongitude != 0.0">
+                store_longitude = #{store.storeLongitude},
+            </if>
+            <if test="store.storeLatitude != 0.0">
+                store_latitude = #{store.storeLatitude},
+            </if>
+            <if test="store.storePhoneNumber != null">
+                store_phone_number = #{store.storePhoneNumber},
+            </if>
+            <if test="store.storeName != null">
+                store_name = #{store.storeName},
+            </if>
+            <if test="store.address != null">
+                address = #{store.address},
+            </if>
+        </trim>
         where id = #{store.id} and valid = 1;
     </update>
 
@@ -81,7 +83,7 @@
     <select id="getLikeName" resultMap="storeMap">
         select
         <include refid="SelectTo"/>
-        from store where store_name = concat('%',#{store.store_name},'%')
+        from store where store_name like concat('%',#{store.storeName},'%')
         and valid = 1;
     </select>
 
