@@ -6,7 +6,6 @@
         <artifactId>FastFood</artifactId>
         <groupId>com.fastfood</groupId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.wang</groupId>
     <artifactId>Fast-Food-Start-BaseInfo</artifactId>

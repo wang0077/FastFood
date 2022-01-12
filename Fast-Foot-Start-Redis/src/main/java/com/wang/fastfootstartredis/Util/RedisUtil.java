@@ -1,7 +1,6 @@
 package com.wang.fastfootstartredis.Util;
 
 import com.github.pagehelper.PageInfo;
-import com.wang.fastfootstartredis.enums.RedisOption;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.GeoRadiusParam;
+import com.wang.fastfootstartredis.enums.RedisOption;
 
 import java.util.*;
 import java.util.stream.Collectors;
