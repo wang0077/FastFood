@@ -1,6 +1,6 @@
-package com.wang.storeCenter.Interceptor;
+package com.wang.fastfoodstartbaseinfo.interceptor;
 
-import com.wang.storeCenter.config.SpringContext;
+import com.wang.fastfoodstartbaseinfo.config.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -15,6 +15,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.springframework.stereotype.Component;
 
 import java.sql.Statement;
 import java.util.*;
@@ -29,7 +30,7 @@ import java.util.*;
 @Intercepts({@Signature(type = StatementHandler.class, method = "query", args = {Statement.class, ResultHandler.class}),
         @Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
         @Signature(type = StatementHandler.class, method = "batch", args = { Statement.class })})
-//@Component
+@Component
 public class SqlCostInterceptor implements Interceptor {
 
     @Override

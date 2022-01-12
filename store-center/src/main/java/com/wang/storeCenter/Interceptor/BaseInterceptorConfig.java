@@ -1,5 +1,6 @@
 package com.wang.storeCenter.Interceptor;
 
+import com.wang.fastfoodstartbaseinfo.interceptor.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

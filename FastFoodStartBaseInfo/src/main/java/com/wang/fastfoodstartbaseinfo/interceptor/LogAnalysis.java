@@ -1,10 +1,11 @@
-package com.wang.storeCenter.Interceptor;
+package com.wang.fastfoodstartbaseinfo.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpSession;
  * @Description: 将响应数据放入Session
  */
 
-//@ControllerAdvice
+@ControllerAdvice
 @Slf4j
 public class LogAnalysis implements ResponseBodyAdvice<Object> {
     @Override

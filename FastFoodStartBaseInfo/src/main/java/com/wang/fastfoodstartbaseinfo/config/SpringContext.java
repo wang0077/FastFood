@@ -1,8 +1,9 @@
-package com.wang.storeCenter.config;
+package com.wang.fastfoodstartbaseinfo.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /**
  * @Auther: wAnG
@@ -10,7 +11,7 @@ import org.springframework.context.ApplicationContextAware;
  * @Description:
  */
 
-//@Component
+@Component
 public class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext context;

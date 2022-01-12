@@ -1,7 +1,7 @@
 package com.wang.storeCenter;
 
+import com.wang.fastfoodstartbaseinfo.config.SpringContext;
 import com.wang.storeCenter.Interceptor.SqlCostInterceptor;
-import com.wang.storeCenter.config.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +14,7 @@ public class StoreCenterApplication {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
         SpringApplication.run(StoreCenterApplication.class, args);
-        init();
+//        init();
         long endTime = System.currentTimeMillis();
         long TotalTime = endTime - startTime;
         log.info("[Start-Success (TotalTime : {}ms)] ==> ServerName : [Product-Center]",TotalTime);

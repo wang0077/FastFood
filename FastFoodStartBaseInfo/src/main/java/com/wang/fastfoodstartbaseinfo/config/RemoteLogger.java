@@ -1,4 +1,4 @@
-package com.wang.storeCenter.config;
+package com.wang.fastfoodstartbaseinfo.config;
 
 import feign.Logger;
 import feign.Request;
