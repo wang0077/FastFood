@@ -5,7 +5,6 @@ import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.entity.DTO.UserDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.fastfood.usercenter.entity.BO.User;
-import com.wang.fastfood.usercenter.exception.UserAlreadyExistException;
 import com.wang.fastfood.usercenter.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public Response<Integer> register(@RequestBody UserDTO userDTO) throws UserAlreadyExistException {
+    public Response<Integer> register(@RequestBody UserDTO userDTO) {
         User user = buildBO(userDTO);
         Integer result = userService.add(user);
         return ResponseUtil.success(result);

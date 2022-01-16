@@ -28,11 +28,11 @@ public class userService implements IUserService {
         if(user == null){
             return null;
         }
-        return user.convertToDetailType();
+        return user.convertToUser();
     }
 
     @Override
-    public Integer add(User user) throws UserAlreadyExistException {
+    public Integer add(User user) {
         User userName = getByUserName(user.getUsername());
         if(userName != null){
             throw new UserAlreadyExistException("用户已存在");

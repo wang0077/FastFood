@@ -74,7 +74,7 @@ public class UserPO extends BasePO implements Serializable {
 	 */
 	private Date updateTime;
 
-	public User convertToDetailType(){
+	public User convertToUser(){
 		userBOConvert convert = new userBOConvert();
 		return convert.convert(this);
 	}

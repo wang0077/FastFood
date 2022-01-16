@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.accountcenter.dao.SignInDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.accountcenter.entity.PO.SignInPO" id="signInMap">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="lastTime" column="last_time"/>
+        <result property="continuousCount" column="continuous_count"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        id,uid,last_time,continuous_count
+    </sql>
+
+    <insert id="insert">
+        insert into signIn (uid, last_time, continuous_count,valid)
+            VALUES
+            (#{signIn.uid},#{signIn.lastTime},0,1);
+    </insert>
+
+    <update id="checkIn">
+        update signIn set
+        last_time = #{signIn.lastTime},continuous_count = #{continuousCount}
+        where uid = #{signIn.uid}
+    </update>
+
+    <select id="getByUid" resultMap="signInMap">
+        select
+        <include refid="SelectTo"/>
+        from signIn
+        where uid = #{signIn.uid} and valid = 1;
+    </select>
+
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.accountcenter.dao.UserAccountDao">
+
+    <resultMap type="com.wang.accountcenter.entity.PO.UserAccountPO" id="userAccountMap">
+        <result property="id" column="id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="uid" column="uid"/>
+        <result property="amount" column="amount"/>
+        <result property="integral" column="integral"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        id,account_id,uid,amount,integral
+    </sql>
+
+    <insert id="insert">
+        insert into user_account
+            (account_id, uid, amount, integral, valid)
+            VALUES
+            (#{userAccount.accountId},#{userAccount.uid},0,0,1)
+    </insert>
+
+    <update id="checkIn">
+        update user_account set
+        integral = integral + #{userAccount.addIntegral}
+        where uid = #{userAccount.uid};
+    </update>
+
+    <select id="getByUserId" resultMap="userAccountMap">
+        select
+        <include refid="SelectTo"/>
+        from user_account
+        where uid = #{userAccount.uid} and valid = 1;
+    </select>
+
+
+</mapper>

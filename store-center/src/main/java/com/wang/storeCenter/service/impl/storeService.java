@@ -6,7 +6,6 @@ import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.fastfootstartredis.Redis.AsyncRedis;
 import com.wang.fastfootstartredis.Util.RedisUtil;
-import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.storeCenter.dao.StoreDao;
 import com.wang.storeCenter.entity.BO.Store;
 import com.wang.storeCenter.entity.BO.StoreRadius;
@@ -67,7 +66,7 @@ public class storeService implements IStoreService {
                     PageUtils.startPage(store);
                     List<StorePO> poResult = storeDao.getStoreAll();
                     List<Store> storeList = poResult.stream()
-                            .map(StorePO::convertToDetailType)
+                            .map(StorePO::convertToStore)
                             .collect(Collectors.toList());
                     result = PageUtils.getPageInfo(poResult, storeList);
                     asyncRedis.set(redisName, result);
@@ -108,7 +107,7 @@ public class storeService implements IStoreService {
                 try {
                     StorePO storePO = store.doForward();
                     StorePO poResult = storeDao.getByName(storePO);
-                    result = poResult == null ? null : poResult.convertToDetailType();
+                    result = poResult == null ? null : poResult.convertToStore();
                     if (result != null) {
                         redisName = StoreGetRedisName(result);
                         asyncRedis.set(redisName, result);
@@ -136,7 +135,7 @@ public class storeService implements IStoreService {
                 try {
                     StorePO storePO = store.doForward();
                     StorePO poResult = storeDao.getById(storePO);
-                    result = poResult == null ? null : poResult.convertToDetailType();
+                    result = poResult == null ? null : poResult.convertToStore();
                     if (result != null) {
                         redisName = StoreGetRedisName(result);
                         asyncRedis.set(redisName, result);
@@ -153,7 +152,7 @@ public class storeService implements IStoreService {
     @Override
     public List<Store> getByIds(List<Integer> idList) {
         return storeDao.getByIds(idList).stream()
-                .map(StorePO::convertToDetailType)
+                .map(StorePO::convertToStore)
                 .collect(Collectors.toList());
     }
 
@@ -164,7 +163,7 @@ public class storeService implements IStoreService {
         StorePO storePO = store.doForward();
         List<StorePO> poResult = storeDao.getLikeName(storePO);
         List<Store> storeList = poResult.stream()
-                .map(StorePO::convertToDetailType)
+                .map(StorePO::convertToStore)
                 .collect(Collectors.toList());
         result = PageUtils.getPageInfo(poResult, storeList);
         return result;

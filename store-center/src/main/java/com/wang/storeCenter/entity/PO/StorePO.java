@@ -55,7 +55,7 @@ public class StorePO implements Serializable {
 	 */
 	private Date updateTime;
 
-	public Store convertToDetailType(){
+	public Store convertToStore(){
 		storeBOConvert convert = new storeBOConvert();
 		return convert.convert(this);
 	}
