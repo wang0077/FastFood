@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
+import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.productcenter.Redis.RedisService;
 import com.wang.productcenter.Util.RedisUtil;
 import com.wang.productcenter.dao.ProductDao;
@@ -11,6 +12,7 @@ import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.entity.PO.ProductPO;
+import com.wang.productcenter.service.IDetailTypeService;
 import com.wang.productcenter.service.IProductDetailService;
 import com.wang.productcenter.service.IProductService;
 import com.wang.productcenter.service.IProductTypeService;
@@ -18,6 +20,7 @@ import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,9 +44,14 @@ public class ProductServiceImpl implements IProductService {
     private IProductDetailService productDetailService;
 
     @Autowired
+    private IDetailTypeService detailTypeService;
+
+    @Autowired
     private RedisService redisService;
 
     private static final String REDIS_PREFIX = "Product-";
+
+    private static final String ALL = "ALL";
 
     private static final String REDIS_PAGE = "page";
 
@@ -200,8 +208,103 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int update(Product product) {
         ProductPO productPO = product.doForward();
-        return productDao.update(productPO);
+        productDao.update(productPO);
+        int productId = productPO.getId();
+
+        // 获取更新的Detail数据
+        List<Integer> curDetailIds = product.getProductDetailList()
+                .stream()
+                .map(ProductDetail::getId)
+                .collect(Collectors.toList());
+
+        // 获取更新的DetailTypeIds
+        List<Integer> curDetailTypeIds = new ArrayList<>();
+        product.getProductDetailList().forEach(productDetail -> {
+            productDetail.getDetailTypeList().forEach(detailType -> {
+                curDetailTypeIds.add(detailType.getId());
+            });
+        });
+
+        // 获取表中旧的Detail数据
+        List<Integer> oldDetailIds = productDetailService.getProductDetailIdsByProductId(productId);
+        List<Integer> oldDetailTypeId = detailTypeService.getDetailTypeIdsByProductId(productId);
+
+        // 处理新旧Detail数据
+        // 取交集获取不需要变更的数据
+        List<Integer> noChangeDetailIds = intersection(curDetailIds,oldDetailIds);
+        List<Integer> noChangeDetailTypeIds = intersection(curDetailTypeIds,curDetailTypeIds);
+
+        // 取一次差集获取需要删除的数据
+        List<Integer> deleteDetailIds = difference(oldDetailIds,noChangeDetailIds);
+        List<Integer> deleteDetailTypeIds = difference(oldDetailTypeId,noChangeDetailTypeIds);
+
+        // 新旧数据取一次差集为新增数据做准备
+        List<Integer> differenceDetailIds = difference(oldDetailIds, curDetailIds);
+        List<Integer> differenceDetailTypeIds = difference(oldDetailTypeId, curDetailTypeIds);
+
+        // 将差集数据与表中数据再做一次差集
+        List<Integer> addDetailIds = difference(differenceDetailIds,oldDetailIds);
+        List<Integer> addDetailTypeIds = difference(differenceDetailTypeIds,oldDetailTypeId);
+
+        // 更新数据
+        productDetailService.productAssociationDetail(productId,addDetailIds);
+        detailTypeService.productAssociationDetailType(productId,addDetailTypeIds);
+
+        // 删除失效数据
+        productDetailService.productDisconnectDetail(productId,deleteDetailIds);
+        detailTypeService.productDisconnectDetailType(productId,deleteDetailTypeIds);
+
+        return 1;
     }
+
+    @Override
+    public int insert(Product product) {
+        ProductPO productPO = product.doForward();
+
+        ProductPO result_temp = productDao.getByName(productPO);
+
+        if(result_temp != null){
+            return SqlResultEnum.REPEAT_INSERT.getValue();
+        }
+
+        productDao.insert(productPO);
+
+        int productId = productDao.getProductIdByName(productPO.getProductName());
+
+        // 关联商品和商品可选项
+        List<Integer> detailId = product.getProductDetailList()
+                .stream()
+                .map(ProductDetail::getId)
+                .collect(Collectors.toList());
+        productDetailService.productAssociationDetail(productId,detailId);
+
+        // 关联商品和商品可选项详情
+        ArrayList<Integer> detailTypeIds = new ArrayList<>();
+        product.getProductDetailList().forEach(productDetail -> {
+            productDetail.getDetailTypeList().forEach(detailType -> {
+                detailTypeIds.add(detailType.getId());
+            });
+        });
+        detailTypeService.productAssociationDetailType(productId,detailTypeIds);
+        // todo 后期事务上来以后要修改
+        return 1;
+    }
+
+    /**
+     *  获取交集
+     */
+    private List<Integer> intersection(List<Integer> curList,List<Integer> oldList){
+        return curList.stream()
+                .filter(oldList::contains)
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> difference(List<Integer> curList,List<Integer> oldList){
+        return curList.stream()
+                .filter(integer -> !oldList.contains(integer))
+                .collect(Collectors.toList());
+    }
+
 
     /**
      *  同步清理分页缓存
@@ -219,6 +322,15 @@ public class ProductServiceImpl implements IProductService {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
         redisService.del(keys);
+    }
+
+    private void removeAllCache(){
+        String redisName = productAllGetRedisName();
+        RedisUtil.del(redisName);
+    }
+
+    private String productAllGetRedisName(){
+        return REDIS_PREFIX + ALL;
     }
 
 

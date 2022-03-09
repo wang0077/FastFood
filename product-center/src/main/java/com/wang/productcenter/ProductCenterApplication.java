@@ -1,17 +1,17 @@
 package com.wang.productcenter;
 
-import com.wang.productcenter.Util.RedisUtil;
-import com.wang.productcenter.config.SpringContext;
 import com.wang.productcenter.Interceptor.SqlCostInterceptor;
+import com.wang.productcenter.config.SpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @EnableAspectJAutoProxy
 @SpringBootApplication
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 @EnableFeignClients
 @Slf4j
 public class ProductCenterApplication {

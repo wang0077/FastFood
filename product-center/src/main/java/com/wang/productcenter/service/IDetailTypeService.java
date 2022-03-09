@@ -32,7 +32,13 @@ public interface IDetailTypeService {
 
     PageInfo<DetailType> getByProductDetailId(DetailType detailType);
 
-    List<Product_DetailType_Middle> getByProductId(List<Integer> idList);
+    List<Product_DetailType_Middle> getByProductMiddle(List<Integer> idList);
 
     List<DetailType> getByIds(List<Integer> idList);
+
+    void productAssociationDetailType(int productId,List<Integer> detailTypeIds);
+
+    void productDisconnectDetailType(int productId, List<Integer> detailTypeIds);
+
+    List<Integer> getDetailTypeIdsByProductId(int productId);
 }

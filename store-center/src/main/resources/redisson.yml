@@ -16,13 +16,13 @@ singleServerConfig:
   #  # 执行失败最大次数
   #  failedAttempts: 3
   # 密码
-  password: Wangsi12
+  password: 228913
   # 单个连接最大订阅数量
   subscriptionsPerConnection: 5
   # 客户端名称
   clientName: null
   #  # 节点地址
-  address: redis://121.196.168.154:6379
+  address: redis://159.75.20.118:6379
   # 发布和订阅连接的最小空闲连接数
   subscriptionConnectionMinimumIdleSize: 1
   # 发布和订阅连接池大小

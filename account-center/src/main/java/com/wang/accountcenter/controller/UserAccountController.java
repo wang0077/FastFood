@@ -5,7 +5,6 @@ import com.wang.accountcenter.service.IUserAccountService;
 import com.wang.fastfood.apicommons.Util.BOUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
-import com.wang.fastfood.apicommons.entity.DTO.SignInDTO;
 import com.wang.fastfood.apicommons.entity.DTO.UserAccountDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.fastfood.apicommons.enums.CodeEnum;
@@ -40,11 +39,6 @@ public class UserAccountController {
         UserAccount userAccount = buildBO(userAccountDTO);
         UserAccount result = userAccountService.getByUserId(userAccount);
         return result == null ? ResponseUtil.success(CodeEnum.SUCCESS) : ResponseUtil.success(result.doBackward());
-    }
-
-    @PostMapping("/checkIn")
-    public Response<SignInDTO> checkIn(@RequestBody UserAccountDTO userAccountDTO){
-        return null;
     }
 
 

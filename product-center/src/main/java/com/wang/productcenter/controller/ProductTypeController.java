@@ -68,21 +68,21 @@ public class ProductTypeController {
     }
 
     @PostMapping("/getByName")
-    public Response<ProductTypeDTO> getTypeByName(ProductTypeDTO productTypeDTO) {
+    public Response<ProductTypeDTO> getTypeByName(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         ProductType result = productTypeService.getByName(productType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/delete")
-    public Response remove(ProductTypeDTO productTypeDTO) {
+    public Response remove(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         productTypeService.removeType(productType);
         return ResponseUtil.success();
     }
 
     @PostMapping("/update")
-    public Response update(ProductTypeDTO productTypeDTO) {
+    public Response update(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);
         int result = productTypeService.updateType(productType);
         return SqlResultUtil.updateResult(result);

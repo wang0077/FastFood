@@ -34,5 +34,7 @@ public interface ProductDetailDao {
 
     List<Product_Detail_Middle> getProductDetailIdByProductId(List<Integer> idList);
 
+    int productAssociationDetail(@Param("productId") int productId,@Param("detailId") int detailId);
 
+    void productDisconnectDetail(@Param("productId") int productId,@Param("detailId") int detailId);
 }

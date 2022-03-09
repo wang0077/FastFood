@@ -5,34 +5,18 @@ spring:
     name: FastFood-API
   cloud:
     nacos:
-      server-addr: 121.196.168.154:8848
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: Wangsi12
-    # Druid配置
-    type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 100
-    minIdle: 100
-    maxActive: 600
-    maxWait: 2000
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    filters: stat,wall
-    maxPoolPreparedStatementPerConnectionSize: 20
-    useGlobalDataSourceStat: true
-    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-
-# Mybatis配置
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.wang.productcenter.entity
+      discovery:
+        server-addr: 121.196.168.154:8848
+    gateway:
+      routes:
+        - id: ProductCenter
+          uri: lb://Product-Center
+          predicates:
+            - Path=/detailType/**,/product/**,/type/**,/productDetail/**
+        - id: StoreCenter
+          uri: lb://Store-Center
+          predicates:
+            - Path=/store/**
 
 
 management:

@@ -56,6 +56,11 @@ public class Product extends Page {
     private Integer isSales;
 
     /**
+     * 商品描述
+     */
+    private String describe;
+
+    /**
      * 商品详情可选项
      */
     private List<ProductDetail> productDetailList;

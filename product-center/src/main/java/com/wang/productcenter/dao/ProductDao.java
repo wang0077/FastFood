@@ -25,5 +25,9 @@ public interface ProductDao {
 
     void remove(@Param("product")ProductPO productPO);
 
-    int update(@Param("product")ProductPO productP);
+    int update(@Param("product")ProductPO productPO);
+
+    int insert(@Param("product")ProductPO productPO);
+
+    int getProductIdByName(String productName);
 }

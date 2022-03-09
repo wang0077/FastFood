@@ -29,6 +29,13 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @PostMapping("/insert")
+    public Response insert(@RequestBody ProductDTO productDTO){
+        Product product = buildBO(productDTO);
+        int result = productService.insert(product);
+        return SqlResultUtil.insertResult(result);
+    }
+
     @PostMapping("/getAll")
     public Response<PageInfo<ProductDTO>> getAll(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);

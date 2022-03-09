@@ -45,6 +45,22 @@ public class Store extends Page {
 	 * 门店地址
 	 */
 	private String address;
+	/**
+	 * 营业开始时间
+	 */
+	private String startTime;
+	/**
+	 * 营业结束时间
+	 */
+	private String endTime;
+	/**
+	 * 店长姓名
+	 */
+	private String managerName;
+	/**
+	 * 是否营业
+	 */
+	private boolean business;
 
 	public StorePO doForward(){
 		storePOConvert convert = new storePOConvert();

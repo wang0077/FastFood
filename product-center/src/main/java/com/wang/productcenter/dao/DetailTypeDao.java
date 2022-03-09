@@ -36,5 +36,13 @@ public interface DetailTypeDao {
 
     List<DetailTypePO> getByIds(List<Integer> idList);
 
+    /**
+     *  新增商品和商品可选项详情表关联关系
+     */
+    int productAssociationDetailType(@Param("productId") int productId, @Param("detailTypeId") int detailTypeId);
 
+    /**
+     *  新增(断开)商品和商品可选项详情表关联关系
+     */
+    int productDisconnectDetailType(@Param("productId") int productId, @Param("detailTypeId") int detailTypeId);
 }

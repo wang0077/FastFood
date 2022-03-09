@@ -43,6 +43,8 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     private static final String REDIS_PREFIX = "Detail-Type-";
 
+    private static final String ALL = "ALL";
+
     private static final String REDIS_PAGE = "page";
 
     private static final String REDIS_NAME = "name";
@@ -173,6 +175,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         DetailTypePO detailTypePO = detailType.doForward();
         int result = detailTypeDao.update(detailTypePO);
         asyncRemovePageCache();
+        removeAllCache();
         return result;
     }
 
@@ -189,7 +192,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
      * @return 返回DetailType和Product映射关系
      */
     @Override
-    public List<Product_DetailType_Middle> getByProductId(List<Integer> idList) {
+    public List<Product_DetailType_Middle> getByProductMiddle(List<Integer> idList) {
         return detailTypeDao.getDetailTypeByProductId(idList);
     }
 
@@ -236,6 +239,30 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
+    public void productAssociationDetailType(int productId, List<Integer> detailTypeIds) {
+        // todo 后期需要改成批处理
+        detailTypeIds.forEach(id -> {
+            detailTypeDao.productAssociationDetailType(productId,id);
+        });
+    }
+
+    @Override
+    public void productDisconnectDetailType(int productId, List<Integer> detailTypeIds) {
+        // todo 后期需要改成批处理
+        detailTypeIds.forEach(id -> {
+            detailTypeDao.productDisconnectDetailType(productId,id);
+        });
+    }
+
+    @Override
+    public List<Integer> getDetailTypeIdsByProductId(int productId) {
+        List<Product_DetailType_Middle> middle = getByProductMiddle(new ArrayList<>(productId));
+        return middle.stream()
+                .map(Product_DetailType_Middle::getDetailTypeId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Map<Integer, List<DetailType>> groupByProductDetailId(List<Integer> idList) {
         PageInfo<DetailType> result = getByProductDetailId(idList);
         List<DetailType> detailTypes = result.getList();
@@ -259,6 +286,15 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
         redisService.del(keys);
+    }
+
+    private void removeAllCache(){
+        String redisName = detailTypeAllGetRedisName();
+        RedisUtil.del(redisName);
+    }
+
+    private String detailTypeAllGetRedisName(){
+        return REDIS_PREFIX + ALL;
     }
 
     private List<String> DetailTypesIdsGetRedisName(List<Integer> ids) {

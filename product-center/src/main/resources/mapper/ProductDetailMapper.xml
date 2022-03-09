@@ -34,6 +34,13 @@
         insert into product_detail (product_detail_name, valid) VALUES (#{product_detail.productDetailName}, 1);
     </insert>
 
+    <insert id="productAssociationDetail">
+        insert into product__product_detail
+            (product_id, product_detail_id, valid)
+            VALUES
+            (#{productId},#{detailId},1)
+    </insert>
+
     <update id="remove">
         update product_detail
         set valid = 0
@@ -50,6 +57,14 @@
                 id = #{product_detail.id}
             </if>
         </where>
+    </update>
+
+    <update id="productDisconnectDetail">
+        update product__product_detail
+        set
+        valid = 0
+        where
+        product_id = #{productId} and product_detail_id = #{detailId}
     </update>
 
     <select id="getAll" resultMap="productDetailMap">

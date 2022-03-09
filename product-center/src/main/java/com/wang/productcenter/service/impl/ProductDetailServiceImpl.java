@@ -44,6 +44,8 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
     private static final String REDIS_PREFIX = "Product-Detail-";
 
+    private static final String ALL = "ALL";
+
     private static final String REDIS_PAGE = "page";
 
     private static final String REDIS_NAME = "name";
@@ -62,7 +64,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         PageInfo<ProductDetail> result = null;
         String redisName = productDetailAllGetRedisName(productDetail);
         result = RedisUtil.getByPageInfo(redisName, ProductDetail.class);
-        if (result == null) {
+        if (result == null || productDetail.isDetail()) {
             RLock lock = RedisUtil.getLock(redisName);
             if (lock.tryLock()) {
                 try {
@@ -86,11 +88,14 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     }
 
     public int insert(ProductDetail productDetail) {
+        syncRemovePageCache();
         ProductDetailPO productDetailPO = productDetail.doForward();
         ProductDetailPO result_temp = productDetailDao.getByName(productDetailPO);
         if (result_temp != null) {
             return SqlResultEnum.REPEAT_INSERT.getValue();
         }
+        asyncRemovePageCache();
+        removeAllCache();
         return productDetailDao.insert(productDetailPO);
     }
 
@@ -175,6 +180,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         ProductDetailPO productDetailPO = productDetail.doForward();
         int result = productDetailDao.update(productDetailPO);
         asyncRemovePageCache();
+        removeAllCache();
         return result;
     }
 
@@ -227,7 +233,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         List<Product_Detail_Middle> productDetailMiddles = getProductMiddle(idList);
 
         // 通过ProductId查询中间表获取和DetailType关联关系
-        List<Product_DetailType_Middle> productDetailTypeMiddles = detailTypeService.getByProductId(idList);
+        List<Product_DetailType_Middle> productDetailTypeMiddles = detailTypeService.getByProductMiddle(idList);
 
         // 去重获取所有的ProductDetailId
         List<Integer> productDetailIds = productDetailMiddles.stream()
@@ -279,6 +285,33 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     }
 
     /**
+     *  关联商品和商品详细
+     */
+    @Override
+    public void productAssociationDetail(int productId, List<Integer> detailId) {
+        // todo 后期这段要改成批处理
+        detailId.forEach(id -> {
+            productDetailDao.productAssociationDetail(productId,id);
+        });
+    }
+
+    @Override
+    public void productDisconnectDetail(int productId, List<Integer> detailId) {
+        // todo 后期这段要改成批处理
+        detailId.forEach(id -> {
+            productDetailDao.productDisconnectDetail(productId,id);
+        });
+    }
+
+    @Override
+    public List<Integer> getProductDetailIdsByProductId(int productId) {
+        List<Product_Detail_Middle> Middle = getProductMiddle(new ArrayList<>(productId));
+        return Middle.stream()
+                .map(Product_Detail_Middle::getProductDetailId)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 同步清理分页缓存
      */
     private void syncRemovePageCache() {
@@ -294,6 +327,15 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
         redisService.del(keys);
+    }
+
+    private void removeAllCache(){
+        String redisName = productDetailAllGetRedisName();
+        RedisUtil.del(redisName);
+    }
+
+    private String  productDetailAllGetRedisName(){
+        return REDIS_PREFIX + ALL;
     }
 
     private List<String> productDetailIdsGetRedisName(List<Integer> ids) {

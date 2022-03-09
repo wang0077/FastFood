@@ -22,6 +22,12 @@
             <groupId>com.fastfood.commons</groupId>
             <artifactId>api-commons</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--redisson-->

@@ -23,4 +23,6 @@ public interface IProductService {
     void remove(Product product);
 
     int update(Product product);
+
+    int insert(Product product);
 }

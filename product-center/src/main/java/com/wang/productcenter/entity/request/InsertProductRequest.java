@@ -1,5 +1,6 @@
-package com.wang.fastfood.apicommons.entity.DTO;
+package com.wang.productcenter.entity.request;
 
+import com.wang.fastfood.apicommons.entity.DTO.ProductDetailDTO;
 import com.wang.fastfood.apicommons.entity.common.BaseRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,13 +9,13 @@ import java.util.List;
 
 /**
  * @Auther: wAnG
- * @Date: 2021/12/4 21:08
+ * @Date: 2022/3/9 17:49
  * @Description:
  */
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ProductDTO extends BaseRequest {
+public class InsertProductRequest extends BaseRequest {
 
     /**
      * 商品ID
@@ -60,10 +61,4 @@ public class ProductDTO extends BaseRequest {
      */
     private List<ProductDetailDTO> productDetailDTOList;
 
-    private ProductTypeDTO productTypeDTO;
-
-    @Override
-    public void validity() {
-
-    }
 }

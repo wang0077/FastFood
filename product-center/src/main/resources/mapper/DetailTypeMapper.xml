@@ -34,9 +34,16 @@
     </sql>
 
     <insert id="insert">
-        insert into detail_type (Detail_type_name, product_detail_id,price, valid)
-        VALUES (#{detail_type.detailTypeName}, #{detail_type.productDetailId},#{detail_type.price}, 1);
+        insert into detail_type (Detail_type_name, product_detail_id, price, valid)
+        VALUES (#{detail_type.detailTypeName}, #{detail_type.productDetailId}, #{detail_type.price}, 1);
     </insert>
+
+    <insert id="productAssociationDetailType">
+        insert into product__detail_type
+            (product_id, detail_type_id, valid)
+        VALUES (#{productId}, #{detailTypeId}, 1)
+    </insert>
+
 
     <update id="remove">
         update detail_type
@@ -55,6 +62,13 @@
             </if>
         </trim>
         where id = #{detail_type.id}
+    </update>
+
+    <update id="productDisconnectDetailType">
+        update product__detail_type
+        set valid = 0
+        where
+        detail_type_id = #{detailTypeId} and product_id = #{productId}
     </update>
 
     <select id="getAll" resultMap="detailTypeMap">

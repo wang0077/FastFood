@@ -13,10 +13,7 @@ import com.wang.storeCenter.entity.BO.Store;
 import com.wang.storeCenter.entity.BO.StoreRadius;
 import com.wang.storeCenter.service.IStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.GeoCoordinate;
 
 import java.util.List;
@@ -30,6 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/store")
+@CrossOrigin
 public class storeController {
 
     @Autowired

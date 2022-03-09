@@ -36,6 +36,14 @@ public class ProductDetailDTO extends BaseRequest {
      */
     private boolean isDetail;
 
+    public boolean isDetail() {
+        return isDetail;
+    }
+
+    public void setIsDetail(boolean detail) {
+        isDetail = detail;
+    }
+
     @Override
     public void validity() {
         try {

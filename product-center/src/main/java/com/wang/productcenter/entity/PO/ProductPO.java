@@ -57,6 +57,11 @@ public class ProductPO extends BasePO implements Serializable {
 	private Integer isSales;
 
 	/**
+	 * 商品描述
+	 */
+	private String describe;
+
+	/**
 	 * 数据是否有效
 	 */
 	private Integer valid;

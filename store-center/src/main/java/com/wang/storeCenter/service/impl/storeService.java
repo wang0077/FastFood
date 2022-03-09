@@ -39,6 +39,8 @@ public class storeService implements IStoreService {
 
     private static final String STORE_RADIUS = "storeRadius";
 
+    private static final String ALL = "ALL";
+
     private static final String REDIS_PREFIX = "Store-";
 
     private static final String REDIS_PAGE = "page";
@@ -81,21 +83,24 @@ public class storeService implements IStoreService {
 
     @Override
     public int insert(Store store) {
+        asyncRemovePageCache();
         if (store.getId() == null && validityStoreExist(store)) {
             return SqlResultEnum.REPEAT_INSERT.getValue();
         }
         StorePO storePO = store.doForward();
         int result = storeDao.add(storePO);
         Store compStore = getByName(store);
-        String redisName = StoreGetRedisName(compStore);
+        String redisName = storeGetRedisName(compStore);
         RedisUtil.setGeo(STORE_RADIUS,buildGeoCoordinate(store),redisName);
+        syncRemovePageCache();
+        removeAllCache();
         return result;
     }
 
     @Override
     public Store getByName(Store store) {
         Store result = null;
-        String redisName = StoreGetRedisName(store);
+        String redisName = storeGetRedisName(store);
         List<String> keys = RedisUtil.keys(redisName);
         List<Store> storeList = RedisUtil.mget(Store.class, keys);
         if (storeList != null && storeList.size() > 0) {
@@ -109,7 +114,7 @@ public class storeService implements IStoreService {
                     StorePO poResult = storeDao.getByName(storePO);
                     result = poResult == null ? null : poResult.convertToStore();
                     if (result != null) {
-                        redisName = StoreGetRedisName(result);
+                        redisName = storeGetRedisName(result);
                         asyncRedis.set(redisName, result);
                     }
                 } finally {
@@ -123,7 +128,7 @@ public class storeService implements IStoreService {
     @Override
     public Store getById(Store store) {
         Store result = null;
-        String redisName = StoreGetRedisName(store);
+        String redisName = storeGetRedisName(store);
         List<String> keys = RedisUtil.keys(redisName);
         List<Store> storeList = RedisUtil.mget(Store.class, keys);
         if (storeList != null &&storeList.size() > 0) {
@@ -137,7 +142,7 @@ public class storeService implements IStoreService {
                     StorePO poResult = storeDao.getById(storePO);
                     result = poResult == null ? null : poResult.convertToStore();
                     if (result != null) {
-                        redisName = StoreGetRedisName(result);
+                        redisName = storeGetRedisName(result);
                         asyncRedis.set(redisName, result);
                     }
                 } finally {
@@ -182,7 +187,7 @@ public class storeService implements IStoreService {
 
     @Override
     public int remove(Store store) {
-        String redisName = StoreGetRedisName(store);
+        String redisName = storeGetRedisName(store);
         syncRemovePageCache();
         StorePO storePO = store.doForward();
         int result = storeDao.remove(storePO);
@@ -195,6 +200,7 @@ public class storeService implements IStoreService {
         asyncRedis.del(redisName);
         // 删除门店地图数据
         asyncRedis.delGeo(STORE_RADIUS,redisName);
+        removeAllCache();
         return result;
     }
 
@@ -207,7 +213,7 @@ public class storeService implements IStoreService {
         List<Store> storeList = RedisUtil.mget(Store.class, keys);
         storeRadiusList.forEach(storeRadius -> {
             storeList.stream()
-                    .filter(store -> storeRadius.getMember().equals(StoreGetRedisName(store)))
+                    .filter(store -> storeRadius.getMember().equals(storeGetRedisName(store)))
                     .findFirst()
                     .ifPresent(storeRadius::setStore);
         });
@@ -243,6 +249,14 @@ public class storeService implements IStoreService {
     }
 
     /**
+     * 清除**-ALL的缓存
+     */
+    private void removeAllCache(){
+        String redisName = storeAllGetRedisName();
+        RedisUtil.del(redisName);
+    }
+
+    /**
      * 同步清理分页缓存
      */
     private void syncRemovePageCache() {
@@ -266,7 +280,11 @@ public class storeService implements IStoreService {
         asyncRedis.del(keys);
     }
 
-    private String StoreGetRedisName(Store store) {
+    private String storeAllGetRedisName(){
+        return REDIS_PREFIX + ALL;
+    }
+
+    private String storeGetRedisName(Store store) {
         StringBuilder result = new StringBuilder();
         result.append(REDIS_PREFIX);
         if (store != null) {

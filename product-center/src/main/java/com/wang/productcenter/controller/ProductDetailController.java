@@ -40,7 +40,7 @@ public class ProductDetailController {
     }
 
     @PostMapping("/insert")
-    public Response insert(ProductDetailDTO productDetailDTO){
+    public Response insert(@RequestBody ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
         int result = productDetailService.insert(productDetail);
         return SqlResultUtil.insertResult(result);
@@ -61,7 +61,7 @@ public class ProductDetailController {
     }
 
     @PostMapping("/delete")
-    public Response remove(ProductDetailDTO productDetailDTO){
+    public Response remove(@RequestBody ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
         productDetailService.remove(productDetail);
         return ResponseUtil.success();
@@ -78,7 +78,7 @@ public class ProductDetailController {
     }
 
     @PostMapping("/update")
-    public Response update(ProductDetailDTO productDetailDTO){
+    public Response update(@RequestBody ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);
         int result = productDetailService.update(productDetail);
         return SqlResultUtil.updateResult(result);

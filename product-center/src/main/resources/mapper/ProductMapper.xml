@@ -12,6 +12,7 @@
         <result property="productImagePath" column="product_image_path"/>
         <result property="sales" column="sales"/>
         <result property="isSales" column="is_sales"/>
+        <result property="describe" column="content"/>
         <result property="valid" column="valid"/>
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
@@ -24,6 +25,7 @@
         product_price,
         product_image_path,
         sales,
+        content,
         is_sales
     </sql>
 
@@ -47,8 +49,8 @@
         <if test="product.sales != null">
             and sales = #{product.sales}
         </if>
-        <if test="product.isSales != null">
-            and is_sales = #{product.isSales}
+        <if test="product.describe != null">
+            and content = #{product.describe}
         </if>
     </sql>
 
@@ -69,8 +71,36 @@
             <if test="product.isSales != null">
                 is_sales = #{product.isSales},
             </if>
+            <if test="product.content != null">
+                content = #{product.content}
+            </if>
         </trim>
     </sql>
+
+    <insert id="insert">
+        insert into product
+            (
+             type_id,
+             product_name,
+             product_price,
+             product_image_path,
+             content,
+             sales,
+             is_sales,
+             valid
+             )
+            VALUES
+            (
+             #{product.type_id},
+             #{product.product_name},
+             #{product.product_price},
+             #{product.product_image_path},
+             #{product.content},
+             0,
+             1,
+             1
+             )
+    </insert>
 
     <update id="remove">
         update product
@@ -112,6 +142,11 @@
         <include refid="SelectTo"/>
         from product
         where product.product_name like CONCAT('%',#{product.productName},'%')
+    </select>
+
+    <select id="getProductIdByName" resultType="java.lang.Integer">
+        select id
+        from product where product_name = #{productName};
     </select>
 
 

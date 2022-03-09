@@ -31,4 +31,10 @@ public interface IProductDetailService {
 
     Map<Integer,List<ProductDetail>> getByProductIds(List<Integer> idList);
 
+    void productAssociationDetail(int productId,List<Integer> detailId);
+
+    void productDisconnectDetail(int productId,List<Integer> detailId);
+
+    List<Integer> getProductDetailIdsByProductId(int productId);
+
 }

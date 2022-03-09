@@ -14,16 +14,20 @@
         <result property="valid" column="valid"/>
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
+        <result property="startTime" column="start_Time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="managerName" column="manager_name"/>
+        <result property="business" column="isbusiness"/>
     </resultMap>
 
     <sql id="SelectTo">
-        id,store_name,store_latitude,store_longitude,store_phone_number,address
+        id,store_name,store_latitude,store_longitude,store_phone_number,address,start_time,end_time,manager_name,isbusiness
     </sql>
 
     <insert id="add">
-        insert into store (store_longitude, store_latitude, store_phone_number, store_name, valid)
+        insert into store (store_longitude, store_latitude, store_phone_number, store_name, valid,start_time,end_time,manager_name,isbusiness,address)
         values
-        (#{store.storeLongitude},#{store.storeLatitude},#{store.storePhoneNumber},#{store.storeName},1);
+        (#{store.storeLongitude},#{store.storeLatitude},#{store.storePhoneNumber},#{store.storeName},1,#{store.startTime},#{store.endTime},#{store.managerName},false,#{store.address});
     </insert>
 
     <update id="update">
@@ -47,6 +51,18 @@
             <if test="store.address != null">
                 address = #{store.address},
             </if>
+            <if test="store.startTime != null">
+                start_time = #{store.startTime}
+            </if>
+            <if test="store.endTime != null">
+                end_time = #{store.endTime}
+            </if>
+            <if test="store.managerName != null">
+                manager_name = #{store.managerName}
+            </if>
+            <if test="store.business != null">
+                isbusiness = #{store.business}
+            </if>
         </trim>
         where id = #{store.id} and valid = 1;
     </update>
@@ -54,7 +70,7 @@
 
     <delete id="remove">
         update store set
-        valid = 0
+        valid = 0,isbusiness = 0
         where id = #{store.id}
     </delete>
 
@@ -62,7 +78,7 @@
     <select id="getStoreAll" resultMap="storeMap">
         select
         <include refid="SelectTo"/>
-        from store where valid = 1;
+        from store where valid = 1
     </select>
 
 

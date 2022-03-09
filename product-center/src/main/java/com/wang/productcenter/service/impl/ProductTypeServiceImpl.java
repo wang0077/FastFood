@@ -35,6 +35,8 @@ public class ProductTypeServiceImpl implements IProductTypeService {
 
     private static final String REDIS_PREFIX = "Product-Type-";
 
+    private static final String ALL = "ALL";
+
     private static final String REDIS_PAGE = "page";
 
     private static final String REDIS_NAME = "name";
@@ -82,6 +84,7 @@ public class ProductTypeServiceImpl implements IProductTypeService {
         }
         int count = productTypeDao.insert(productTypePO);
         asyncRemovePageCache();
+        removeAllCache();
         return count;
     }
 
@@ -152,13 +155,20 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     }
 
     public void removeType(ProductType productType) {
+        syncRemovePageCache();
         ProductTypePO productTypePO = productType.doForward();
         productTypeDao.remove(productTypePO);
+        asyncRemovePageCache();
+        removeAllCache();
     }
 
     public int updateType(ProductType productType) {
+        syncRemovePageCache();
         ProductTypePO productTypePO = productType.doForward();
-        return productTypeDao.update(productTypePO);
+        int result = productTypeDao.update(productTypePO);
+        asyncRemovePageCache();
+        removeAllCache();
+        return result;
     }
 
     @Override
@@ -168,6 +178,11 @@ public class ProductTypeServiceImpl implements IProductTypeService {
                 .map(ProductTypePO::convertToProductType)
                 .collect(Collectors.toList());
         return productTypes.stream().collect(Collectors.toMap(ProductType::getId, productType -> productType));
+    }
+
+    private void removeAllCache(){
+        String redisName = productTypeAllGetRedisName();
+        RedisUtil.del(redisName);
     }
 
     /**
@@ -192,6 +207,10 @@ public class ProductTypeServiceImpl implements IProductTypeService {
             return;
         }
         redisService.del(keys);
+    }
+
+    private String productTypeAllGetRedisName(){
+        return REDIS_PREFIX + ALL;
     }
 
     private String productTypeLikeNameGetRedisName(ProductType type) {

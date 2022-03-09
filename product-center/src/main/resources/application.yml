@@ -14,6 +14,8 @@ spring:
     # Nacos配置
     nacos:
       server-addr: 121.196.168.154:8848
+      discovery:
+        ip: 127.0.0.1
   # Mybatis配置
 
   datasource:
@@ -23,8 +25,8 @@ spring:
     password: Wangsi12
     # Druid配置
     type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 100
-    minIdle: 100
+    initialSize: 10
+    minIdle: 10
     maxActive: 600
     maxWait: 2000
     timeBetweenEvictionRunsMillis: 60000
@@ -41,10 +43,10 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 121.196.168.154
+    host: 159.75.20.118
     port: 6379
     database: 0
-    password: Wangsi12
+    password: 228913
     jedis:
       pool:
         max-active: 100
