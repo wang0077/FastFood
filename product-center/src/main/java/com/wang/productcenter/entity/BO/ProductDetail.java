@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ProductDetail extends Page {
+public class ProductDetail extends Page implements Cloneable {
 
     /**
      * 商品详情ID
@@ -41,6 +41,20 @@ public class ProductDetail extends Page {
      * 是否获取子节点
      */
     private boolean isDetail;
+
+    /**
+     *  这是一个浅拷贝的clone!!!切记不要乱用!!!
+     */
+    @Override
+    public ProductDetail clone() {
+        ProductDetail productDetail = null;
+        try {
+            productDetail = (ProductDetail) super.clone();
+        }catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return productDetail;
+    }
 
     public ProductDetailPO doForward(){
         productDetailPOConvert convert = new productDetailPOConvert();

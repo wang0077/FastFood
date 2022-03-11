@@ -30,6 +30,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.wang</groupId>
+            <artifactId>Fast-Foot-Start-Redis</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!--redisson-->
         <dependency>
             <groupId>org.redisson</groupId>

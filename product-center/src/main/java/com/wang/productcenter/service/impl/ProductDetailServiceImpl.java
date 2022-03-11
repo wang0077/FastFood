@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
-import com.wang.productcenter.Redis.RedisService;
-import com.wang.productcenter.Util.RedisUtil;
+import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.ProductDetailDao;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.ProductDetail;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     private IDetailTypeService detailTypeService;
 
     @Autowired
-    private RedisService redisService;
+    private AsyncRedis redisService;
 
     private static final String REDIS_PREFIX = "Product-Detail-";
 
@@ -212,7 +213,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         } else {
             MissId = idList;
         }
-        if(MissId != null && MissId.size() > 0){
+        if (MissId != null && MissId.size() > 0) {
             List<ProductDetailPO> poResult = productDetailDao.getByIds(MissId);
             result = poResult.stream()
                     .map(ProductDetailPO::convertToProductDetail)
@@ -221,7 +222,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             for (ProductDetail productDetail : result) {
                 redisNameList.add(productDetailGetRedisName(productDetail));
             }
-            redisService.mset(redisNameList,result);
+            redisService.mset(redisNameList, result);
         }
         return result;
     }
@@ -263,35 +264,57 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                             v1.addAll(v2);
                             return v1;
                         }));
-        // 通过Product和DetailType映射关系再和Product和ProductDetail关系
-        // 整合出Product对应的ProductDetail封装和Product对应的DetailType
-        return productDetailMiddles.stream()
+
+        Map<Integer, List<ProductDetail>> productDetailMap = productDetailMiddles.stream()
                 .collect(Collectors.toMap(Product_Detail_Middle::getProductId
                         , middle -> productDetails.stream()
-                                .filter(productDetail -> {
-                                    Integer productId = middle.getProductId();
-                                    List<DetailType> detailTypeList = productMap.get(productId);
-                                    List<DetailType> list = detailTypeList.stream()
-                                            .filter(detailType -> detailType.getProductDetailId().equals(productDetail.getId()))
-                                            .collect(Collectors.toList());
-                                    if (list.size() == 0) {
-                                        return false;
-                                    }
-                                    productDetail.setDetailTypeList(list);
-                                    return true;
-                                })
+                                .filter(productDetail -> productDetail.getId().equals(middle.getProductDetailId()))
+                                .map(ProductDetail::clone)
                                 .collect(Collectors.toList())
-                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> v1));
+                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> {
+                            v1.addAll(v2);
+                            return v1;
+                        }));
+        idList.forEach(productId -> {
+            List<DetailType> detailTypeList = productMap.get(productId);
+            List<ProductDetail> details = productDetailMap.get(productId);
+            details.forEach(detail -> {
+                detail.setDetailTypeList(detailTypeList
+                        .stream()
+                        .filter(detailType -> detailType.getProductDetailId().equals(detail.getId()))
+                        .collect(Collectors.toList()));
+            });
+        });
+        return productDetailMap;
+        // 通过Product和DetailType映射关系再和Product和ProductDetail关系
+        // 整合出Product对应的ProductDetail封装和Product对应的DetailType
+//        return productDetailMiddles.stream()
+//                .collect(Collectors.toMap(Product_Detail_Middle::getProductId
+//                        , middle -> productDetails.stream()
+//                                .filter(productDetail -> {
+//                                    Integer productId = middle.getProductId();
+//                                    List<DetailType> detailTypeList = productMap.get(productId);
+//                                    List<DetailType> list = detailTypeList.stream()
+//                                            .filter(detailType -> detailType.getProductDetailId().equals(productDetail.getId()))
+//                                            .collect(Collectors.toList());
+//                                    if (list.size() == 0) {
+//                                        return false;
+//                                    }
+//                                    productDetail.setDetailTypeList(list);
+//                                    return true;
+//                                })
+//                                .collect(Collectors.toList())
+//                        , (List<ProductDetail> v1, List<ProductDetail> v2) -> v1));
     }
 
     /**
-     *  关联商品和商品详细
+     * 关联商品和商品详细
      */
     @Override
     public void productAssociationDetail(int productId, List<Integer> detailId) {
         // todo 后期这段要改成批处理
         detailId.forEach(id -> {
-            productDetailDao.productAssociationDetail(productId,id);
+            productDetailDao.productAssociationDetail(productId, id);
         });
     }
 
@@ -299,13 +322,13 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     public void productDisconnectDetail(int productId, List<Integer> detailId) {
         // todo 后期这段要改成批处理
         detailId.forEach(id -> {
-            productDetailDao.productDisconnectDetail(productId,id);
+            productDetailDao.productDisconnectDetail(productId, id);
         });
     }
 
     @Override
     public List<Integer> getProductDetailIdsByProductId(int productId) {
-        List<Product_Detail_Middle> Middle = getProductMiddle(new ArrayList<>(productId));
+        List<Product_Detail_Middle> Middle = getProductMiddle(productId);
         return Middle.stream()
                 .map(Product_Detail_Middle::getProductDetailId)
                 .collect(Collectors.toList());
@@ -329,12 +352,12 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         redisService.del(keys);
     }
 
-    private void removeAllCache(){
+    private void removeAllCache() {
         String redisName = productDetailAllGetRedisName();
         RedisUtil.del(redisName);
     }
 
-    private String  productDetailAllGetRedisName(){
+    private String productDetailAllGetRedisName() {
         return REDIS_PREFIX + ALL;
     }
 
@@ -415,6 +438,10 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             }
         }
         return result.toString();
+    }
+
+    private List<Product_Detail_Middle> getProductMiddle(int id) {
+        return getProductMiddle(Collections.singletonList(id));
     }
 
     private List<Product_Detail_Middle> getProductMiddle(List<Integer> idList) {

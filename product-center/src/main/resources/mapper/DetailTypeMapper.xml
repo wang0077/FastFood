@@ -114,7 +114,7 @@
     <select id="getDetailTypeByProductId" resultMap="middle">
         select product_id,detail_type_id
         from product__detail_type
-        where product_id
+        where valid = 1 and product_id
         in
         <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
             #{id}

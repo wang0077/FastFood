@@ -4,8 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
-import com.wang.productcenter.Redis.RedisService;
-import com.wang.productcenter.Util.RedisUtil;
+import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.ProductTypeDao;
 import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.entity.PO.ProductTypePO;
@@ -31,7 +31,7 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     private ProductTypeDao productTypeDao;
 
     @Autowired
-    private RedisService redisService;
+    private AsyncRedis redisService;
 
     private static final String REDIS_PREFIX = "Product-Type-";
 

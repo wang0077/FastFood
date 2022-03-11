@@ -1,11 +1,10 @@
 package com.wang.productcenter.Redis.RedisRetry;
 
 import com.wang.productcenter.Redis.RedisRetry.Functional.RedisRetryFunctional;
-import com.wang.productcenter.entity.RocketMQ.RedisMessage;
 import com.wang.productcenter.Redis.RedisService;
+import com.wang.productcenter.entity.RocketMQ.RedisMessage;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
  * @Description:
  */
 
-@Service
+//@Service
 public class MessageDispatch implements InitializingBean {
 
     // todo RedisMessage后期可能更改if的方法

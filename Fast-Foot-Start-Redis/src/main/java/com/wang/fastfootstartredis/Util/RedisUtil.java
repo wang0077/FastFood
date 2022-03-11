@@ -1,6 +1,7 @@
 package com.wang.fastfootstartredis.Util;
 
 import com.github.pagehelper.PageInfo;
+import com.wang.fastfootstartredis.enums.RedisOption;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.GeoRadiusParam;
-import com.wang.fastfootstartredis.enums.RedisOption;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -441,6 +441,239 @@ public class RedisUtil {
         return value;
     }
 
+    public static <T> List<T> hmget(String key,List<String> field,Class<T> clazz){
+        return hmget(key,field,clazz,0);
+    }
+
+    public static <T> List<T> hmget(String key,List<String> field,Class<T> clazz,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        List<T> result = null;
+        String[] fields = new String[field.size()];
+        field.toArray(fields);
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            List<String> jsons = jedis.hmget(key, fields);
+            result = jsons.stream()
+                    .map(json -> JSONUtil.parse(json,clazz))
+                    .collect(Collectors.toList());
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime,RedisOption.HMGET,key,indexDB,result);
+        } catch (Exception e) {
+            RedisLog.LogReadResultError(RedisOption.HMGET,key,indexDB,e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static <T> T hget(String key,String field,Class<T> clazz){
+        return hget(key,field,clazz,0);
+    }
+
+    public static <T> T hget(String key,String field,Class<T> clazz,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        T result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            String json = jedis.hget(key, field);
+            result = JSONUtil.parse(json,clazz);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime,RedisOption.HSET,key,indexDB,result);
+        } catch (Exception e) {
+            RedisLog.LogReadResultError(RedisOption.HSET,key,indexDB,e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static String hmset(String key,List<String> field,List<Object> value){
+        return hmset(key,field,value,0);
+    }
+
+    public static String hmset(String key,List<String> field,List<Object> value,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+
+        // 先对Object进行序列化
+        List<String> valueJson = value.stream()
+                .map(RedisUtil::Serialization)
+                .collect(Collectors.toList());
+
+        // 将field和valueJson进行合并成Map结构（Jedis需要这样的结构）
+        Map<String, String> json = field.stream()
+                .collect(Collectors.toMap(mapKey -> mapKey
+                        , mapKey -> valueJson.get(field.indexOf(mapKey))));
+
+        String result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.hmset(key, json);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime,RedisOption.HSET,key,value,indexDB,result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.HSET,key,value,indexDB,e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+
+    public static Long hset(String key,String field,Object value){
+        return hset(key,field,value,0);
+    }
+
+    public static Long hset(String key,String field,Object value,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        String resultJson = Serialization(value);
+        Long result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.hset(key, field, resultJson);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime,RedisOption.HSET,key,value,indexDB,result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.HSET,key,value,indexDB,e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     *  ZSet按照索引区间进行查找，查找的区间是 start <= index <= end 范围的数据
+     */
+    public static List<Integer> zrange(String key,int start,int end){
+        return zrange(key,start,end,0);
+    }
+
+    public static List<Integer> zrange(String key, int start, int end, int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        List<Integer> result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            Set<String> zrange = jedis.zrange(key, start, end);
+            result = new ArrayList<>(zrange)
+                    .stream()
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogReadResultSuccess(totalTime,RedisOption.ZRANGE,key,indexDB,result);
+        } catch (Exception e) {
+            RedisLog.LogDelResultError(RedisOption.ZREM,e,indexDB,key);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static Long zrem(String key,Integer member){
+        return zrem(key,Collections.singletonList(member));
+    }
+
+    public static Long zrem(String key,List<Integer> member){
+        return zrem(key,member,0);
+    }
+
+    public static Long zrem(String key,List<Integer> member,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        Long result = null;
+        Integer[] members = new Integer[member.size()];
+        member.toArray(members);
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.zrem(key,Arrays.toString(members));
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogDelResultSuccess(totalTime, RedisOption.ZREM,result,indexDB,key);
+        } catch (Exception e) {
+            RedisLog.LogDelResultError(RedisOption.ZREM,e,indexDB,key);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static Long zcard(String key){
+        return zcard(key,0);
+    }
+
+    public static Long zcard(String key,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        Long result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.zcard(key);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.ZCARD, key, null, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.ZCARD, key, null, indexDB, e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static Long zadd(String key,int score,Object value){
+        return zadd(key,score,value,0);
+    }
+
+    public static Long zadd(String key,int score,Object value,int indexDB){
+        long totalTime;
+        Jedis jedis = null;
+        Long result = null;
+        String resultJson = Serialization(value);
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(indexDB);
+            result = jedis.zadd(key,score,resultJson);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogWriteResultSuccess(totalTime, RedisOption.ZADD, key, value, indexDB, result);
+        } catch (Exception e) {
+            RedisLog.LogWriteResultError(RedisOption.ZADD, key, value, indexDB, e);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
     public static String set(String key, Object value) {
         return set(key, value, 0);
     }
@@ -671,7 +904,7 @@ public class RedisUtil {
         }
 
         private static void LogWriteResultError(RedisOption op, String key, Object value, int indexDB, Exception e) {
-            log.error("[Redis] ==> option : [{}] | Key : [{}] | value : [{}] | indexDB : [{}] \n | errorMsg : [{}]", op.getOpName(), key, value.toString(), indexDB, e.getMessage());
+            log.error("[Redis] ==> option : [{}] | Key : [{}] | value : [{}] | indexDB : [{}] \n | errorMsg : [{}]", op.getOpName(), key, value, indexDB, e.getMessage());
         }
 
         private static void LogDelResultSuccess(Long totalTime, RedisOption op, Long result, int indexDB, String... keys) {

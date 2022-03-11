@@ -71,8 +71,8 @@
             <if test="product.isSales != null">
                 is_sales = #{product.isSales},
             </if>
-            <if test="product.content != null">
-                content = #{product.content}
+            <if test="product.describe != null">
+                content = #{product.describe}
             </if>
         </trim>
     </sql>

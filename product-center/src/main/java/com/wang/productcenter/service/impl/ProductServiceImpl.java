@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
-import com.wang.productcenter.Redis.RedisService;
-import com.wang.productcenter.Util.RedisUtil;
+import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.ProductDao;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements IProductService {
     private IDetailTypeService detailTypeService;
 
     @Autowired
-    private RedisService redisService;
+    private AsyncRedis redisService;
 
     private static final String REDIS_PREFIX = "Product-";
 
@@ -96,7 +96,7 @@ public class ProductServiceImpl implements IProductService {
         String redisName = productGetRedisName(product);
         List<String> keys = RedisUtil.keys(redisName);
         List<Product> list = RedisUtil.mget(Product.class, keys);
-        if(list != null && list.size() != 0){
+        if (list != null && list.size() != 0) {
             result = list.get(0);
         }
         if (result == null) {
@@ -104,7 +104,7 @@ public class ProductServiceImpl implements IProductService {
             if (lock.tryLock()) {
                 try {
                     list = RedisUtil.mget(Product.class, keys);
-                    if(list != null && list.size() != 0){
+                    if (list != null && list.size() != 0) {
                         result = list.get(0);
                     }
                     if (result == null) {
@@ -134,7 +134,7 @@ public class ProductServiceImpl implements IProductService {
         String redisName = productGetRedisName(product);
         List<String> keys = RedisUtil.keys(redisName);
         List<Product> list = RedisUtil.mget(Product.class, keys);
-        if(list != null && list.size() != 0){
+        if (list != null && list.size() != 0) {
             result = list.get(0);
         }
         if (result == null) {
@@ -142,7 +142,7 @@ public class ProductServiceImpl implements IProductService {
             if (lock.tryLock()) {
                 try {
                     list = RedisUtil.mget(Product.class, keys);
-                    if(list != null && list.size() != 0){
+                    if (list != null && list.size() != 0) {
                         result = list.get(0);
                     }
                     if (result == null) {
@@ -227,33 +227,35 @@ public class ProductServiceImpl implements IProductService {
 
         // 获取表中旧的Detail数据
         List<Integer> oldDetailIds = productDetailService.getProductDetailIdsByProductId(productId);
-        List<Integer> oldDetailTypeId = detailTypeService.getDetailTypeIdsByProductId(productId);
+        List<Integer> oldDetailTypeIds = detailTypeService.getDetailTypeIdsByProductId(productId);
 
         // 处理新旧Detail数据
         // 取交集获取不需要变更的数据
-        List<Integer> noChangeDetailIds = intersection(curDetailIds,oldDetailIds);
-        List<Integer> noChangeDetailTypeIds = intersection(curDetailTypeIds,curDetailTypeIds);
+        List<Integer> noChangeDetailIds = intersection(curDetailIds, oldDetailIds);
+        List<Integer> noChangeDetailTypeIds = intersection(curDetailTypeIds, oldDetailTypeIds);
 
         // 取一次差集获取需要删除的数据
-        List<Integer> deleteDetailIds = difference(oldDetailIds,noChangeDetailIds);
-        List<Integer> deleteDetailTypeIds = difference(oldDetailTypeId,noChangeDetailTypeIds);
+        List<Integer> deleteDetailIds = leftDifference(oldDetailIds, noChangeDetailIds);
+        List<Integer> deleteDetailTypeIds = leftDifference(oldDetailTypeIds, noChangeDetailTypeIds);
 
         // 新旧数据取一次差集为新增数据做准备
-        List<Integer> differenceDetailIds = difference(oldDetailIds, curDetailIds);
-        List<Integer> differenceDetailTypeIds = difference(oldDetailTypeId, curDetailTypeIds);
+        List<Integer> differenceDetailIds = symmetricDifference(oldDetailIds, curDetailIds);
+        List<Integer> differenceDetailTypeIds = symmetricDifference(oldDetailTypeIds, curDetailTypeIds);
 
         // 将差集数据与表中数据再做一次差集
-        List<Integer> addDetailIds = difference(differenceDetailIds,oldDetailIds);
-        List<Integer> addDetailTypeIds = difference(differenceDetailTypeIds,oldDetailTypeId);
+        List<Integer> addDetailIds = leftDifference(differenceDetailIds, oldDetailIds);
+        List<Integer> addDetailTypeIds = leftDifference(differenceDetailTypeIds, oldDetailTypeIds);
 
         // 更新数据
-        productDetailService.productAssociationDetail(productId,addDetailIds);
-        detailTypeService.productAssociationDetailType(productId,addDetailTypeIds);
+        productDetailService.productAssociationDetail(productId, addDetailIds);
+        detailTypeService.productAssociationDetailType(productId, addDetailTypeIds);
 
         // 删除失效数据
-        productDetailService.productDisconnectDetail(productId,deleteDetailIds);
-        detailTypeService.productDisconnectDetailType(productId,deleteDetailTypeIds);
+        productDetailService.productDisconnectDetail(productId, deleteDetailIds);
+        detailTypeService.productDisconnectDetailType(productId, deleteDetailTypeIds);
 
+        syncRemovePageCache();
+        removeAllCache();
         return 1;
     }
 
@@ -263,7 +265,7 @@ public class ProductServiceImpl implements IProductService {
 
         ProductPO result_temp = productDao.getByName(productPO);
 
-        if(result_temp != null){
+        if (result_temp != null) {
             return SqlResultEnum.REPEAT_INSERT.getValue();
         }
 
@@ -276,7 +278,7 @@ public class ProductServiceImpl implements IProductService {
                 .stream()
                 .map(ProductDetail::getId)
                 .collect(Collectors.toList());
-        productDetailService.productAssociationDetail(productId,detailId);
+        productDetailService.productAssociationDetail(productId, detailId);
 
         // 关联商品和商品可选项详情
         ArrayList<Integer> detailTypeIds = new ArrayList<>();
@@ -285,51 +287,69 @@ public class ProductServiceImpl implements IProductService {
                 detailTypeIds.add(detailType.getId());
             });
         });
-        detailTypeService.productAssociationDetailType(productId,detailTypeIds);
+        detailTypeService.productAssociationDetailType(productId, detailTypeIds);
         // todo 后期事务上来以后要修改
         return 1;
     }
 
     /**
-     *  获取交集
+     * 获取交集
      */
-    private List<Integer> intersection(List<Integer> curList,List<Integer> oldList){
+    private List<Integer> intersection(List<Integer> curList, List<Integer> oldList) {
         return curList.stream()
                 .filter(oldList::contains)
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> difference(List<Integer> curList,List<Integer> oldList){
-        return curList.stream()
+    /**
+     *  获取对称差集
+     */
+    private List<Integer> symmetricDifference(List<Integer> curList, List<Integer> oldList) {
+        List<Integer> tempList = curList.stream()
                 .filter(integer -> !oldList.contains(integer))
+                .collect(Collectors.toList());
+        oldList.forEach(integer -> {
+                    if(!curList.contains(integer)){
+                        tempList.add(integer);
+                    }
+                });
+        return tempList;
+    }
+
+    /**
+     *  获取左边集合的差集
+     */
+    private List<Integer> leftDifference(List<Integer> left, List<Integer> right) {
+        return left.stream()
+                .filter(integer -> !right.contains(integer))
                 .collect(Collectors.toList());
     }
 
 
     /**
-     *  同步清理分页缓存
+     * 同步清理分页缓存
      */
-    private void syncRemovePageCache(){
+    private void syncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
         RedisUtil.del(keys);
     }
 
     /**
-     *  异步清理分页缓存
+     * 异步清理分页缓存
      */
-    private void asyncRemovePageCache(){
+    private void asyncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
         redisService.del(keys);
     }
 
-    private void removeAllCache(){
+    private void removeAllCache() {
         String redisName = productAllGetRedisName();
         RedisUtil.del(redisName);
     }
 
-    private String productAllGetRedisName(){
+    private String productAllGetRedisName() {
         return REDIS_PREFIX + ALL;
     }
 

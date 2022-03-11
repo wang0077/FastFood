@@ -100,7 +100,7 @@
     <select id="getProductDetailIdByProductId" resultMap="Middle">
         select product_id,product_detail_id
         from product__product_detail
-        where product_id
+        where valid = 1 and product_id
         in
         <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
             #{id}

@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
-import com.wang.productcenter.Redis.RedisService;
-import com.wang.productcenter.Util.RedisUtil;
+import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.ProductDetail;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     private IProductDetailService productDetailService;
 
     @Autowired
-    private RedisService redisService;
+    private AsyncRedis redisService;
 
     private static final String REDIS_PREFIX = "Detail-Type-";
 
@@ -186,6 +187,10 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         return getByProductDetailId(Lists.newArrayList(detailTypePO.getProductDetailId()));
     }
 
+    public List<Product_DetailType_Middle> getByProductMiddle(int id) {
+        return getByProductMiddle(Collections.singletonList(id));
+    }
+
     /**
      * 通过DetailType和Product中间表查找映射关系
      * @param idList DetailTypeId
@@ -256,7 +261,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     @Override
     public List<Integer> getDetailTypeIdsByProductId(int productId) {
-        List<Product_DetailType_Middle> middle = getByProductMiddle(new ArrayList<>(productId));
+        List<Product_DetailType_Middle> middle = getByProductMiddle(productId);
         return middle.stream()
                 .map(Product_DetailType_Middle::getDetailTypeId)
                 .collect(Collectors.toList());

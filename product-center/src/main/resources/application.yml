@@ -77,3 +77,14 @@ logging:
   level:
     root: info
   config: classpath:logback-dev.xml
+redis:
+  pool:
+    max-active: 100
+    min-idle: 100
+    max-idle: 100
+    max-wait-millis: -1
+  host: 159.75.20.118
+  port: 6379
+  database: 0
+  password: 228913
+  timeout: 2000

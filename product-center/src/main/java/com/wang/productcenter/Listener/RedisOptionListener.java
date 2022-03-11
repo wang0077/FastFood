@@ -1,13 +1,12 @@
 package com.wang.productcenter.Listener;
 
+import com.wang.productcenter.Redis.RedisService;
 import com.wang.productcenter.Util.JSONUtil;
 import com.wang.productcenter.entity.RocketMQ.RedisMessage;
 import com.wang.productcenter.enums.RedisOption;
-import com.wang.productcenter.Redis.RedisService;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * @Auther: wAnG
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 
-@Component
+//@Component
 @RocketMQMessageListener(topic = "RedisOption", consumerGroup = "Product-Center-Group")
 public class RedisOptionListener implements RocketMQListener<String> {
 

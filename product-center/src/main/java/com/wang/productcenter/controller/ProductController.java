@@ -7,7 +7,9 @@ import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductDTO;
 import com.wang.fastfood.apicommons.entity.common.Response;
+import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.Product;
+import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +87,25 @@ public class ProductController {
     }
 
     private Product buildBO(ProductDTO productDTO){
-        return BOUtils.convert(Product.class, productDTO);
+        Product product = BOUtils.convert(Product.class, productDTO);
+        if(productDTO.getProductDetailDTOList() != null){
+            product.setProductDetailList(productDTO.getProductDetailDTOList()
+                    .stream()
+                    .map(productDetailDTO -> {
+                        ProductDetail productDetail = BOUtils.convert(ProductDetail.class, productDetailDTO);
+                        if(productDetailDTO.getDetailTypeDTOList() != null){
+                            productDetail.setDetailTypeList(productDetailDTO.getDetailTypeDTOList()
+                                    .stream()
+                                    .map(detailTypeDTO -> {
+                                        return BOUtils.convert(DetailType.class,detailTypeDTO);
+                                    })
+                                    .collect(Collectors.toList()));
+                        }
+                        return productDetail;
+                    })
+                    .collect(Collectors.toList()));
+        }
+        return product;
     }
 
 }

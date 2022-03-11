@@ -6,7 +6,6 @@ import com.wang.productcenter.entity.RocketMQ.RedisMessage;
 import com.wang.productcenter.enums.RedisOption;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  * @Description:
  */
 
-@Service
+//@Service
 public class RedisService implements Serializable {
 
     @Autowired

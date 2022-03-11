@@ -21,6 +21,12 @@ public enum RedisOption {
     DECR("decr"),
     DECRBY("decrBy"),
     EXPIRE("expire"),
+    ZCARD("zcard"),
+    ZADD("zadd"),
+    ZREM("zrem"),
+    ZRANGE("zrange"),
+    HSET("hset"),
+    HMGET("hmget"),
     DEL("del");
 
     private final String opName;

@@ -1,6 +1,8 @@
 package com.wang.productcenter;
 
+import com.wang.fastfootstartredis.Util.RedisUtil;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -11,11 +13,9 @@ class ProductCenterApplicationTests {
     RocketMQTemplate rocketMQTemplate;
 
 
-//    public int S (Object a){
-//        System.out.println(a.getClass());
-//        if(a instanceof Number){
-//            System.out.println("yes");
-//        }
-//    }
+    @Test
+    public void S (){
+        RedisUtil.zadd("test",1,1);
+    }
 
 }
