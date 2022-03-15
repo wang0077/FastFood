@@ -29,6 +29,12 @@ public class ProductDetailController {
     @Autowired
     private IProductDetailService productDetailService;
 
+    @PostMapping("/flush")
+    public Response flushZset(){
+        productDetailService.flush();
+        return ResponseUtil.success();
+    }
+
     @PostMapping("/getAll")
     public Response<PageInfo<ProductDetailDTO>> getAll(@RequestBody ProductDetailDTO productDetailDTO){
         ProductDetail productDetail = buildBO(productDetailDTO);

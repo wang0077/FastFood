@@ -8,6 +8,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,90 @@ public class AsyncRedis implements Serializable {
     private RocketMQTemplate mqTemplate;
 
     private final int retryCount = 3;
+
+    public String zrem(String key,Integer member){
+        return zrem(key,Collections.singletonList(member));
+    }
+
+    public String zrem(String key,List<Integer> member){
+        return zrem(key,member,0);
+    }
+
+    public String zrem(String key,List<Integer> member,int indexDB){
+        String result = null;
+        int count = 0;
+        while (count < retryCount && !"0".equals(result)) {
+            count++;
+            result = String.valueOf(RedisUtil.zrem(key,member,indexDB));
+        }
+        if (count >= retryCount && "0".equals(result)) {
+            RedisMessage message = buildMessage(key,member,indexDB,RedisOption.ZREM);
+            sendMessage(message);
+            result = "MQ-Retry";
+        }
+        return result;
+    }
+
+    public String hdel(String key,Integer field){
+        return hdel(key, Collections.singletonList(field));
+    }
+
+    public String hdel(String key,List<Integer> field){
+        return hdel(key,field,0);
+    }
+
+    public String hdel(String key,List<Integer> field,int indexDB){
+        String result = null;
+        int count = 0;
+        while (count < retryCount && !"0".equals(result)) {
+            count++;
+            result = String.valueOf(RedisUtil.hdel(key,field));
+        }
+        if (count >= retryCount && "0".equals(result)) {
+            RedisMessage message = buildMessage(key,field,indexDB,RedisOption.HDEL);
+            sendMessage(message);
+            result = "MQ-Retry";
+        }
+        return result;
+    }
+
+    public String hmset(String keu,List<String> field,List<Object> value){
+        return hmset(keu,field,value,0);
+    }
+
+    public String hmset(String key,List<String> field,List<Object> value,int indexDB){
+        String result = null;
+        int count = 0;
+        while (count < retryCount && !"0".equals(result)) {
+            count++;
+            result = String.valueOf(RedisUtil.hmset(key,field,value,indexDB));
+        }
+        if (count >= retryCount && "0".equals(result)) {
+            RedisMessage message = buildMessage(key,field,value,indexDB,RedisOption.HMSET);
+            sendMessage(message);
+            result = "MQ-Retry";
+        }
+        return result;
+    }
+
+    public String hset(String key,String field,Object value){
+        return hset(key,field,value,0);
+    }
+
+    public String hset(String key,String field,Object value,int indexDB){
+        String result = null;
+        int count = 0;
+        while (count < retryCount && !"0".equals(result)) {
+            count++;
+            result = String.valueOf(RedisUtil.hset(key,field,value,indexDB));
+        }
+        if (count >= retryCount && "0".equals(result)) {
+            RedisMessage message = buildMessage(key,field,indexDB,RedisOption.HSET);
+            sendMessage(message);
+            result = "MQ-Retry";
+        }
+        return result;
+    }
 
     public String setex(String key, Object body, int seconds) {
         return setex(key, body, seconds, 0);
@@ -256,6 +341,35 @@ public class AsyncRedis implements Serializable {
         mq.setSeconds(seconds);
         mq.setOption(option);
         mq.setIndexDB(indexDB);
+        return mq;
+    }
+
+    private RedisMessage buildMessage(String key,String field,Object value,int indexDB,RedisOption option){
+        RedisMessage mq = new RedisMessage();
+        mq.setKey(key);
+        mq.setField(field);
+        mq.setPayload(value);
+        mq.setIndexDB(indexDB);
+        mq.setPayload(option);
+        return mq;
+    }
+
+    public RedisMessage buildMessage(String key,List<String> field,int indexDB,RedisOption option){
+        RedisMessage mq = new RedisMessage();
+        mq.setKey(key);
+        mq.setFields(field);
+        mq.setIndexDB(indexDB);
+        mq.setOption(option);
+        return mq;
+    }
+
+    public RedisMessage buildMessage(String key,List<String> field,List<Object> value,int indexDB,RedisOption option){
+        RedisMessage mq = new RedisMessage();
+        mq.setKey(key);
+        mq.setPayloads(value);
+        mq.setFields(field);
+        mq.setIndexDB(indexDB);
+        mq.setOption(option);
         return mq;
     }
 }

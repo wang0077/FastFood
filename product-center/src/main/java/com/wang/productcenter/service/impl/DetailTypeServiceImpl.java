@@ -4,8 +4,10 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
+import com.wang.fastfood.apicommons.entity.common.RedisPageInfo;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.fastfootstartredis.Redis.AsyncRedis;
+import com.wang.fastfootstartredis.Util.RedisPageUtil;
 import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.DetailTypeDao;
 import com.wang.productcenter.entity.BO.DetailType;
@@ -18,10 +20,7 @@ import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +43,10 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     private static final String REDIS_PREFIX = "Detail-Type-";
 
+    private static final String REDIS_PAGE_ZSET = "Detail-Type-Zset";
+
+    private static final String REDIS_PAGE_HASH = "Detail-Type-Map";
+
     private static final String ALL = "ALL";
 
     private static final String REDIS_PAGE = "page";
@@ -57,6 +60,16 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     private static final String REDIS_ORDERBY = "orderBy";
 
     private static final String REDIS_SEPARATE = "-";
+
+    public void flush(){
+        if(true){
+            throw new NullPointerException();
+        }
+//        List<DetailTypePO> all = detailTypeDao.getAll();
+//        all.forEach(productPO -> {
+//            RedisUtil.zadd(REDIS_PAGE_ZSET,productPO.getId(),productPO.getId());
+//        });
+    }
 
     public int insert(DetailType detailType) {
         DetailTypePO detailTypePO = detailType.doForward();
@@ -75,45 +88,47 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Override
     public PageInfo<DetailType> getAll(DetailType detailType) {
         PageInfo<DetailType> result = null;
-        String redisName = DetailTypeAllGetRedisName(detailType);
-        result = RedisUtil.getByPageInfo(redisName, DetailType.class);
-        if (result == null) {
-            RLock lock = RedisUtil.getLock(redisName);
+        RedisPageInfo<DetailType> pageInfo = PageUtils.startRedisPage(detailType);
+        RedisPageUtil.computeRedisPageInfo(pageInfo,REDIS_PAGE_ZSET);
+        RedisPageUtil.getPageData(pageInfo,REDIS_PAGE_ZSET,REDIS_PAGE_HASH,DetailType.class);
+        if (pageInfo.isExistMiss()) {
+            RLock lock = RedisUtil.getLock(REDIS_PAGE_HASH);
             if (lock.tryLock()) {
                 try {
-                    PageUtils.startPage(detailType);
-                    List<DetailTypePO> poResult = detailTypeDao.getAll();
+                    List<DetailTypePO> poResult = detailTypeDao.getByIds(pageInfo.getMissIds());
                     List<DetailType> detailTypeList = poResult.stream()
                             .map(DetailTypePO::convertToDetailType)
                             .collect(Collectors.toList());
                     getProductDetail(detailTypeList);
-                    result = PageUtils.getPageInfo(poResult, detailTypeList);
-                    if (result != null) {
-                        redisService.set(redisName, result);
-                    }
+                    RedisUtil.hmset(REDIS_PAGE_HASH
+                            ,detailTypeList.stream().map(item -> String.valueOf(item.getId())).collect(Collectors.toList())
+                            ,detailTypeList);
+                    pageInfo.getList().addAll(detailTypeList);
+                    pageInfo.getList().sort(Comparator.comparingInt(DetailType::getId));
                 } finally {
                     lock.unlock();
                 }
             }
         }
+        result = PageUtils.getPageInfo(pageInfo);
         return result;
     }
 
     @Override
     public DetailType getById(DetailType detailType) {
         DetailType result = null;
-        String redisName = DetailTypeGetRedisName(detailType);
-        result = RedisUtil.get(redisName, DetailType.class);
+        Integer id = detailType.getId();
+        result = RedisUtil.hget(REDIS_PAGE_HASH,String.valueOf(id), DetailType.class);
         if (result == null) {
-            RLock lock = RedisUtil.getLock(redisName);
+            RLock lock = RedisUtil.getLock(REDIS_PAGE_HASH);
             if (lock.tryLock()) {
                 try {
-                    DetailTypePO detailTypePO = detailType.doForward();
-                    DetailTypePO poResult = detailTypeDao.getById(detailTypePO);
-                    if (poResult != null) {
+                    result = RedisUtil.hget(REDIS_PAGE_HASH,String.valueOf(id),DetailType.class);
+                    if (result != null) {
+                        DetailTypePO detailTypePO = detailType.doForward();
+                        DetailTypePO poResult = detailTypeDao.getById(detailTypePO);
                         result = poResult.convertToDetailType();
-                        redisName = DetailTypeGetRedisName(detailType);
-                        redisService.set(redisName, result);
+                        redisService.hset(REDIS_PAGE_HASH,String.valueOf(result.getId()),result);
                     }
                 } finally {
                     lock.unlock();
@@ -168,15 +183,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
             return;
         }
         redisService.del(keys);
+        redisService.zrem(REDIS_PAGE_ZSET,detailType.getId());
     }
 
     @Override
     public int update(DetailType detailType) {
-        syncRemovePageCache();
         DetailTypePO detailTypePO = detailType.doForward();
         int result = detailTypeDao.update(detailTypePO);
-        asyncRemovePageCache();
-        removeAllCache();
+        redisService.hdel(REDIS_PAGE_HASH,detailType.getId());
         return result;
     }
 
@@ -204,11 +218,11 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Override
     public List<DetailType> getByIds(List<Integer> idList) {
         List<DetailType> result = null;
-        List<String> redisNameList = DetailTypesIdsGetRedisName(idList);
-        List<String> keys = RedisUtil.keys(redisNameList);
-        if (keys != null && keys.size() > 0) {
-            result = RedisUtil.mget(DetailType.class, keys);
-        }
+
+        result = RedisUtil.hmget(REDIS_PAGE_HASH
+                ,idList.stream().map(String::valueOf).collect(Collectors.toList())
+                ,DetailType.class);
+
         List<Integer> MissId = null;
         if (result != null) {
             if (result.size() != idList.size()) {
@@ -231,14 +245,18 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         }
         if(MissId != null && MissId.size() > 0){
             List<DetailTypePO> poResult = detailTypeDao.getByIds(idList);
-            result = poResult.stream()
+            List<DetailType> missResult = poResult.stream()
                     .map(DetailTypePO::convertToDetailType)
                     .collect(Collectors.toList());
-            redisNameList = new ArrayList<>();
-            for (DetailType detailType : result) {
-                redisNameList.add(DetailTypeGetRedisName(detailType));
+            RedisUtil.hmset(REDIS_PAGE_HASH
+                    ,missResult.stream().map(productDetail -> String.valueOf(productDetail.getId())).collect(Collectors.toList())
+                    ,missResult);
+
+            if(result == null){
+                result = missResult;
+            }else{
+                result.addAll(missResult);
             }
-            redisService.mset(redisNameList,result);
         }
         return result;
     }

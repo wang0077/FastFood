@@ -3,6 +3,8 @@ package com.wang.productcenter.service;
 import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.Product;
 
+import java.util.List;
+
 /**
  * @Auther: wAnG
  * @Date: 2021/12/4 20:57
@@ -25,4 +27,8 @@ public interface IProductService {
     int update(Product product);
 
     int insert(Product product);
+
+    List<Product> getProductByTypeId(Integer id);
+
+    public void flush();
 }

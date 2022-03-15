@@ -2,7 +2,9 @@ package com.wang.fastfood.apicommons.Util;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.wang.fastfood.apicommons.Function.Convert;
 import com.wang.fastfood.apicommons.entity.common.Page;
+import com.wang.fastfood.apicommons.entity.common.RedisPageInfo;
 import com.wang.fastfood.apicommons.exception.StartPageException;
 
 import java.util.List;
@@ -14,6 +16,27 @@ import java.util.List;
  */
 
 public class PageUtils {
+
+    public static <T> RedisPageInfo<T> startRedisPage(T Bean){
+        RedisPageInfo<T> pageInfo = null;
+        try {
+            if(Bean instanceof Page){
+                pageInfo = new RedisPageInfo<>();
+                Page page = (Page) Bean;
+                if(!page.IsPage()){
+                    return pageInfo;
+                }
+                pageInfo.setPageNum(page.getPageNum());
+                pageInfo.setPageSize(page.getPageSize());
+                pageInfo.setIsPage(true);
+            }else {
+                throw new StartPageException();
+            }
+        }catch (StartPageException e){
+            e.printStackTrace();
+        }
+        return pageInfo;
+    }
 
     /**
      * 使用PageHelper开启分页，直接传入对应的Bean会自动判断是否需要进行分页
@@ -57,6 +80,30 @@ public class PageUtils {
             dest.setTotal(source.getTotal());
             PageInfo<S> result = new PageInfo<>(dest);
             result.setList(destList);
+            return result;
+        }
+        return null;
+    }
+
+    public static <T,S> PageInfo<S> getPageInfo(RedisPageInfo<T> source, Convert<T,S> convert){
+        if(source != null){
+            com.github.pagehelper.Page<S> dest =
+                    new com.github.pagehelper.Page<>(source.getPageNum(), source.getPageSize());
+            dest.setTotal(source.getTotal());
+            PageInfo<S> result = new PageInfo<>(dest);
+            result.setList(convert.doConvert(source.getList()));
+            return result;
+        }
+        return null;
+    }
+
+    public static <T> PageInfo<T> getPageInfo(RedisPageInfo<T> source){
+        if(source != null){
+            com.github.pagehelper.Page<T> dest =
+                    new com.github.pagehelper.Page<>(source.getPageNum(), source.getPageSize());
+            dest.setTotal(source.getTotal());
+            PageInfo<T> result = new PageInfo<>(dest);
+            result.setList(source.getList());
             return result;
         }
         return null;

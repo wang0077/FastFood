@@ -26,6 +26,8 @@ public enum RedisOption {
     ZREM("zrem"),
     ZRANGE("zrange"),
     HSET("hset"),
+    HMSET("hmset"),
+    HDEL("hdel"),
     HMGET("hmget"),
     DEL("del");
 

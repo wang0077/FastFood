@@ -1,5 +1,6 @@
 package com.wang.fastfood.apicommons.entity.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**

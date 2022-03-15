@@ -13,7 +13,7 @@ echo "==================================="
 scp $targetPath/$serverName$suffix$type root@106.55.239.37:/root/project
 
 
-ssh root@106.13.206.235 << eeooff
+ssh root@106.55.239.37 << eeooff
 cd /root/project
 echo "==================================="
 echo "=============停止现有应用==========="

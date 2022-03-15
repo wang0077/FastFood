@@ -4,6 +4,7 @@ import com.wang.fastfootstartredis.enums.RedisOption;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Auther: wAnG
@@ -18,6 +19,8 @@ public class RedisMessage implements Serializable {
 
     private Object payload;
 
+    private List<Object> payloads;
+
     private int indexDB;
 
     private int seconds;
@@ -27,5 +30,9 @@ public class RedisMessage implements Serializable {
     private RedisOption option;
 
     private String memberNum;
+
+    private String field;
+
+    private List<String> fields;
 
 }

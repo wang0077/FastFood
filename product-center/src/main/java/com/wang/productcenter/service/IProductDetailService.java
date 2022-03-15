@@ -37,4 +37,5 @@ public interface IProductDetailService {
 
     List<Integer> getProductDetailIdsByProductId(int productId);
 
+    void flush();
 }

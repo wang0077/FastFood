@@ -149,5 +149,21 @@
         from product where product_name = #{productName};
     </select>
 
+    <select id="getByIds" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from
+        product where id in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getProductByTypeId" resultMap="productMap">
+        select
+        <include refid="SelectTo"/>
+        from product
+        where valid = 1 and type_id = #{id}
+    </select>
+
 
 </mapper>

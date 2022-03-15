@@ -19,6 +19,8 @@ public interface ProductDao {
 
     ProductPO getById(@Param("product")ProductPO productPO);
 
+    List<ProductPO> getByIds(@Param("list")List<Integer> ids);
+
     ProductPO getByName(@Param("product")ProductPO productPO);
 
     List<ProductPO> likeByName(@Param("product")ProductPO productPO);
@@ -30,4 +32,6 @@ public interface ProductDao {
     int insert(@Param("product")ProductPO productPO);
 
     int getProductIdByName(String productName);
+
+    List<ProductPO> getProductByTypeId(@Param("id") Integer id);
 }

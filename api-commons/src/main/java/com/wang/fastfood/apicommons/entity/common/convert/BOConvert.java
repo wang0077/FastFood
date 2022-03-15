@@ -5,6 +5,6 @@ package com.wang.fastfood.apicommons.entity.common.convert;
  * @Date: 2021/11/30 21:19
  * @Description:
  */
-public interface BOConvert <S,T> extends Convert{
+public interface BOConvert <S,T> {
     T convert(S s);
 }

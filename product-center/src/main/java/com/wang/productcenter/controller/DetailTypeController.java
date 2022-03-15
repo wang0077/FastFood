@@ -29,8 +29,14 @@ public class DetailTypeController {
     @Autowired
     IDetailTypeService detailTypeService;
 
-    @GetMapping("/getAll")
-    public Response<PageInfo<DetailTypeDTO>> getAll(DetailTypeDTO detailTypeDTO) {
+    @PostMapping("/flush")
+    public Response flushZset(){
+        detailTypeService.flush();
+        return ResponseUtil.success();
+    }
+
+    @PostMapping("/getAll")
+    public Response<PageInfo<DetailTypeDTO>> getAll(@RequestBody DetailTypeDTO detailTypeDTO) {
         DetailType detailType = buildBO(detailTypeDTO);
         PageInfo<DetailType> result = detailTypeService.getAll(detailType);
         return ResponseUtil.success(PageUtils.getPageInfo(result, result.getList()
@@ -47,14 +53,14 @@ public class DetailTypeController {
     }
 
     @PostMapping("/getById")
-    public Response<DetailTypeDTO> getById(DetailTypeDTO detailTypeDTO) {
+    public Response<DetailTypeDTO> getById(@RequestBody DetailTypeDTO detailTypeDTO) {
         DetailType detailType = buildBO(detailTypeDTO);
         DetailType result = detailTypeService.getById(detailType);
         return ResponseUtil.success(result.doBackward());
     }
 
     @PostMapping("/getByProductDetailId")
-    public Response<PageInfo<DetailTypeDTO>> getByProductDetailId(DetailTypeDTO detailTypeDTO) {
+    public Response<PageInfo<DetailTypeDTO>> getByProductDetailId(@RequestBody DetailTypeDTO detailTypeDTO) {
         DetailType detailType = buildBO(detailTypeDTO);
         PageInfo<DetailType> result = detailTypeService.getByProductDetailId(detailType);
         return ResponseUtil.success(PageUtils.getPageInfo(result, result.getList()
@@ -64,14 +70,14 @@ public class DetailTypeController {
     }
 
     @PostMapping("/getByName")
-    public Response<DetailTypeDTO> getByName(DetailTypeDTO detailTypeDTO) {
+    public Response<DetailTypeDTO> getByName(@RequestBody DetailTypeDTO detailTypeDTO) {
         DetailType detailType = buildBO(detailTypeDTO);
         DetailType result = detailTypeService.getByName(detailType);
         return ResponseUtil.success(result != null ? result.doBackward() : null);
     }
 
     @PostMapping("/getLikeName")
-    public Response<PageInfo<DetailTypeDTO>> getLikeName(DetailTypeDTO detailTypeDTO) {
+    public Response<PageInfo<DetailTypeDTO>> getLikeName(@RequestBody DetailTypeDTO detailTypeDTO) {
         DetailType detailType = buildBO(detailTypeDTO);
         PageInfo<DetailType> result = detailTypeService.getLikeName(detailType);
         return ResponseUtil.success(PageUtils.getPageInfo(result, result.getList()

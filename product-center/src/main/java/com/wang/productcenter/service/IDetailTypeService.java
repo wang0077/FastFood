@@ -41,4 +41,6 @@ public interface IDetailTypeService {
     void productDisconnectDetailType(int productId, List<Integer> detailTypeIds);
 
     List<Integer> getDetailTypeIdsByProductId(int productId);
+
+    void flush();
 }

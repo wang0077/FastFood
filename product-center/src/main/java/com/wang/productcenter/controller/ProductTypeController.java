@@ -33,6 +33,12 @@ public class ProductTypeController {
     @Autowired
     private DiscoveryClient discoveryClient;
 
+    @PostMapping("/flush")
+    public Response flushZset(){
+        productTypeService.flush();
+        return ResponseUtil.success();
+    }
+
     @PostMapping("/getAll")
     public Response<PageInfo<ProductTypeDTO>> getAll(@RequestBody ProductTypeDTO productTypeDTO) {
         ProductType productType = buildBO(productTypeDTO);

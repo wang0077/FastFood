@@ -29,4 +29,5 @@ public interface IProductTypeService {
 
     Map<Integer,ProductType> groupById(List<Integer> idList);
 
+    void flush();
 }

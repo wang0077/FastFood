@@ -31,6 +31,12 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @PostMapping("/flush")
+    public Response flushZset(){
+        productService.flush();
+        return ResponseUtil.success();
+    }
+
     @PostMapping("/insert")
     public Response insert(@RequestBody ProductDTO productDTO){
         Product product = buildBO(productDTO);

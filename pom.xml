@@ -13,6 +13,9 @@
         <module>user-center</module>
         <module>product-center</module>
         <module>api-commons</module>
+        <module>store-center</module>
+        <module>Fast-Food-Start-BaseInfo</module>
+        <module>Fast-Foot-Start-Redis</module>
     </modules>
 
     <properties>
@@ -23,7 +26,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>4.12</junit.version>
         <log4j.version>1.2.16</log4j.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.14.6</lombok.version>
         <mysql.version>8.0.22</mysql.version>
         <druid.verison>1.1.8</druid.verison>
         <mybatis.spring.boot.verison>2.1.4</mybatis.spring.boot.verison>
@@ -130,9 +133,10 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.2.2</version>
             <type>maven-plugin</type>
             <exclusions>
                 <exclusion>
@@ -204,18 +208,6 @@
     </dependencies>
 
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-            <plugins>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
