@@ -42,5 +42,11 @@ public interface IDetailTypeService {
 
     List<Integer> getDetailTypeIdsByProductId(int productId);
 
+    List<Integer> getIdsByProductDetailId(Integer productDetailId);
+
+    int removeDetailTypeCacheByDetailTypeId(Integer detailTypeId);
+
+    int removeDetailTypeCacheByDetailTypeId(List<Integer> detailTypeId);
+
     void flush();
 }

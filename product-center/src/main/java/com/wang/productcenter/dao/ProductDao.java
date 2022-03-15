@@ -1,6 +1,8 @@
 package com.wang.productcenter.dao;
 
 import com.wang.productcenter.entity.PO.ProductPO;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
+import com.wang.productcenter.entity.PO.Product_Detail_Middle;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,4 +36,10 @@ public interface ProductDao {
     int getProductIdByName(String productName);
 
     List<ProductPO> getProductByTypeId(@Param("id") Integer id);
+
+    List<Integer> getProductIdByTypeId(@Param("id") Integer id);
+
+    List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> idList);
+
+    List<Product_Detail_Middle> getProductByDetailId(@Param("list") List<Integer> productDetailIds);
 }

@@ -18,6 +18,16 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <resultMap type="com.wang.productcenter.entity.PO.Product_DetailType_Middle" id="detailTypeMiddle">
+        <result property="productId" column="product_id"/>
+        <result property="detailTypeId" column="detail_type_id"/>
+    </resultMap>
+
+    <resultMap type="com.wang.productcenter.entity.PO.Product_Detail_Middle" id="detailMiddle">
+        <result property="productId" column="product_id"/>
+        <result property="productDetailId" column="product_detail_id"/>
+    </resultMap>
+
     <sql id="SelectTo">
         id,
         type_id,
@@ -163,6 +173,32 @@
         <include refid="SelectTo"/>
         from product
         where valid = 1 and type_id = #{id}
+    </select>
+
+    <select id="getProductIdByTypeId" resultType="java.lang.Integer">
+        select
+        id
+        from product
+        where valid = 1 and type_id = #{id}
+    </select>
+    <select id="getProductByDetailTypeId" resultMap="detailTypeMiddle">
+        select product_id,detail_type_id
+        from product__detail_type
+        where valid = 1 and detail_type_id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getProductByDetailId" resultMap="detailMiddle">
+        select *
+        from product__product_detail
+        where valid = 1 and product_detail_id
+        in
+        <foreach collection="list" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
     </select>
 
 

@@ -37,5 +37,9 @@ public interface IProductDetailService {
 
     List<Integer> getProductDetailIdsByProductId(int productId);
 
+    int removeProductDetailCache(Integer productDetailId);
+
+    int removeProductDetailCache(List<Integer> productDetailIds);
+
     void flush();
 }

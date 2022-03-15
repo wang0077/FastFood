@@ -4,13 +4,17 @@ import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.RedisPageInfo;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
+import com.wang.fastfood.apicommons.exception.DeleteException;
 import com.wang.fastfootstartredis.Redis.AsyncRedis;
 import com.wang.fastfootstartredis.Util.RedisPageUtil;
 import com.wang.fastfootstartredis.Util.RedisUtil;
 import com.wang.productcenter.dao.ProductTypeDao;
+import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.entity.PO.ProductTypePO;
+import com.wang.productcenter.service.IProductService;
 import com.wang.productcenter.service.IProductTypeService;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +38,7 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     private ProductTypeDao productTypeDao;
 
     @Autowired
-    private ProductServiceImpl productService;
+    private IProductService productService;
 
     @Autowired
     private AsyncRedis redisService;
@@ -178,8 +182,14 @@ public class ProductTypeServiceImpl implements IProductTypeService {
     public void removeType(ProductType productType) {
         ProductTypePO productTypePO = productType.doForward();
 
+        Integer id = productType.getId();
         // 检查是否有商品正在使用这个数据
+        List<Product> checkList = productService.getProductByTypeId(id);
+        if(checkList.size() > 0){
+            throw new DeleteException("此分类正在被商品正在使用",CodeEnum.SQL_DELETE_ERROR);
+        }
 
+        // 删除数据没有存在依赖性，进行删除
         productTypeDao.remove(productTypePO);
         redisService.zrem(REDIS_PAGE_ZSET,productType.getId());
         String redisName = productTypeGetRedisName(productType);
@@ -192,6 +202,9 @@ public class ProductTypeServiceImpl implements IProductTypeService {
         redisService.hdel(REDIS_PAGE_HASH,productType.getId());
         String redisName = productTypeGetRedisName(productType);
         redisService.del(redisName);
+
+        // 清除商品依赖相关Hash缓存
+        removeProductCache(productType);
         return result;
     }
 
@@ -202,6 +215,11 @@ public class ProductTypeServiceImpl implements IProductTypeService {
                 .map(ProductTypePO::convertToProductType)
                 .collect(Collectors.toList());
         return productTypes.stream().collect(Collectors.toMap(ProductType::getId, productType -> productType));
+    }
+
+    private void removeProductCache(ProductType productType) {
+        List<Integer> productIds = productService.getProductIdsByTypeId(productType.getId());
+        productService.removeProductCacheByProductId(productIds);
     }
 
     @Deprecated

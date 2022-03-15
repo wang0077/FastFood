@@ -14,6 +14,8 @@ import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.entity.BO.ProductType;
 import com.wang.productcenter.entity.PO.ProductPO;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
+import com.wang.productcenter.entity.PO.Product_Detail_Middle;
 import com.wang.productcenter.service.IDetailTypeService;
 import com.wang.productcenter.service.IProductDetailService;
 import com.wang.productcenter.service.IProductService;
@@ -22,10 +24,7 @@ import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -95,6 +94,8 @@ public class ProductServiceImpl implements IProductService {
                     List<Product> products = missResult.stream()
                             .map(ProductPO::convertToProduct)
                             .collect(Collectors.toList());
+                    getProductDetail(products);
+                    getProductType(products);
                     // todo 同步添加缓存没有保障机制
                     RedisUtil.hmset(REDIS_PAGE_HASH
                             ,products.stream().map(item -> String.valueOf(item.getId())).collect(Collectors.toList())
@@ -301,6 +302,37 @@ public class ProductServiceImpl implements IProductService {
         return productPOList.stream()
                 .map(ProductPO::convertToProduct)
                 .collect(Collectors.toList());
+    }
+
+    public List<Integer> getProductIdsByTypeId(Integer typeId){
+        return productDao.getProductIdByTypeId(typeId);
+    }
+
+    public List<Integer> getProductIdsByDetail(Integer productDetailId){
+        List<Product_Detail_Middle> middles =
+                productDao.getProductByDetailId(Collections.singletonList(productDetailId));
+        return middles.stream().map(Product_Detail_Middle::getProductId).collect(Collectors.toList());
+    }
+
+    /**
+     * 删除商品的Hash缓存
+     */
+    public int removeProductCacheByProductId(Integer ProductId) {
+        return removeProductCacheByProductId(Collections.singletonList(ProductId));
+    }
+
+    /**
+     * 删除商品的Hash缓存
+     */
+    public int removeProductCacheByProductId(List<Integer> ProductIds){
+        String result = redisService.hdel(REDIS_PAGE_HASH, ProductIds);
+        return Integer.parseInt(result);
+    }
+
+
+
+    public List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> detailTypeIds){
+        return productDao.getProductByDetailTypeId(detailTypeIds);
     }
 
     /**

@@ -45,4 +45,6 @@ public interface DetailTypeDao {
      *  新增(断开)商品和商品可选项详情表关联关系
      */
     int productDisconnectDetailType(@Param("productId") int productId, @Param("detailTypeId") int detailTypeId);
+
+    List<Integer> getIdsByProductDetailId(@Param("id") int productDetailId);
 }

@@ -2,6 +2,7 @@ package com.wang.productcenter.service;
 
 import com.github.pagehelper.PageInfo;
 import com.wang.productcenter.entity.BO.Product;
+import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 
 import java.util.List;
 
@@ -29,6 +30,16 @@ public interface IProductService {
     int insert(Product product);
 
     List<Product> getProductByTypeId(Integer id);
+
+    int removeProductCacheByProductId(Integer id);
+
+    int removeProductCacheByProductId(List<Integer> ProductIds);
+
+    List<Integer> getProductIdsByTypeId(Integer typeId);
+
+    List<Integer> getProductIdsByDetail(Integer productDetailId);
+
+    List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> detailTypeIds);
 
     public void flush();
 }

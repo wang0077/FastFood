@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.RedisPageInfo;
+import com.wang.fastfood.apicommons.enums.CodeEnum;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
+import com.wang.fastfood.apicommons.exception.DeleteException;
 import com.wang.fastfootstartredis.Redis.AsyncRedis;
 import com.wang.fastfootstartredis.Util.RedisPageUtil;
 import com.wang.fastfootstartredis.Util.RedisUtil;
@@ -16,6 +18,7 @@ import com.wang.productcenter.entity.PO.DetailTypePO;
 import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 import com.wang.productcenter.service.IDetailTypeService;
 import com.wang.productcenter.service.IProductDetailService;
+import com.wang.productcenter.service.IProductService;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,9 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
 
     @Autowired
     private IProductDetailService productDetailService;
+
+    @Autowired
+    private IProductService productService;
 
     @Autowired
     private AsyncRedis redisService;
@@ -77,12 +83,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         if (detailTypePO.getProductDetailId() == null || validityProductDetailId(detailType)) {
             return SqlResultEnum.ERROR_INSERT.getValue();
         }
-        DetailTypePO result = detailTypeDao.getByName(detailTypePO);
-        if (result != null) {
+        DetailTypePO checkResult = detailTypeDao.getByName(detailTypePO);
+        if (checkResult != null) {
             return SqlResultEnum.REPEAT_INSERT.getValue();
         }
-        asyncRemovePageCache();
-        return detailTypeDao.insert(detailTypePO);
+        int result = detailTypeDao.insert(detailTypePO);
+        checkResult = detailTypeDao.getByName(detailTypePO);
+        RedisUtil.zadd(REDIS_PAGE_ZSET,checkResult.getId(),checkResult.getId());
+        return result;
     }
 
     @Override
@@ -176,6 +184,21 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Override
     public void remove(DetailType detailType) {
         DetailTypePO detailTypePO = detailType.doForward();
+
+        // 检查该数据的依赖情况
+
+        List<Product_DetailType_Middle> middles =
+                productService.getProductByDetailTypeId(Collections.singletonList(detailType.getId()));
+        if(middles.size() > 0){
+            throw new DeleteException("该可选项正在被商品正在使用", CodeEnum.SQL_DELETE_ERROR);
+        }
+        List<ProductDetail> productDetails =
+                productDetailService.getByIds(Collections.singletonList(detailType.getProductDetailId()));
+        if(productDetails.size() > 0){
+            throw new DeleteException("该可选项正在被可选项分类正在使用", CodeEnum.SQL_DELETE_ERROR);
+        }
+
+        // 数据无依赖情况进行删除
         detailTypeDao.remove(detailTypePO);
         String redisName = DetailTypeGetRedisName(detailType);
         List<String> keys = RedisUtil.keys(redisName);
@@ -191,6 +214,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         DetailTypePO detailTypePO = detailType.doForward();
         int result = detailTypeDao.update(detailTypePO);
         redisService.hdel(REDIS_PAGE_HASH,detailType.getId());
+        Integer detailTypeId = detailType.getId();
+        Integer productDetailId = detailType.getProductDetailId();
+
+        // 删除有关联的商品缓存
+        removeProductCache(detailTypeId);
+        // 删除有关联的可选项分类缓存
+        removeProductDetailCache(productDetailId);
+
         return result;
     }
 
@@ -286,6 +317,28 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     }
 
     @Override
+    public List<Integer> getIdsByProductDetailId(Integer productDetailId) {
+        return detailTypeDao.getIdsByProductDetailId(productDetailId);
+    }
+
+    /**
+     * 删除可选项的Hash缓存
+     */
+    @Override
+    public int removeDetailTypeCacheByDetailTypeId(Integer detailTypeId) {
+        return removeDetailTypeCacheByDetailTypeId(Collections.singletonList(detailTypeId));
+    }
+
+    /**
+     * 删除可选项的Hash缓存
+     */
+    @Override
+    public int removeDetailTypeCacheByDetailTypeId(List<Integer> detailTypeId) {
+        String result = redisService.hdel(REDIS_PAGE_HASH, detailTypeId);
+        return Integer.parseInt(result);
+    }
+
+    @Override
     public Map<Integer, List<DetailType>> groupByProductDetailId(List<Integer> idList) {
         PageInfo<DetailType> result = getByProductDetailId(idList);
         List<DetailType> detailTypes = result.getList();
@@ -293,9 +346,23 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
                 .collect(Collectors.groupingBy(DetailType::getProductDetailId));
     }
 
+    private int removeProductCache(Integer detailTypeId){
+        List<Product_DetailType_Middle> middles =
+                productService.getProductByDetailTypeId(Collections.singletonList(detailTypeId));
+        List<Integer> productIds = middles.stream()
+                        .map(Product_DetailType_Middle::getProductId)
+                        .collect(Collectors.toList());
+        return productService.removeProductCacheByProductId(productIds);
+    }
+
+    private int removeProductDetailCache(Integer productDetailId){
+        return productDetailService.removeProductDetailCache(productDetailId);
+    }
+
     /**
      * 同步清理分页缓存
      */
+    @Deprecated
     private void syncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
@@ -305,6 +372,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     /**
      * 异步清理分页缓存
      */
+    @Deprecated
     private void asyncRemovePageCache() {
         String redisName = REDIS_PREFIX + REDIS_PAGE + ":*";
         List<String> keys = RedisUtil.keys(redisName);
@@ -385,6 +453,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         productDetails.forEach(productDetail -> {
             detailTypes.forEach(detailType -> {
                 if (detailType.getProductDetailId().equals(productDetail.getId())) {
+                    productDetail.setDetailTypeList(null);
                     detailType.setProductDetail(productDetail);
                 }
             });

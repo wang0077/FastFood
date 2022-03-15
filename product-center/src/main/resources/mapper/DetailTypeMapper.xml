@@ -132,4 +132,10 @@
         </foreach>
     </select>
 
+    <select id="getIdsByProductDetailId" resultType="java.lang.Integer">
+        select id
+        from detail_type
+        where product_detail_id = #{id}
+    </select>
+
 </mapper>

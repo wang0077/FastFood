@@ -29,6 +29,7 @@ public class ResponseUtil {
         return buildResult(errorCode, data);
     }
 
+    @Deprecated
     public static<T> Response<T> fail(BaseEnum errorCode,T data) {
         return buildResult(errorCode, data);
     }
@@ -41,6 +42,10 @@ public class ResponseUtil {
         return buildResult(errorCode, errorMsg, null);
     }
 
+    public static<T> Response<T> fail(BaseEnum errorCode,String errorMsg){
+        return buildResult(errorCode.getCode(),errorMsg,null);
+    }
+
     private static<T> Response<T> buildResult(BaseEnum errorCode, T data) {
         return buildResult(errorCode.getCode(), errorCode.getMsg(), data);
     }
@@ -48,4 +53,5 @@ public class ResponseUtil {
     private static<T> Response<T> buildResult(int errorCode, String errorMsg, T data) {
         return new Response(errorCode, errorMsg, data);
     }
+
 }
