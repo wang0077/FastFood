@@ -105,11 +105,12 @@
         select
         <include refid="SelectTo"/>
         from detail_type
-        where product_detail_id
+        where valid = 1 and product_detail_id
         in
         <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
             #{id}
         </foreach>
+
     </select>
     <select id="getDetailTypeByProductId" resultMap="middle">
         select product_id,detail_type_id

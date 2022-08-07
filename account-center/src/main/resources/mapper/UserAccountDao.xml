@@ -9,13 +9,16 @@
         <result property="uid" column="uid"/>
         <result property="amount" column="amount"/>
         <result property="integral" column="integral"/>
+        <result property="experience" column="experience"/>
+        <result property="needExperience" column="need_experience"/>
+        <result property="userLevel" column="user_level"/>
         <result property="valid" column="valid"/>
         <result property="crateTime" column="crate_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="SelectTo">
-        id,account_id,uid,amount,integral
+        id,account_id,uid,amount,integral,user_level,experience,need_experience
     </sql>
 
     <insert id="insert">
@@ -25,10 +28,32 @@
             (#{userAccount.accountId},#{userAccount.uid},0,0,1)
     </insert>
 
+    <update id="addExperienceAndIntegral">
+        update user_account set
+        user_level = #{userAccount.userLevel},
+        experience = #{userAccount.experience},
+        integral = #{userAccount.integral},
+        need_experience = #{userAccount.needExperience}
+        where
+        uid = #{userAccount.uid}
+    </update>
+
     <update id="checkIn">
         update user_account set
         integral = integral + #{userAccount.addIntegral}
         where uid = #{userAccount.uid};
+    </update>
+
+    <update id="rechargeAmount">
+        update user_account set
+        amount = amount + #{userAccount.amount}
+        where uid = #{userAccount.uid}
+    </update>
+
+    <update id="pay">
+        update user_account set
+        amount = amount - #{amount}
+        where uid = #{uid}
     </update>
 
     <select id="getByUserId" resultMap="userAccountMap">
@@ -36,6 +61,13 @@
         <include refid="SelectTo"/>
         from user_account
         where uid = #{userAccount.uid} and valid = 1;
+    </select>
+
+    <select id="getUserAmount" resultType="java.lang.Double">
+        select
+               amount
+            from user_account
+        where valid = 1 and uid = #{uid}
     </select>
 
 

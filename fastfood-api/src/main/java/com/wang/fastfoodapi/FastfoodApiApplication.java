@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableFeignClients
 public class FastFoodApiApplication {
 
+
+
     public static void main(String[] args) {
         SpringApplication.run(FastFoodApiApplication.class, args);
     }

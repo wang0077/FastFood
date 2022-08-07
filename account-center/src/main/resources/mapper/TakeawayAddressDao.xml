@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.accountcenter.dao.TakeawayAddressDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.accountcenter.entity.PO.TakeawayAddressPO" id="takeawayAddressMap">
+        <result property="id" column="id"/>
+        <result property="addressId" column="address_id"/>
+        <result property="uid" column="uid"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="sex" column="sex"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="houseNumber" column="house_number"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        uid,address_id,phone_number,sex,name,address,house_number
+    </sql>
+
+    <insert id="insert">
+        insert into takeaway_address
+            (
+             address_id,
+             uid,
+             phone_number,
+             sex,
+             name,
+             address,
+             house_number,
+             valid
+             )
+            VALUES
+            (
+             #{takeawayAddress.addressId},
+             #{takeawayAddress.uid},
+             #{takeawayAddress.phoneNumber},
+             #{takeawayAddress.sex},
+             #{takeawayAddress.name},
+             #{takeawayAddress.address},
+             #{takeawayAddress.houseNumber},
+             1
+            )
+    </insert>
+
+    <update id="update">
+        update takeaway_address
+        <trim prefix="set" suffixOverrides=",">
+            <if test="takeawayAddress.phoneNumber != null">
+                phone_number = #{takeawayAddress.phoneNumber},
+            </if>
+            <if test="takeawayAddress.sex != null">
+                sex = #{takeawayAddress.sex},
+            </if>
+            <if test="takeawayAddress.name != null">
+                name = #{takeawayAddress.name},
+            </if>
+            <if test="takeawayAddress.address != null">
+                address = #{takeawayAddress.address},
+            </if>
+            <if test="takeawayAddress.houseNumber != null">
+                house_number = #{takeawayAddress.houseNumber},
+            </if>
+        </trim>
+        where address_id = #{takeawayAddress.addressId}
+    </update>
+
+    <select id="getByUid" resultMap="takeawayAddressMap">
+        select
+        <include refid="SelectTo"/>
+        from takeaway_address where uid = #{uid} and valid = 1;
+    </select>
+
+
+</mapper>

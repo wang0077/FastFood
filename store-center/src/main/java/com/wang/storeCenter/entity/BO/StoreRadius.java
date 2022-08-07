@@ -22,6 +22,11 @@ public class StoreRadius {
 
     private double distance;
 
+    /**
+     * 是否营业中
+     */
+    private boolean Business;
+
     public StoreRadiusDTO doBackward(){
         storeRadiusDTOConvert convert = new storeRadiusDTOConvert();
         return convert.convert(this);
@@ -34,6 +39,7 @@ public class StoreRadius {
             StoreRadiusDTO storeRadiusDTO  = new StoreRadiusDTO();
             storeRadiusDTO.setDistance(storeRadius.getDistance());
             storeRadiusDTO.setStore(storeRadius.getStore().doBackward());
+            storeRadiusDTO.setBusiness(storeRadius.isBusiness());
             return storeRadiusDTO;
         }
     }

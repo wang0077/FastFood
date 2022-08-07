@@ -33,6 +33,18 @@ public class UserAccount {
      */
     private Double amount;
     /**
+     * 用户等级
+     */
+    private Integer userLevel;
+    /**
+     * 用户经验
+     */
+    private Integer experience;
+    /**
+     * 该级别所需要的经验值
+     */
+    private Integer needExperience;
+    /**
      * 账户积分
      */
     private Integer integral;

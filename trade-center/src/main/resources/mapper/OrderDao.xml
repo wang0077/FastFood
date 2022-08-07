@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.tradecenter.dao.OrderDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.tradecenter.entity.PO.OrderPO" id="orderMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="uid" column="uid"/>
+        <result property="productDetail" column="product_detail"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="takeOrderNumber" column="take_order_number"/>
+        <result property="completeProductionTime" column="complete_production_time"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="valid" column="valid"/>
+        <result property="takeMethod" column="take_method"/>
+        <result property="payMethod" column="pay_method"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="SelectTo">
+        order_id,store_id,take_method,pay_method,uid,product_detail,order_amount,order_status,take_order_number,complete_production_time,order_time
+    </sql>
+
+    <insert id="createOrder">
+        insert into `order`
+            (
+             order_id,
+             store_id,
+             uid,
+             take_method,
+             product_detail,
+             order_amount,
+             order_status,
+             order_time,
+             valid)
+        values
+            (
+             #{order.orderId},
+             #{order.storeId},
+             #{order.uid},
+             #{order.takeMethod},
+             #{order.productDetail},
+             #{order.orderAmount},
+             #{order.orderStatus},
+             #{order.orderTime},
+             1
+             )
+    </insert>
+    <update id="addOrderPayMethod">
+        update `order` set
+        pay_method = #{payMethod}
+        where order_id = #{orderId}
+    </update>
+
+    <sql id="updateParam">
+        <trim prefix="set" suffixOverrides=",">
+            <if test="order.orderId != null">
+                order_id = #{order.orderId},
+            </if>
+            <if test="order.storeId != null">
+                store_id = #{order.storeId},
+            </if>
+            <if test="order.uid != null">
+                uid = #{order.uid},
+            </if>
+            <if test="order.productDetail != null">
+                product_detail = #{order.productDetail},
+            </if>
+            <if test="order.orderAmount != null">
+                order_amount = #{order.orderAmount},
+            </if>
+            <if test="order.orderStatus != null">
+                order_status = #{order.orderStatus},
+            </if>
+            <if test="order.takeOrderNumber != null">
+                take_order_number = #{order.takeOrderNumber}
+            </if>
+            <if test="order.completeProductionTime != null">
+                complete_production_time = #{order.completeProductionTime}
+            </if>
+            <if test="order.orderTime != null">
+                order_time = #{order.orderTime}
+            </if>
+            <if test="order.valid != null">
+                valid = #{order.valid}
+            </if>
+        </trim>
+    </sql>
+
+    <select id="getOrderByOrderId" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order`
+        where order_id = #{orderId} and valid = 1
+    </select>
+
+    <select id="getOrderProgressByStoreId" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order`
+        where valid = 1
+          and order_status not in (1,4,5,7,10,16,17,20,30)
+          <if test="selectStatue.size() > 0">
+              and order_status in
+              <foreach collection="selectStatue" separator="," item="id" index="index" open="(" close=")">
+                  #{id}
+              </foreach>
+          </if>
+          and store_id = #{order.storeId}
+    </select>
+
+    <select id="getTakeStatueOrderByStoreId" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order`
+        where valid = 1
+        and order_status = 5
+        and store_id = #{order.storeId}
+    </select>
+
+    <select id="getHistoryOrderInfoByUid" resultMap="orderMap">
+        select order_id
+             ,store_id
+             ,order_status
+             ,product_detail
+             ,order_amount
+             ,order_time
+             ,take_order_number
+             ,complete_production_time
+        from `order`
+        where uid = #{uid}
+        order by crate_time desc;
+    </select>
+    <select id="getByOrderIds" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order` where order_id in
+        <foreach collection="orderIds" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getStoreHistoryOderInfo" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order` where order_status in (7) and store_id = #{order.storeId}
+        order by crate_time desc
+    </select>
+    <select id="searchProgressOrder" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order` where order_id like CONCAT('%',#{order.orderId},'%') and order_status in (1,4,5,7,10,16,17,20,30) and valid = 1
+    </select>
+    <select id="searchHistoryOrder" resultMap="orderMap">
+        select
+        <include refid="SelectTo"/>
+        from `order` where order_id like CONCAT('%',#{order.orderId},'%') and order_status in (7) and valid = 1
+    </select>
+
+
+    <update id="updateByOrderId">
+        update `order`
+        <include refid="updateParam"/>
+        where order_id = #{order.orderId} and valid = 1
+    </update>
+
+    <update id="changeStatueAndTakeNumber">
+        update `order`
+        set
+            take_order_number = #{number},
+            order_status = #{statue}
+        where valid = 1 and order_id = #{orderId}
+    </update>
+
+    <update id="changeStatueAndCompleteTime">
+        update `order`
+        set
+            complete_production_time = #{time},
+            order_status = #{statue}
+        where valid = 1 and order_id = #{orderId}
+    </update>
+
+    <update id="changeStatue">
+        update `order`
+        set
+            order_status = #{statue}
+        where valid = 1 and order_id = #{orderId}
+    </update>
+
+
+</mapper>

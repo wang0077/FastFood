@@ -32,4 +32,6 @@ public interface IStoreService {
 
     List<StoreRadius> storeRadius(GeoCoordinate geoCoordinate, double radius);
 
+    StoreRadius nearbyStore(GeoCoordinate geoCoordinate,double radius);
+
 }

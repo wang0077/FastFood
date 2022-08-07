@@ -19,4 +19,12 @@ public interface UserAccountDao {
 
     int checkIn(@Param("userAccount") UserAccountPO userAccountPO);
 
+    double getUserAmount(@Param("uid")String openId);
+
+    void rechargeAmount(@Param("userAccount") UserAccountPO userAccountPO);
+
+    int pay(@Param("uid")String openId,@Param("amount")Double amount);
+
+    int addExperienceAndIntegral(@Param("userAccount")UserAccountPO userAccountPO);
+
 }

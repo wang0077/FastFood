@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/productDetail")
-@CrossOrigin
 @SuppressWarnings("all")
 public class ProductDetailController {
 

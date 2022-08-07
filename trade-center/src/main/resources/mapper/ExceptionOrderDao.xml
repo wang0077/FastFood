@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.tradecenter.dao.ExceptionOrderDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.tradecenter.entity.PO.ExceptionOrderPO" id="exceptionOrderMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="takeMethod" column="take_method"/>
+        <result property="uid" column="uid"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="exceptionInfo" column="exception_info"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insertExceptionOrder">
+        insert into exception_order
+            (
+             store_id,
+             order_id,
+             exception_info,
+             order_amount,
+             uid,
+             take_method,
+             valid
+             )
+            VALUES
+            (
+             #{exceptionOrder.storeId},
+             #{exceptionOrder.orderId},
+             #{exceptionOrder.exceptionInfo},
+             #{exceptionOrder.orderAmount},
+             #{exceptionOrder.uid},
+             #{exceptionOrder.takeMethod},
+             1
+             )
+    </insert>
+    <update id="dealWithExceptionOrder">
+        update exception_order set valid = 0 where order_id = #{exceptionOrder.orderId}
+    </update>
+    <select id="getExceptionOrderByStoreId" resultMap="exceptionOrderMap">
+        select * from exception_order
+        where store_id = #{exceptionOrder.storeId} and valid = 1
+    </select>
+    <select id="searchExceptionOrder" resultMap="exceptionOrderMap">
+        select
+        *
+        from exception_order where order_id like CONCAT('%',#{order.orderId},'%') and valid = 1
+    </select>
+
+
+</mapper>

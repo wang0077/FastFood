@@ -1,12 +1,17 @@
 server:
   port: 8090
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8095/rsa/publicKey
   application:
     name: FastFood-API
   cloud:
     nacos:
       discovery:
-        server-addr: 121.196.168.154:8848
+        server-addr: 106.13.206.235:8848
     gateway:
       routes:
         - id: ProductCenter
@@ -17,7 +22,44 @@ spring:
           uri: lb://Store-Center
           predicates:
             - Path=/store/**
-
+        - id: OrderCenter
+          uri: lb://Trade-Center
+          predicates:
+            - Path=/order/**
+        - id: AuthCenter
+          uri: lb://AuthCenter
+          predicates:
+            - Path=/oauth/**,/DDD/**
+        - id: UserCenter
+          uri: lb://User-Center
+          predicates:
+            - Path=/user/**
+        - id: AccountCenter
+          uri: lb://Account-Center
+          predicates:
+            - Path=/Account/**,/address/**
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: Wangsi12
+    # Druid配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 100
+    minIdle: 100
+    maxActive: 600
+    maxWait: 2000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    filters: stat,wall
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
 management:
   endpoints:
@@ -33,7 +75,8 @@ feign:
         loggerLevel: basic
 logging:
   level:
-    com.wang.fastfoodapi: debug
+    root: info
+  config: classpath:logback-dev.xml
 
 token:
   # 1000 * 60 * 60 * 24 * 3 \u4E09\u5929
@@ -43,4 +86,16 @@ token:
   tokenHead: Bearer
   # JWT存储的请求头
   tokenHeader: authorization
+
+redis:
+  pool:
+    max-active: 100
+    min-idle: 10
+    max-idle: 100
+    max-wait-millis: -1
+  host: 159.75.20.118
+  port: 6379
+  database: 0
+  password: 228913
+  timeout: 2000
 

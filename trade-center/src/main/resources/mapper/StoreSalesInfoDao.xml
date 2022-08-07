@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.tradecenter.dao.StoreSalesInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.wang.tradecenter.entity.PO.StoreSalesInfoPO" id="storeSalesInfoMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="sales" column="sales"/>
+        <result property="wxPayCount" column="wx_pay_count"/>
+        <result property="fastFoodPayCount" column="fast_food_pay_count"/>
+        <result property="pickUpCount" column="pick_up_count"/>
+        <result property="deliveryCount" column="delivery_count"/>
+        <result property="valid" column="valid"/>
+        <result property="crateTime" column="crate_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="createSales">
+        insert into store_sales_info
+            (store_id, sales, wx_pay_count, fast_food_pay_count, pick_up_count, delivery_count,valid)
+            VALUES
+            (#{StoreId},0,0,0,0,0,1)
+    </insert>
+
+    <update id="updateSales">
+        update store_sales_info set
+        sales  = #{storeSalesInfo.sales},
+        wx_pay_count = #{storeSalesInfo.wxPayCount},
+        fast_food_pay_count = #{storeSalesInfo.fastFoodPayCount},
+        pick_up_count = #{storeSalesInfo.pickUpCount},
+        delivery_count = #{storeSalesInfo.deliveryCount}
+        where store_id = #{storeSalesInfo.storeId} and TO_DAYS(crate_time) = TO_DAYS(now()) and valid = 1
+    </update>
+
+    <select id="getSalesToday" resultMap="storeSalesInfoMap">
+        select * from store_sales_info
+        where
+              TO_DAYS(crate_time) = TO_DAYS(now())
+          and
+              store_id = #{StoreId}
+          and
+              valid = 1;
+    </select>
+
+    <select id="getRecentDateStoreSalesInfo" resultMap="storeSalesInfoMap">
+        select *
+        from store_sales_info
+        where
+              store_id = #{StoreId}
+          and
+              DATEDIFF(crate_time,now()) &lt;= #{day}
+          and
+              valid = 1
+          order by crate_time
+    </select>
+
+    <select id="getAdminRecentDateStoreSalesInfo" resultMap="storeSalesInfoMap">
+        select *
+        from store_sales_info
+        where
+            DATEDIFF(crate_time,now()) &lt;= #{day}
+          and
+            valid = 1
+        order by crate_time
+    </select>
+
+
+</mapper>

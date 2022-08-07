@@ -1,6 +1,7 @@
 package com.wang.productcenter.service;
 
 import com.github.pagehelper.PageInfo;
+import com.wang.fastfood.apicommons.entity.DTO.UpdateProductDetail;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.PO.Product_DetailType_Middle;
 
@@ -18,6 +19,8 @@ public interface IProductService {
     PageInfo<Product> getAll(Product product);
 
     Product getById(Product product);
+
+    List<Product> getByIds(List<Integer> productIds);
 
     Product getByName(Product product);
 
@@ -41,5 +44,9 @@ public interface IProductService {
 
     List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> detailTypeIds);
 
-    public void flush();
+    void updateSales(List<UpdateProductDetail> orderDetails);
+
+    int updateIsSales(Product product);
+
+    void flush();
 }

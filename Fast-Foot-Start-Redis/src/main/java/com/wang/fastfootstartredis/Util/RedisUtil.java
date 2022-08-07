@@ -663,6 +663,48 @@ public class RedisUtil {
         return result;
     }
 
+    public static Long zremrangeByScore(String key,Long member){
+        long totalTime;
+        Jedis jedis = null;
+        Long result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(0);
+            result = jedis.zremrangeByScore(key,member,member);
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogDelResultSuccess(totalTime, RedisOption.ZREMRANGEBYSCORE,result,0,key);
+        } catch (Exception e) {
+            RedisLog.LogDelResultError(RedisOption.ZREM,e,0,key);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    public static Long zrevrank(String key,Long member){
+        long totalTime;
+        Jedis jedis = null;
+        Long result = null;
+        try {
+            long startTime = System.currentTimeMillis();
+            jedis = getResource();
+            jedis.select(0);
+            result = jedis.zrevrank(key,member.toString());
+            long endTime = System.currentTimeMillis();
+            totalTime = endTime - startTime;
+            RedisLog.LogDelResultSuccess(totalTime, RedisOption.ZREVRANK,result,0,key);
+        } catch (Exception e) {
+            RedisLog.LogDelResultError(RedisOption.ZREM,e,0,key);
+            e.printStackTrace();
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
     public static Long zcard(String key){
         return zcard(key,0);
     }
@@ -688,11 +730,12 @@ public class RedisUtil {
         return result;
     }
 
-    public static Long zadd(String key,int score,Object value){
+    public static Long zadd(String key,long score,Object value){
         return zadd(key,score,value,0);
     }
 
-    public static Long zadd(String key,int score,Object value,int indexDB){
+
+    public static Long zadd(String key,long score,Object value,int indexDB){
         long totalTime;
         Jedis jedis = null;
         Long result = null;

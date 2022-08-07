@@ -15,4 +15,6 @@ public class StoreRadiusDTO {
 
     private double distance;
 
+    private boolean business;
+
 }

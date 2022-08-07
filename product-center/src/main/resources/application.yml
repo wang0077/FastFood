@@ -1,11 +1,15 @@
 server:
-  port: 8091
+  tomcat:
+    max-threads: 800
+  port: 8099
 
 rocketmq:
   name-server: 159.75.20.118:9876
   producer:
     group: Product-Center-Group
 spring:
+  profiles:
+    active: dev
   application:
     name: Product-Center
   cache:
@@ -13,7 +17,7 @@ spring:
   cloud:
     # Nacos配置
     nacos:
-      server-addr: 121.196.168.154:8848
+      server-addr: 106.13.206.235:8848
       discovery:
         ip: 127.0.0.1
   # Mybatis配置

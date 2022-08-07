@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * @Auther: wAnG
@@ -39,17 +38,25 @@ public class UserDTO extends BaseRequest implements UserDetails {
      */
     private String phoneNumber;
     /**
+     * 用户权限
+     */
+    private Integer role;
+    /**
      * 性别
      */
     private Integer sex;
     /**
+     * 用户头像
+     */
+    private String avatarUrl;
+    /**
      * 生日
      */
-    private Date birthday;
+    private String birthday;
     /**
      * 用户入会时间
      */
-    private Date joinTime;
+    private String joinTime;
     /**
      * 用户等级
      */
@@ -58,6 +65,11 @@ public class UserDTO extends BaseRequest implements UserDetails {
      * 用户经验值
      */
     private Integer experience;
+    /**
+     * 门店ID
+     */
+    private String storeId;
+
 
     @Override
     public void validity() {

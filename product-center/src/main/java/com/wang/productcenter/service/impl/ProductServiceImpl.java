@@ -3,6 +3,7 @@ package com.wang.productcenter.service.impl;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.wang.fastfood.apicommons.Util.PageUtils;
+import com.wang.fastfood.apicommons.entity.DTO.UpdateProductDetail;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.RedisPageInfo;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
@@ -84,7 +85,6 @@ public class ProductServiceImpl implements IProductService {
         RedisPageInfo<Product> pageInfo = PageUtils.startRedisPage(product);
         RedisPageUtil.computeRedisPageInfo(pageInfo,REDIS_PAGE_ZSET);
         RedisPageUtil.getPageData(pageInfo,REDIS_PAGE_ZSET,REDIS_PAGE_HASH,Product.class);
-
         if (pageInfo.isExistMiss()) {
             RLock lock = RedisUtil.getLock(REDIS_PAGE_HASH);
             if (lock.tryLock()) {
@@ -98,7 +98,8 @@ public class ProductServiceImpl implements IProductService {
                     getProductType(products);
                     // todo 同步添加缓存没有保障机制
                     RedisUtil.hmset(REDIS_PAGE_HASH
-                            ,products.stream().map(item -> String.valueOf(item.getId())).collect(Collectors.toList())
+                            ,products.stream().map(item -> String.valueOf(item.getId()))
+                                    .collect(Collectors.toList())
                             ,products);
                     pageInfo.getList().addAll(products);
                     pageInfo.getList().sort(Comparator.comparingInt(Product::getId));
@@ -108,6 +109,12 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         result = PageUtils.getPageInfo(pageInfo);
+        if(!product.IsPage()){
+            result.setList(result.getList()
+                    .stream()
+                    .filter(productItem -> productItem.getIsSales().equals(1))
+                    .collect(Collectors.toList()));
+        }
         return result;
     }
 
@@ -133,6 +140,35 @@ public class ProductServiceImpl implements IProductService {
                     lock.unlock();
                 }
             }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Product> getByIds(List<Integer> productIds) {
+        List<Product> result = new ArrayList<>();
+        result = RedisUtil.hmget(REDIS_PAGE_HASH
+                ,productIds.stream().map(String::valueOf).collect(Collectors.toList())
+                ,Product.class);
+        if(productIds.size() != result.size()){
+            ArrayList<Integer> missIds = new ArrayList<>();
+            for (Integer id : productIds){
+                boolean flag = false;
+                for(Product product : result){
+                    if(product.getId().equals(id)){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!flag){
+                    missIds.add(id);
+                }
+            }
+            List<ProductPO> missProductPO = productDao.getByIds(missIds);
+            List<Product> missProduct = missProductPO.stream()
+                    .map(ProductPO::convertToProduct)
+                    .collect(Collectors.toList());
+            result.addAll(missProduct);
         }
         return result;
     }
@@ -202,11 +238,17 @@ public class ProductServiceImpl implements IProductService {
     public void remove(Product product) {
         String redisName = productGetRedisName(product);
         ProductPO productPO = product.doForward();
-        // todo 这里只删除了商品表，商品详情和商品分类详情的中间表还未清理
-        //      等后期Redis逻辑清晰进行修改
         productDao.remove(productPO);
-        redisService.hdel(REDIS_PAGE_ZSET,product.getId());
+        redisService.zrem(REDIS_PAGE_ZSET, product.getId());
         redisService.del(redisName);
+    }
+
+    public int updateIsSales(Product product){
+        ProductPO productPO = product.doForward();
+        int result = productDao.update(productPO);
+        int productId = productPO.getId();
+        RedisUtil.hdel(REDIS_PAGE_HASH,productId);
+        return result;
     }
 
     @Override
@@ -291,7 +333,7 @@ public class ProductServiceImpl implements IProductService {
             });
         });
         detailTypeService.productAssociationDetailType(productId, detailTypeIds);
-        RedisUtil.zadd(REDIS_PAGE_ZSET,product.getId(),product.getId());
+        RedisUtil.zadd(REDIS_PAGE_ZSET,productId,productId);
         // todo 后期事务上来以后要修改
         return 1;
     }
@@ -333,6 +375,13 @@ public class ProductServiceImpl implements IProductService {
 
     public List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> detailTypeIds){
         return productDao.getProductByDetailTypeId(detailTypeIds);
+    }
+
+    @Override
+    public void updateSales(List<UpdateProductDetail> orderDetails) {
+        orderDetails.forEach(order -> {
+            productDao.updateSales(order.getProductName(),order.getNumber());
+        });
     }
 
     /**

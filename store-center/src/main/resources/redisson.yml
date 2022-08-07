@@ -28,9 +28,9 @@ singleServerConfig:
   # 发布和订阅连接池大小
   subscriptionConnectionPoolSize: 50
   # 最小空闲连接数
-  connectionMinimumIdleSize: 35
+  connectionMinimumIdleSize: 15
   # 连接池大小
-  connectionPoolSize: 64
+  connectionPoolSize: 30
   # 数据库编号
   database: 0
   # DNS监测时间间隔，单位：毫秒

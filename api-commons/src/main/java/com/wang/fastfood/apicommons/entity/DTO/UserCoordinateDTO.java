@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class UserCoordinateDTO {
 
+    private Integer id;
+
     private double longitude;
 
     private double latitude;

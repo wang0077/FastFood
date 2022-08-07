@@ -10,6 +10,9 @@ import lombok.Data;
 
 @Data
 public class Response<T> {
+
+    public Response(){}
+
     /**
      * 响应码
      */

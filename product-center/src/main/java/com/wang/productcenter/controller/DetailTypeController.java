@@ -12,6 +12,7 @@ import com.wang.productcenter.service.IDetailTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@CrossOrigin
 @RequestMapping("/detailType")
 @SuppressWarnings("all")
 public class DetailTypeController {
@@ -57,6 +57,14 @@ public class DetailTypeController {
         DetailType detailType = buildBO(detailTypeDTO);
         DetailType result = detailTypeService.getById(detailType);
         return ResponseUtil.success(result.doBackward());
+    }
+
+    @PostMapping("/getByIds")
+    public Response<List<DetailTypeDTO>> getByIds(@RequestBody List<Integer> detailTypeIds) {
+        List<DetailType> result = detailTypeService.getByIds(detailTypeIds);
+        return ResponseUtil.success(result.stream()
+                .map(DetailType::doBackward)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/getByProductDetailId")

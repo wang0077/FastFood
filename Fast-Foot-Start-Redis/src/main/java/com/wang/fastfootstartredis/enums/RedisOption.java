@@ -24,6 +24,8 @@ public enum RedisOption {
     ZCARD("zcard"),
     ZADD("zadd"),
     ZREM("zrem"),
+    ZREMRANGEBYSCORE("zremrangeByScore"),
+    ZREVRANK("zrevrank"),
     ZRANGE("zrange"),
     HSET("hset"),
     HMSET("hmset"),

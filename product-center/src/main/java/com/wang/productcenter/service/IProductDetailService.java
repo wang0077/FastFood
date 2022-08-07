@@ -41,5 +41,7 @@ public interface IProductDetailService {
 
     int removeProductDetailCache(List<Integer> productDetailIds);
 
+    void removeMapCache(Integer productDetailId);
+
     void flush();
 }

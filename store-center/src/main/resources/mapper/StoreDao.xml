@@ -52,19 +52,19 @@
                 address = #{store.address},
             </if>
             <if test="store.startTime != null">
-                start_time = #{store.startTime}
+                start_time = #{store.startTime},
             </if>
             <if test="store.endTime != null">
-                end_time = #{store.endTime}
+                end_time = #{store.endTime},
             </if>
             <if test="store.managerName != null">
-                manager_name = #{store.managerName}
+                manager_name = #{store.managerName},
             </if>
             <if test="store.business != null">
                 isbusiness = #{store.business}
             </if>
         </trim>
-        where id = #{store.id} and valid = 1;
+        where id = #{store.id} and valid = 1
     </update>
 
 

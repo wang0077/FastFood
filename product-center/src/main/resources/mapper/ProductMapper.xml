@@ -66,6 +66,9 @@
 
     <sql id="updateParam">
         <trim prefix="set" suffixOverrides=",">
+            <if test="product.typeId != null">
+                type_id = #{product.typeId},
+            </if>
             <if test="product.productName != null">
                 product_name = #{product.productName},
             </if>
@@ -101,11 +104,11 @@
              )
             VALUES
             (
-             #{product.type_id},
-             #{product.product_name},
-             #{product.product_price},
-             #{product.product_image_path},
-             #{product.content},
+             #{product.typeId},
+             #{product.productName},
+             #{product.productPrice},
+             #{product.productImagePath},
+             #{product.describe},
              0,
              1,
              1
@@ -122,6 +125,12 @@
         update product
         <include refid="updateParam"/>
         where id = #{product.id} and valid = 1
+    </update>
+
+    <update id="updateSales">
+        update product
+        set sales = sales + #{number}
+        where product_name = #{name}
     </update>
 
     <select id="getAll" resultMap="productMap">

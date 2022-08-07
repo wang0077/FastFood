@@ -1,5 +1,9 @@
 package com.wang.fastfood.usercenter.entity.PO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.wang.fastfood.apicommons.entity.common.BasePO;
 import com.wang.fastfood.apicommons.entity.common.convert.BOConvert;
 import com.wang.fastfood.usercenter.entity.BO.User;
@@ -8,6 +12,8 @@ import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -42,17 +48,29 @@ public class UserPO extends BasePO implements Serializable {
 	 */
 	private String phoneNumber;
 	/**
+	 * 用户头像
+	 */
+	private String avatarUrl;
+	/**
 	 * 性别
 	 */
 	private Integer sex;
 	/**
 	 * 生日
 	 */
-	private Date birthday;
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	private LocalDate birthday;
+	/**
+	 * 用户权限
+	 */
+	private Integer role;
 	/**
 	 * 用户入会时间
 	 */
-	private Date joinTime;
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	private LocalDateTime joinTime;
 	/**
 	 * 用户等级
 	 */
@@ -61,6 +79,10 @@ public class UserPO extends BasePO implements Serializable {
 	 * 用户经验值
 	 */
 	private Integer experience;
+	/**
+	 * 门店ID
+	 */
+	private String storeId;
 	/**
 	 * 数据是否有效
 	 */

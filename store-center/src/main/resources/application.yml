@@ -13,7 +13,7 @@ spring:
   cloud:
     # Nacos配置
     nacos:
-      server-addr: 121.196.168.154:8848
+      server-addr: 106.13.206.235:8848
       discovery:
         ip: 127.0.0.1
   # Mybatis配置
@@ -74,7 +74,7 @@ redis:
   password: 228913
   timeout: 2000
   pool:
-    max-active: 100
-    min-idle: 100
-    max-idle: 100
+    max-active: 50
+    min-idle: 15
+    max-idle: 50
     max-wait-millis: -1

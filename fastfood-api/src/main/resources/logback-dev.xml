@@ -18,7 +18,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>Product-Center/logs/Product-Center_Info.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <FileNamePattern>fastfood-api/logs/FastFood-api_Info.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
             <!--日志文件最大的大小-->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
@@ -35,11 +35,11 @@
     <!-- 按照每天生成日志文件 -->
     <appender name="ErrorFileLog"  class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>DEBUG</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>Product-Center/logs/Product-Center_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <FileNamePattern>fastfood-api/logs/FastFood-api_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
             <!--日志文件最大的大小-->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>

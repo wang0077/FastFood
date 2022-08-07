@@ -15,7 +15,7 @@ public class IDUtil {
        return UUID.randomUUID()
                .toString()
                .replaceAll("-","")
-               .toUpperCase(Locale.ROOT);
+               .toUpperCase(Locale.ROOT).substring(0,19);
     }
 
 }

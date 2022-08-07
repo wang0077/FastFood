@@ -3,6 +3,8 @@ package com.wang.storeCenter.service.impl;
 import com.github.pagehelper.PageInfo;
 import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.entity.common.Page;
+import com.wang.fastfood.apicommons.entity.common.Response;
+import com.wang.fastfood.apicommons.entity.request.addAdminRequest;
 import com.wang.fastfood.apicommons.enums.SqlResultEnum;
 import com.wang.fastfootstartredis.Redis.AsyncRedis;
 import com.wang.fastfootstartredis.Util.RedisUtil;
@@ -10,6 +12,7 @@ import com.wang.storeCenter.dao.StoreDao;
 import com.wang.storeCenter.entity.BO.Store;
 import com.wang.storeCenter.entity.BO.StoreRadius;
 import com.wang.storeCenter.entity.PO.StorePO;
+import com.wang.storeCenter.fegin.UserClient;
 import com.wang.storeCenter.service.IStoreService;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.GeoRadiusResponse;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,6 +41,9 @@ public class storeService implements IStoreService {
 
     @Autowired
     private AsyncRedis asyncRedis;
+
+    @Autowired
+    private UserClient userClient;
 
     private static final String STORE_RADIUS = "storeRadius";
 
@@ -90,6 +98,9 @@ public class storeService implements IStoreService {
         StorePO storePO = store.doForward();
         int result = storeDao.add(storePO);
         Store compStore = getByName(store);
+        Long id = compStore.getId();
+        addAdminRequest request = buildAddAdminRequest(store.getStorePhoneNumber(),id);
+        Response<Integer> response = userClient.addAdmin(request);
         String redisName = storeGetRedisName(compStore);
         RedisUtil.setGeo(STORE_RADIUS,buildGeoCoordinate(store),redisName);
         syncRemovePageCache();
@@ -217,7 +228,34 @@ public class storeService implements IStoreService {
                     .findFirst()
                     .ifPresent(storeRadius::setStore);
         });
+        checkStoreIsBusiness(storeRadiusList);
         return storeRadiusList;
+    }
+
+    @Override
+    public StoreRadius nearbyStore(GeoCoordinate geoCoordinate, double radius) {
+        List<StoreRadius> stores = storeRadius(geoCoordinate, radius);
+        return stores.stream().min(Comparator.comparing(StoreRadius::getDistance)).orElse(null);
+    }
+
+    private addAdminRequest buildAddAdminRequest(String userName,Long StoreId){
+        addAdminRequest request = new addAdminRequest();
+        request.setUserName(userName);
+        request.setStoreId(String.valueOf(StoreId));
+        return request;
+    }
+
+    private String getStoreUserName(Long storeId){
+        return "Store" + storeId;
+    }
+
+    private void checkStoreIsBusiness(List<StoreRadius> storeRadiusList){
+        storeRadiusList.forEach(store -> {
+            LocalTime localTime = LocalTime.now();
+            LocalTime startTime = LocalTime.parse(store.getStore().getStartTime());
+            LocalTime endTime = LocalTime.parse(store.getStore().getEndTime());
+            store.setBusiness(localTime.isAfter(startTime) & localTime.isBefore(endTime));
+        });
     }
 
     private List<String> buildRedisNameByStoreRadius(List<StoreRadius> storeRadiusList){

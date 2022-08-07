@@ -23,5 +23,9 @@ public class EncoderUtil {
         return Matcher.quoteReplacement(password);
     }
 
+    public static boolean match(String newPassword,String oldPassword){
+        return encoder.matches(newPassword,oldPassword);
+    }
+
 
 }

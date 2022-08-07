@@ -6,14 +6,19 @@ import com.wang.fastfood.apicommons.Util.PageUtils;
 import com.wang.fastfood.apicommons.Util.ResponseUtil;
 import com.wang.fastfood.apicommons.Util.SqlResultUtil;
 import com.wang.fastfood.apicommons.entity.DTO.ProductDTO;
+import com.wang.fastfood.apicommons.entity.DTO.UpdateProductDetail;
 import com.wang.fastfood.apicommons.entity.common.Response;
 import com.wang.productcenter.entity.BO.DetailType;
 import com.wang.productcenter.entity.BO.Product;
 import com.wang.productcenter.entity.BO.ProductDetail;
 import com.wang.productcenter.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -23,7 +28,6 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@CrossOrigin
 @RequestMapping("/product")
 @SuppressWarnings("all")
 public class ProductController {
@@ -52,6 +56,14 @@ public class ProductController {
                 .stream()
                 .map(Product::doBackward)
                 .collect(Collectors.toList())));
+    }
+
+    @PostMapping("/getByIds")
+    public Response<List<ProductDTO>> getByIds(@RequestBody List<Integer> productIds){
+        List<Product> result = productService.getByIds(productIds);
+        return ResponseUtil.success(result.stream()
+                .map(Product::doBackward)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/getById")
@@ -90,6 +102,18 @@ public class ProductController {
         Product product = buildBO(productDTO);
         int result = productService.update(product);
         return ResponseUtil.success(SqlResultUtil.updateResult(result));
+    }
+
+    @PostMapping("/updateIsSales")
+    public Response<Integer> updateIsSales(@RequestBody ProductDTO productDTO){
+        Product product = buildBO(productDTO);
+        int result = productService.updateIsSales(product);
+        return ResponseUtil.success(result);
+    }
+
+    @PostMapping("/updateSales")
+    public void updateSales(@RequestBody List<UpdateProductDetail> orderDetails){
+        productService.updateSales(orderDetails);
     }
 
     private Product buildBO(ProductDTO productDTO){

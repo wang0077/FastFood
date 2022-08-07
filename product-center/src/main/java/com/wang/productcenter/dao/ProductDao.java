@@ -42,4 +42,6 @@ public interface ProductDao {
     List<Product_DetailType_Middle> getProductByDetailTypeId(List<Integer> idList);
 
     List<Product_Detail_Middle> getProductByDetailId(@Param("list") List<Integer> productDetailIds);
+
+    int updateSales(@Param("name")String productName,@Param("number") Integer number);
 }

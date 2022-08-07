@@ -15,4 +15,12 @@ public interface IUserAccountService {
     UserAccount getByUserId(UserAccount userAccount);
 
     int checkIn(UserAccount userAccount);
+
+    Double getUserAmount(String openId);
+
+    void rechargeAmount(UserAccount userAccount);
+
+    void pay(String OpenId,Double amount);
+
+    Integer calculateOrderInterest(String openId, Double amount);
 }

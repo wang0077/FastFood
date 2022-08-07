@@ -189,10 +189,9 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         productDetailDao.remove(productDetailPO);
         String redisName = productDetailGetRedisName(productDetail);
         List<String> keys = RedisUtil.keys(redisName);
-        if (keys == null || keys.size() == 0) {
-            return;
+        if (keys != null && keys.size() > 0) {
+            redisService.del(keys);
         }
-        redisService.del(keys);
         redisService.zrem(REDIS_PAGE_ZSET, productDetail.getId());
     }
 
@@ -229,9 +228,14 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     public List<ProductDetail> getByIds(List<Integer> idList) {
         List<ProductDetail> result = null;
 
-        result = RedisUtil.hmget(REDIS_PAGE_HASH
-                , idList.stream().map(String::valueOf).collect(Collectors.toList())
-                , ProductDetail.class);
+        if(idList.size() > 0){
+            result = RedisUtil.hmget(REDIS_PAGE_HASH
+                    , idList.stream().map(String::valueOf).collect(Collectors.toList())
+                    , ProductDetail.class);
+        }else {
+            return new ArrayList<>();
+        }
+
 
         List<Integer> MissId = null;
         if (result != null) {
@@ -258,6 +262,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             List<ProductDetail> missResult = poResult.stream()
                     .map(ProductDetailPO::convertToProductDetail)
                     .collect(Collectors.toList());
+            getDetailType(missResult);
             RedisUtil.hmset(REDIS_PAGE_HASH
                     , missResult.stream().map(productDetail -> String.valueOf(productDetail.getId())).collect(Collectors.toList())
                     , missResult);
@@ -321,12 +326,14 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         idList.forEach(productId -> {
             List<DetailType> detailTypeList = productMap.get(productId);
             List<ProductDetail> details = productDetailMap.get(productId);
-            details.forEach(detail -> {
-                detail.setDetailTypeList(detailTypeList
-                        .stream()
-                        .filter(detailType -> detailType.getProductDetailId().equals(detail.getId()))
-                        .collect(Collectors.toList()));
-            });
+            if(details != null && detailTypeList != null){
+                details.forEach(detail -> {
+                    detail.setDetailTypeList(detailTypeList
+                            .stream()
+                            .filter(detailType -> detailType.getProductDetailId().equals(detail.getId()))
+                            .collect(Collectors.toList()));
+                });
+            }
         });
         return productDetailMap;
     }
@@ -376,14 +383,23 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         return Integer.parseInt(result);
     }
 
+    @Override
+    public void removeMapCache(Integer productDetailId) {
+        redisService.hdel(REDIS_PAGE_HASH,productDetailId);
+    }
+
     private void removeProductCache(Integer productDetailId) {
         List<Integer> productIds = productService.getProductIdsByDetail(productDetailId);
-        productService.removeProductCacheByProductId(productIds);
+        if(productIds.size() > 0){
+            productService.removeProductCacheByProductId(productIds);
+        }
     }
 
     private void removeDetailTypeCache(Integer productDetailId) {
         List<Integer> detailTypeIds = detailTypeService.getIdsByProductDetailId(productDetailId);
-        detailTypeService.removeDetailTypeCacheByDetailTypeId(detailTypeIds);
+        if(detailTypeIds.size() > 0) {
+            detailTypeService.removeDetailTypeCacheByDetailTypeId(detailTypeIds);
+        }
     }
 
     /**
@@ -524,7 +540,6 @@ public class ProductDetailServiceImpl implements IProductDetailService {
                 .map(ProductDetail::getId)
                 .collect(Collectors.toList());
         Map<Integer, List<DetailType>> detailTypes = detailTypeService.groupByProductDetailId(idList);
-        productDetails.get(0).setDetailTypeList(detailTypes.get(productDetails.get(0).getId()));
         productDetails
                 .forEach(productDetail -> productDetail.setDetailTypeList(detailTypes.get(productDetail.getId())));
     }

@@ -39,7 +39,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>fastfood-api/logs/FastFoodApi_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <FileNamePattern>fastFood-api/logs/FastFoodApi_Error.%d{yyyy-MM-dd}_%i.log</FileNamePattern>
             <!--日志文件最大的大小-->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>

@@ -90,6 +90,7 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         int result = detailTypeDao.insert(detailTypePO);
         checkResult = detailTypeDao.getByName(detailTypePO);
         RedisUtil.zadd(REDIS_PAGE_ZSET,checkResult.getId(),checkResult.getId());
+        removeProductDetailCache(detailType.getProductDetailId());
         return result;
     }
 
@@ -184,29 +185,23 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     @Override
     public void remove(DetailType detailType) {
         DetailTypePO detailTypePO = detailType.doForward();
+        detailTypePO = detailTypeDao.getById(detailTypePO);
 
         // 检查该数据的依赖情况
 
         List<Product_DetailType_Middle> middles =
-                productService.getProductByDetailTypeId(Collections.singletonList(detailType.getId()));
+                productService.getProductByDetailTypeId(Collections.singletonList(detailTypePO.getId()));
         if(middles.size() > 0){
             throw new DeleteException("该可选项正在被商品正在使用", CodeEnum.SQL_DELETE_ERROR);
-        }
-        List<ProductDetail> productDetails =
-                productDetailService.getByIds(Collections.singletonList(detailType.getProductDetailId()));
-        if(productDetails.size() > 0){
-            throw new DeleteException("该可选项正在被可选项分类正在使用", CodeEnum.SQL_DELETE_ERROR);
         }
 
         // 数据无依赖情况进行删除
         detailTypeDao.remove(detailTypePO);
         String redisName = DetailTypeGetRedisName(detailType);
         List<String> keys = RedisUtil.keys(redisName);
-        if (keys == null || keys.size() == 0) {
-            return;
-        }
         redisService.del(keys);
-        redisService.zrem(REDIS_PAGE_ZSET,detailType.getId());
+        redisService.zrem(REDIS_PAGE_ZSET,detailTypePO.getId());
+        removeProductDetailCache(detailTypePO.getProductDetailId());
     }
 
     @Override
@@ -250,9 +245,14 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
     public List<DetailType> getByIds(List<Integer> idList) {
         List<DetailType> result = null;
 
-        result = RedisUtil.hmget(REDIS_PAGE_HASH
-                ,idList.stream().map(String::valueOf).collect(Collectors.toList())
-                ,DetailType.class);
+        if(idList.size() > 0){
+            result = RedisUtil.hmget(REDIS_PAGE_HASH
+                    ,idList.stream().map(String::valueOf).collect(Collectors.toList())
+                    ,DetailType.class);
+        }else {
+            return new ArrayList<>();
+        }
+
 
         List<Integer> MissId = null;
         if (result != null) {
@@ -352,7 +352,10 @@ public class DetailTypeServiceImpl implements IDetailTypeService {
         List<Integer> productIds = middles.stream()
                         .map(Product_DetailType_Middle::getProductId)
                         .collect(Collectors.toList());
-        return productService.removeProductCacheByProductId(productIds);
+        if(productIds.size() > 0){
+            return productService.removeProductCacheByProductId(productIds);
+        }
+        return 0;
     }
 
     private int removeProductDetailCache(Integer productDetailId){

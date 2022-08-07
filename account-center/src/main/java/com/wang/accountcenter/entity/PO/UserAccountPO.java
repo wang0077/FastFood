@@ -39,6 +39,18 @@ public class UserAccountPO implements Serializable {
 	 */
 	private Integer integral;
 	/**
+	 * 用户等级
+	 */
+	private Integer userLevel;
+	/**
+	 * 用户经验
+	 */
+	private Integer experience;
+	/**
+	 * 该级别所需要的经验值
+	 */
+	private Integer needExperience;
+	/**
 	 * 数据是否有效
 	 */
 	private Integer valid;

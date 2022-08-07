@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/store")
-@CrossOrigin
 public class storeController {
 
     @Autowired
@@ -72,6 +71,14 @@ public class storeController {
         return ResponseUtil.success(result == null ? null : result.doBackward());
     }
 
+    @PostMapping("getByIds")
+    public Response<List<StoreDTO>> getByIds(@RequestBody List<Integer> storeIds){
+        List<Store> storeList = storeService.getByIds(storeIds);
+        return ResponseUtil.success(storeList.stream()
+                .map(Store::doBackward)
+                .collect(Collectors.toList()));
+    }
+
     @PostMapping("/getByName")
     public Response<StoreDTO> getByName(@RequestBody StoreDTO storeDTO){
         Store store = buildBO(storeDTO);
@@ -97,6 +104,14 @@ public class storeController {
                 .stream()
                 .map(StoreRadius::doBackward)
                 .collect(Collectors.toList()));
+    }
+
+    @PostMapping("/nearbyStore")
+    public Response<StoreRadiusDTO> nearbyStore(@RequestBody UserCoordinateDTO userCoordinateDTO){
+        GeoCoordinate geoCoordinate = buildGeoCoordinate(userCoordinateDTO);
+        double radius = userCoordinateDTO.getRadius();
+        StoreRadius storeRadius = storeService.nearbyStore(geoCoordinate, radius);
+        return ResponseUtil.success(storeRadius == null ? null : storeRadius.doBackward());
     }
 
     private GeoCoordinate buildGeoCoordinate(UserCoordinateDTO userCoordinateDTO){

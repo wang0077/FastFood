@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@CrossOrigin
 @RequestMapping("type")
 @SuppressWarnings("all")
 public class ProductTypeController {

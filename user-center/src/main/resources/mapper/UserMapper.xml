@@ -10,6 +10,8 @@
         <result column="password" property="password"/>
         <result column="phone_number" property="phoneNumber" />
         <result column="sex" property="sex" />
+        <result column="role" property="role"/>
+        <result column="avatarUrl" property="avatarUrl"/>
         <result column="birthday" property="birthday" />
         <result column="join_time" property="joinTime" />
         <result column="user_level" property="userLevel" />
@@ -18,14 +20,72 @@
         <result column="crate_time" property="crateTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+
+    <update id="WXSaveUserInfo">
+        update user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="User.phoneNumber != null">
+                phone_number = #{User.phoneNumber},
+            </if>
+            <if test="User.birthday != null">
+                birthday = #{User.birthday},
+            </if>
+            <if test="User.sex != null">
+                sex = #{User.sex},
+            </if>
+            <if test="User.username != null">
+                user_name = #{User.username},
+            </if>
+        </trim>
+        where uid = #{User.uid} and valid = 1;
+    </update>
+
+    <update id="updatePassword">
+        update user set password = #{password} where user_name = #{userName} and valid = 1
+    </update>
+
     <insert id="add">
         insert into user
-            (id, uid, user_name, password, user_level, experience, valid)
+            (id, uid, avatarUrl, user_name, password, user_level, experience,role, valid)
             VALUES
-            (#{User.id},#{User.uid},#{User.username},#{User.password},#{User.userLevel},#{User.experience},1);
+            (#{User.id},#{User.uid},#{User.avatarUrl},#{User.username},#{User.password},#{User.userLevel},#{User.experience},#{User.role},1);
     </insert>
+
+    <insert id="addAdmin">
+        insert into user
+        (id, uid, user_name, password,store_id, role,valid)
+        VALUES
+            (#{User.id},#{User.uid},#{User.username},#{User.password},#{User.storeId},#{User.role},1);
+    </insert>
+
+
     <select id="getByUserName" resultMap="BaseResultMap">
         select * from user where user_name = #{userName}
+    </select>
+
+
+    <select id="getByUserId" resultMap="BaseResultMap">
+        select *
+        from user where uid = #{uid};
+    </select>
+
+    <select id="WXGetUserInfo" resultMap="BaseResultMap">
+        select uid,sex,user_name,join_time,phone_number,avatarUrl,birthday,user_level,experience
+        from user
+        where valid = 1 and uid = #{uid}
+    </select>
+    <select id="getByStoreId" resultMap="BaseResultMap">
+        select uid,phone_number,sex from user
+        where store_id = #{storeId} and valid = 1;
+    </select>
+
+    <select id="getByUserIds" resultMap="BaseResultMap">
+        select
+        uid,sex,user_name,join_time,phone_number
+        from user where uid in
+        <foreach collection="UidList" separator="," item="id" index="index" open="(" close=")">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

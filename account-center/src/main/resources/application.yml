@@ -13,7 +13,7 @@ spring:
   cloud:
     # Nacos配置
     nacos:
-      server-addr: 121.196.168.154:8848
+      server-addr: 106.13.206.235:8848
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
@@ -21,9 +21,9 @@ spring:
     password: Wangsi12
     # Druid配置
     type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 100
-    minIdle: 100
-    maxActive: 600
+    initialSize: 50
+    minIdle: 50
+    maxActive: 200
     maxWait: 2000
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
@@ -39,14 +39,14 @@ spring:
   redis:
     redisson:
       config: classpath:redisson.yml
-    host: 121.196.168.154
+    host: 159.75.20.118
     port: 6379
     database: 0
-    password: Wangsi12
+    password: 228913
     jedis:
       pool:
-        max-active: 100
-        min-idle: 100
+        max-active: 15
+        min-idle: 15
         max-wait: -1
         max-idle: 100
     timeout: 2000
@@ -72,3 +72,16 @@ logging:
   level:
     root: info
   config: classpath:logback-dev.xml
+
+fastfood:
+  levels:
+    - level: 1
+      needExperience: 0
+    - level: 2
+      needExperience: 100
+    - level: 3
+      needExperience: 300
+    - level: 4
+      needExperience: 600
+    - level: 5
+      needExperience: 1000

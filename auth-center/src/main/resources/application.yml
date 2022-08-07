@@ -1,13 +1,23 @@
 server:
-  port: 8093
+  port: 8095
 spring:
   main:
     allow-bean-definition-overriding: true
+  rocketmq:
+    name-server: 159.75.20.118:9876
+    producer:
+      group: User-Center-Group
+  redis:
+    host: 159.75.20.118
+    port: 6379
+    password: 228913
   application:
-    name: FastFood-API
+    name: AuthCenter
   cloud:
     nacos:
-      server-addr: 121.196.168.154:8848
+      server-addr: 106.13.206.235:8848
+      discovery:
+        ip: 127.0.0.1
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/Food_domain?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
@@ -61,6 +71,24 @@ token:
   # JWT存储的请求头
   tokenHeader: authorization
 
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.wang.fastfood.entity
 
+redis:
+  pool:
+    max-active: 100
+    min-idle: 15
+    max-idle: 100
+    max-wait-millis: -1
+  host: 159.75.20.118
+  port: 6379
+  database: 0
+  password: 228913
+  timeout: 2000
 
+wechat:
+  webapp:
+    appid: wx408e1d2f920721a4
+    secret: 87d43a76c63fe3574265e1a850c82035
 

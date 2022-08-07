@@ -1,5 +1,9 @@
 package com.wang.fastfood.usercenter.entity.BO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.wang.fastfood.apicommons.entity.DTO.UserDTO;
 import com.wang.fastfood.apicommons.entity.common.Page;
 import com.wang.fastfood.apicommons.entity.common.convert.DTOConvert;
@@ -9,7 +13,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @Auther: wAnG
@@ -47,13 +52,25 @@ public class User extends Page {
      */
     private Integer sex;
     /**
+     * 用户头像
+     */
+    private String avatarUrl;
+    /**
      * 生日
      */
-    private Date birthday;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDate birthday;
     /**
      * 用户入会时间
      */
-    private Date joinTime;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime joinTime;
+    /**
+     * 用户权限
+     */
+    private Integer role;
     /**
      * 用户等级
      */
@@ -62,6 +79,10 @@ public class User extends Page {
      * 用户经验值
      */
     private Integer experience;
+    /**
+     * 门店ID
+     */
+    private String storeId;
 
     public UserPO doForward(){
         UserPOConvert convert = new UserPOConvert();
@@ -89,6 +110,12 @@ public class User extends Page {
         @Override
         public UserDTO convert(User user) {
             UserDTO userDTO = new UserDTO();
+            if(user.getJoinTime() != null){
+                userDTO.setJoinTime(user.getJoinTime().toString().replace("T"," "));
+            }
+            if(user.getBirthday() != null){
+                userDTO.setBirthday(user.getBirthday().toString().replace("T"," "));
+            }
             BeanUtils.copyProperties(user, userDTO);
             return userDTO;
         }

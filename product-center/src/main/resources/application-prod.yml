@@ -1,0 +1,19 @@
+server:
+  port: 8091
+spring:
+  cloud:
+    # Nacos配置
+    nacos:
+      server-addr: 106.13.206.235:8848
+      discovery:
+        ip: 106.55.239.37
+logging:
+  level:
+    root: info
+  config: classpath:logback-pro.xml
+redis:
+  pool:
+    max-active: 300
+    min-idle: 150
+    max-idle: 300
+    max-wait-millis: -1
